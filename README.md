@@ -1,2 +1,2 @@
 # CashControl
-Application de suivit des dépenses des étudiants
+Application de suivi des dépenses des étudiants
