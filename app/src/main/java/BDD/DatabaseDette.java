@@ -24,7 +24,7 @@ public class DatabaseDette extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "Dette_Manager";
 
-    // Table name: Depense.
+    // Table name: Dette.
     private static final String TABLE_DETTE = "Dette";
 
     //On creer la structure de la table
@@ -66,10 +66,10 @@ public class DatabaseDette extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // If depense table has no data
+    // If dette table has no data
     // default, Insert 2 records.
-    public void createDefaultDepenseIfNeed()  {
-        int count = this.getDepenseCount();
+    public void createDefaultDetteIfNeed()  {
+        int count = this.getDetteCount();
         if(count == 0 ) {
             Dette detteYassine = new Dette(0 , "rayan",1920000,  "01/01/2023",2);
             Dette detteRayan = new Dette(1 , "ayoub",1,  "01/01/2023",1);
@@ -77,9 +77,9 @@ public class DatabaseDette extends SQLiteOpenHelper {
         }
     }
 
-    //On ajoute un Depense
-    public void addDepense(Dette dette) {
-        Log.i(TAG, "MyDatabaseHelper.addDepense ... " + dette.getDetteId()); // affiche un message dans la console android
+    //On ajoute un Dette
+    public void addDette(Dette dette) {
+        Log.i(TAG, "MyDatabaseHelper.addDette ... " + dette.getDetteId()); // affiche un message dans la console android
 
         SQLiteDatabase db = this.getWritableDatabase();//ouvre une connexion à la base de données en mode écriture
 
@@ -113,10 +113,10 @@ public class DatabaseDette extends SQLiteOpenHelper {
         return dette;
     }
 
-    public List<Dette> getAllDepense() {
-        Log.i(TAG, "MyDatabaseHelper.getAllDepense ... " );
+    public List<Dette> getAllDette() {
+        Log.i(TAG, "MyDatabaseHelper.getAllDette ... " );
 
-        List<Dette> depenseList = new ArrayList<Dette>();
+        List<Dette> detteList = new ArrayList<Dette>();
 
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_DETTE;
@@ -127,23 +127,23 @@ public class DatabaseDette extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Dette depense = new Dette();
-                depense.setDetteId(Integer.parseInt(cursor.getString(0)));
-                depense.setNom_destinataire((cursor.getString(1)));
-                depense.setMontant_dette(Double.parseDouble((cursor.getString(2))));
-                depense.setDate_echeance((cursor.getString(3)));
-                depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                Dette dette = new Dette();
+                dette.setDetteId(Integer.parseInt(cursor.getString(0)));
+                dette.setNom_destinataire((cursor.getString(1)));
+                dette.setMontant_dette(Double.parseDouble((cursor.getString(2))));
+                dette.setDate_echeance((cursor.getString(3)));
+                dette.setUserId(Integer.parseInt(cursor.getString(4)));
 
 
                 // Adding depense to list
-                depenseList.add(depense);
+                detteList.add(dette);
             } while (cursor.moveToNext());
         }
-        return depenseList;
+        return detteList;
     }
 
-    public int getDepenseCount() {
-        Log.i(TAG, "MyDatabaseHelper.getDepenseCount ... " );
+    public int getDetteCount() {
+        Log.i(TAG, "MyDatabaseHelper.getDetteCount ... " );
 
         String countQuery = "SELECT  * FROM " + TABLE_DETTE;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -156,7 +156,7 @@ public class DatabaseDette extends SQLiteOpenHelper {
         return count;
     }
 
-    public int updateDepense(Dette dette) {
+    public int updateDette(Dette dette) {
         Log.i(TAG, "MyDatabaseHelper.updateDette ... "  + dette.getDetteId());
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -172,7 +172,7 @@ public class DatabaseDette extends SQLiteOpenHelper {
                 new String[]{String.valueOf(dette.getUserId())});
     }
 
-    public void deleteDepense(Dette dette) {
+    public void deleteDette(Dette dette) {
         Log.i(TAG, "MyDatabaseHelper.updateDette ... " + dette.getUserId());
 
         SQLiteDatabase db = this.getWritableDatabase();

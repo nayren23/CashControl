@@ -24,7 +24,7 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "Categorie_Manager";
 
-    // Table name: Depense.
+    // Table name: Categorie.
     private static final String TABLE_CATEGORIE = "Categorie";
 
     //On creer la structure de la table
@@ -60,10 +60,10 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // If depense table has no data
+    // If categorie table has no data
     // default, Insert 2 records.
     public void createDefaultCategorieIfNeed()  {
-        int count = this.getDepenseCount();
+        int count = this.getCategorieCount();
         if(count == 0 ) {
             Categorie Alimentation = new Categorie(0,"Alimentation & Restauration");
             Categorie Achat = new Categorie(1 , "Achat & Shopping");
@@ -78,9 +78,9 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
         }
     }
 
-    //On ajoute un Depense
-    public void addDepense(Categorie categorie) {
-        Log.i(TAG, "MyDatabaseHelper.addDepense ... " + categorie.getCategorieId()); // affiche un message dans la console android
+    //On ajoute un Categorie
+    public void addCategorie(Categorie categorie) {
+        Log.i(TAG, "MyDatabaseHelper.addCategorie ... " + categorie.getCategorieId()); // affiche un message dans la console android
 
         SQLiteDatabase db = this.getWritableDatabase();//ouvre une connexion à la base de données en mode écriture
 
@@ -112,10 +112,10 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
         return categorie;
     }
 
-    public List<Categorie> getAllDepense() {
-        Log.i(TAG, "MyDatabaseHelper.getAllDepense ... " );
+    public List<Categorie> getAllCategorie() {
+        Log.i(TAG, "MyDatabaseHelper.getAllCategorie ... " );
 
-        List<Categorie> depenseList = new ArrayList<Categorie>();
+        List<Categorie> categorieList = new ArrayList<Categorie>();
 
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORIE;
@@ -132,15 +132,15 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
 
 
 
-                // Adding depense to list
-                depenseList.add(categorie);
+                // Adding categorie to list
+                categorieList.add(categorie);
             } while (cursor.moveToNext());
         }
-        return depenseList;
+        return categorieList;
     }
 
-    public int getDepenseCount() {
-        Log.i(TAG, "MyDatabaseHelper.getDepenseCount ... " );
+    public int getCategorieCount() {
+        Log.i(TAG, "MyDatabaseHelper.getCategorieCount ... " );
 
         String countQuery = "SELECT  * FROM " + TABLE_CATEGORIE;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -153,8 +153,8 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
         return count;
     }
 
-    public int updateDepense(Categorie categorie) {
-        Log.i(TAG, "MyDatabaseHelper.updateDepense ... "  + categorie.getCategorieId());
+    public int updateCategorie(Categorie categorie) {
+        Log.i(TAG, "MyDatabaseHelper.updateCategorie ... "  + categorie.getCategorieId());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -167,8 +167,8 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
                 new String[]{String.valueOf(categorie.getCategorieId())});
     }
 
-    public void deleteDepense(Categorie categorie) {
-        Log.i(TAG, "MyDatabaseHelper.updateDepense ... " + categorie.getCategorieId());
+    public void deleteCategorie(Categorie categorie) {
+        Log.i(TAG, "MyDatabaseHelper.updateCategorie ... " + categorie.getCategorieId());
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CATEGORIE, COLUMN_ID_CATEGORIE + " = ?",
