@@ -73,8 +73,8 @@ public class DatabaseUser extends SQLiteOpenHelper {
     public void createDefaultUsersIfNeed()  {
         int count = this.getUserCount();
         if(count ==0 ) {
-            User user1 = new User(0 , "Admin","adminApp", "2 rue de l'admin", "0781799878");
-            User user2 = new User(1 , "AdminPremium","adminAppPremium", "10 rue de l'admin", "0911223344");
+            User user = new User(0 , "Admin","adminApp", "admin@gmail.com", "admin","0781799878");
+            User user1 = new User(1 , "AdminPremium","AdminPremium", "AdminPremium@gmail.com", "AdminPremium","0666766767");
         }
     }
 
@@ -108,7 +108,7 @@ public class DatabaseUser extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_USER, new String[] { COLUMN_ID_UTILISATEUR,
-                        COLUMN_NOM_UTILISATEUR,COLUMN_PRENOM_UTILISATEUR, COLUMN_EMAIL_UTILISATEUR, COLUMN_NUMEROTELEPHONE_UTILISATEUR,COLUMN_USER_PHOTO_PROFIL }, COLUMN_USER_ID + "=?",
+                        COLUMN_NOM_UTILISATEUR,COLUMN_PRENOM_UTILISATEUR, COLUMN_EMAIL_UTILISATEUR, COLUMN_NUMEROTELEPHONE_UTILISATEUR,COLUMN_CHEMINIMAGE_UTILISATEUR }, COLUMN_ID_UTILISATEUR + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -137,7 +137,7 @@ public class DatabaseUser extends SQLiteOpenHelper {
                 user.setPrenom((cursor.getString(2)));
                 user.setEmail((cursor.getString(3)));
                 user.setNumerotelephone((cursor.getString(4)));
-                user.set((cursor.getString(5)));
+                user.setCheminimage((cursor.getString(5)));
 
                 // Adding user to list
                 userList.add(user);
@@ -166,14 +166,14 @@ public class DatabaseUser extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(COLUMN_USER_NOM, user.getNom());
-        values.put(COLUMN_USER_PRENOM, user.getPrenom());
-        values.put(COLUMN_USER_ADRESSE, user.getAdresse());
-        values.put(COLUMN_USER_NUMERO_TELEPHONE, user.getNumeroTelephone());
-        values.put(COLUMN_USER_PHOTO_PROFIL, user.getPhotoDeProfil());
+        values.put(COLUMN_NOM_UTILISATEUR, user.getNom());
+        values.put(COLUMN_PRENOM_UTILISATEUR, user.getPrenom());
+        values.put(COLUMN_EMAIL_UTILISATEUR, user.getEmail());
+        values.put(COLUMN_NUMEROTELEPHONE_UTILISATEUR, user.getNumerotelephone());
+        values.put(COLUMN_CHEMINIMAGE_UTILISATEUR, user.getCheminimage());
 
         // updating row
-        return db.update(TABLE_USER, values, COLUMN_USER_ID + " = ?",
+        return db.update(TABLE_USER, values, COLUMN_ID_UTILISATEUR + " = ?",
                 new String[]{String.valueOf(user.getUserId())});
     }
 
@@ -181,7 +181,7 @@ public class DatabaseUser extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.updateUser ... " + user.getNom());
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_USER, COLUMN_USER_ID + " = ?",
+        db.delete(TABLE_USER, COLUMN_ID_UTILISATEUR + " = ?",
                 new String[] { String.valueOf(user.getUserId()) });
         db.close();
     }

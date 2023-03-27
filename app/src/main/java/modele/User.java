@@ -10,7 +10,7 @@ public class User implements Serializable {
     private String email;
     private String mot_de_passe;
     private String cheminimage;
-    private int numerotelephone;
+    private String numerotelephone;
 
 
     public User() {
@@ -18,7 +18,7 @@ public class User implements Serializable {
     }
 
 
-    public User(int userId, String nom, String prenom, String email, String mot_de_passe, String cheminimage, int numerotelephone) {
+    public User(int userId, String nom, String prenom, String email, String mot_de_passe, String cheminimage,  String numerotelephone) {
         UserId = userId;
         this.nom = nom;
         this.prenom = prenom;
@@ -29,7 +29,7 @@ public class User implements Serializable {
     }
 
 
-    public User(int userId, String nom, String prenom, String email, String mot_de_passe, int numerotelephone) {
+    public User(int userId, String nom, String prenom, String email, String mot_de_passe,  String numerotelephone) {
         UserId = userId;
         this.nom = nom;
         this.prenom = prenom;
@@ -87,11 +87,11 @@ public class User implements Serializable {
         this.cheminimage = cheminimage;
     }
 
-    public int getNumerotelephone() {
+    public String getNumerotelephone() {
         return numerotelephone;
     }
 
-    public void setNumerotelephone(int numerotelephone) {
+    public void setNumerotelephone(String numerotelephone) {
         this.numerotelephone = numerotelephone;
     }
 }
