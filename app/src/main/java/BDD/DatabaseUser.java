@@ -73,8 +73,9 @@ public class DatabaseUser extends SQLiteOpenHelper {
     public void createDefaultUsersIfNeed()  {
         int count = this.getUserCount();
         if(count ==0 ) {
-            User user = new User(0 , "Admin","adminApp", "admin@gmail.com", "admin","0781799878");
-            User user1 = new User(1 , "AdminPremium","AdminPremium", "AdminPremium@gmail.com", "AdminPremium","0666766767");
+            User yassine = new User(0 , "hamidi","yassine",0,"yassine@gmail.com", "yassine", "0781799878");
+            User rayan = new User(0 , "chouchane","rayan",0,"rayan@gmail.com", "rayan", "0781799878");
+            User ayoub = new User(1 , "bouaziz","ayoub", "ayoub@gmail.com", "ayoub","0666766767");
         }
     }
 
@@ -136,8 +137,9 @@ public class DatabaseUser extends SQLiteOpenHelper {
                 user.setNom((cursor.getString(1)));
                 user.setPrenom((cursor.getString(2)));
                 user.setEmail((cursor.getString(3)));
-                user.setNumerotelephone((cursor.getString(4)));
-                user.setCheminimage((cursor.getString(5)));
+                user.setMot_de_passe((cursor.getString(4)));
+                user.setNumerotelephone((cursor.getString(5)));
+                user.setCheminimage((cursor.getString(6)));
 
                 // Adding user to list
                 userList.add(user);
