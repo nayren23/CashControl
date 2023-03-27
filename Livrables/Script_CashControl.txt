@@ -1,0 +1,55 @@
+
+Table "Utilisateur" {
+  "id_utilisateur" INT [pk, not null]
+  "nom_utilisateur" VARCHAR(255) [not null]
+  "email_utilisateur" VARCHAR(255) [not null]
+  "mot_de_passe" VARCHAR(255) [not null]
+  "cheminImage" VARCHAR(255) [not null]
+  "numerotelephone" VARCHAR(255) [not null]
+
+}
+
+Table "Categorie" {
+  "id_categorie" INT [pk, not null]
+  "nom_categorie" VARCHAR(255) [not null]
+}
+
+Table "Depense" {
+  "id_depense" INT [pk, not null]
+  "date_depense" DATE [not null]
+  "montant_depense" "DECIMAL(10, 2)" [not null]
+  "id_utilisateur" INT [not null]
+  "id_categorie" INT [not null]
+}
+
+Table "Notification" {
+  "id_notification" INT [pk, not null]
+  "message_notification" VARCHAR(255) [not null]
+  "date_notification" DATE [not null]
+  "id_utilisateur" INT [not null]
+}
+
+Table "Dette" {
+  "id_dette" INT [pk, not null]
+  "nom_destinataire" VARCHAR(255) [not null]
+  "montant_dette" "DECIMAL(10, 2)" [not null]
+  "date_echeance" DATE [not null]
+  "id_utilisateur" INT [not null]
+}
+
+Table "Calendrier" {
+  "id_calendrier" INT [pk, not null]
+  "date_evenement" DATE [not null]
+  "nom_evenement" VARCHAR(255) [not null]
+  "id_utilisateur" INT [not null]
+}
+
+Ref:"Utilisateur"."id_utilisateur" < "Depense"."id_utilisateur"
+
+Ref:"Categorie"."id_categorie" < "Depense"."id_categorie"
+
+Ref:"Utilisateur"."id_utilisateur" < "Notification"."id_utilisateur"
+
+Ref:"Utilisateur"."id_utilisateur" < "Dette"."id_utilisateur"
+
+Ref:"Utilisateur"."id_utilisateur" < "Calendrier"."id_utilisateur"
