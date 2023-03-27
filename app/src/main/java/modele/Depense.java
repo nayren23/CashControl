@@ -72,4 +72,16 @@ public class Depense implements Serializable {
     public void setCategorieId(int categorieId) {
         CategorieId = categorieId;
     }
+
+
+    @Override
+    public String toString() {
+        return "Depense{" +
+                "DepenseId=" + DepenseId +
+                ", date='" + date + '\'' +
+                ", montant=" + montant +
+                ", UserId=" + UserId +
+                ", CategorieId=" + CategorieId +
+                '}';
+    }
 }

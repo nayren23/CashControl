@@ -24,7 +24,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "Depense_Manager";
 
-    // Table name: User.
+    // Table name: Depense.
     private static final String TABLE_DEPENSE = "Depense";
 
     //On creer la structure de la table
@@ -66,10 +66,10 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // If User table has no data
+    // If depense table has no data
     // default, Insert 2 records.
     public void createDefaultDepenseIfNeed()  {
-        int count = this.getUserCount();
+        int count = this.getDepenseCount();
         if(count == 0 ) {
             Depense depenseYassine = new Depense(0 , "12/13/2013",1920000,  0,1);
             Depense depenseRayan = new Depense(1 , "01/01/2023",1,  1,2);
@@ -77,9 +77,9 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         }
     }
 
-    //On ajoute un User
+    //On ajoute un Depense
     public void addDepense(Depense depense) {
-        Log.i(TAG, "MyDatabaseHelper.addUser ... " + depense.getDepenseId()); // affiche un message dans la console android
+        Log.i(TAG, "MyDatabaseHelper.addDepense ... " + depense.getDepenseId()); // affiche un message dans la console android
 
         SQLiteDatabase db = this.getWritableDatabase();//ouvre une connexion à la base de données en mode écriture
 
@@ -99,7 +99,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
     }
 
     public Depense getDepense(int id) {
-        Log.i(TAG, "MyDatabaseHelper.getUser ... " + id);
+        Log.i(TAG, "MyDatabaseHelper.getDepense ... " + id);
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -116,7 +116,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
     public List<Depense> getAllDepense() {
         Log.i(TAG, "MyDatabaseHelper.getAllDepense ... " );
 
-        List<Depense> userList = new ArrayList<Depense>();
+        List<Depense> depenseList = new ArrayList<Depense>();
 
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_DEPENSE;
@@ -136,14 +136,14 @@ public class DatabaseDepense extends SQLiteOpenHelper {
 
 
                 // Adding depense to list
-                userList.add(depense);
+                depenseList.add(depense);
             } while (cursor.moveToNext());
         }
-        return userList;
+        return depenseList;
     }
 
-    public int getUserCount() {
-        Log.i(TAG, "MyDatabaseHelper.getUsersCount ... " );
+    public int getDepenseCount() {
+        Log.i(TAG, "MyDatabaseHelper.getDepenseCount ... " );
 
         String countQuery = "SELECT  * FROM " + TABLE_DEPENSE;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -157,7 +157,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
     }
 
     public int updateDepense(Depense depense) {
-        Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + depense.getDepenseId());
+        Log.i(TAG, "MyDatabaseHelper.updateDepense ... "  + depense.getDepenseId());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -172,12 +172,15 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                 new String[]{String.valueOf(depense.getUserId())});
     }
 
-    public void deleteUser(Depense depense) {
-        Log.i(TAG, "MyDatabaseHelper.updateUser ... " + depense.getUserId());
+    public void deleteDepense(Depense depense) {
+        Log.i(TAG, "MyDatabaseHelper.updateDepense ... " + depense.getUserId());
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_DEPENSE, COLUMN_ID_UTILISATEUR + " = ?",
                 new String[] { String.valueOf(depense.getUserId()) });
         db.close();
     }
+
+
+
 }
