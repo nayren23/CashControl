@@ -1,15 +1,21 @@
 package com.example.cashcontrol;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
@@ -22,6 +28,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
+
+    private static final int REQUEST_CODE_MAIN = 23; //on recupere la valeur
+
+
     private int id_Utilisateur_Courant;
 
     private ArrayList<Double> sommeDepensesParCategorie;
@@ -65,7 +75,7 @@ public class HomeActivity extends AppCompatActivity {
 
         //On change quelque parametre
         PieDataSet camembertDataSet = new PieDataSet(depenseUser, "Dépense Utilisateurs");
-        camembertDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        camembertDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         camembertDataSet.setValueTextColor(Color.BLACK); //Couleur des valeurs numériques
         camembertDataSet.setValueTextSize(20f);
         camemberDepense.setCenterTextSize(16f);
@@ -78,8 +88,27 @@ public class HomeActivity extends AppCompatActivity {
         int sommeDepenseMois = calculerSommeDepenses(depenses_Utilisateur);
         camemberDepense.setCenterText("" +(sommeDepenseMois) +" €");
         camemberDepense.setCenterTextSize(20f);
-        camemberDepense.setBackgroundColor(Color.GRAY);
         camemberDepense.animate();
+
+        camemberDepense.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry entry, Highlight highlight) {
+                PieEntry pieEntry = (PieEntry) entry;
+                String label = pieEntry.getLabel();
+                float value = pieEntry.getValue();
+                Toast.makeText(getApplicationContext(),"Selection " + label + " avec comme valeur " + value + " €", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(HomeActivity.this, AffichageDetaillerDepenseActiviy.class);
+
+                intent.putExtra("infoCategorie", label);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onNothingSelected() {
+                // do nothing
+            }
+        });
     }
 
     /**

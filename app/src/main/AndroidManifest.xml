@@ -26,6 +26,12 @@
             android:exported="false">
 
         </activity>
+
+        <activity
+            android:name=".AffichageDetaillerDepenseActiviy"
+            android:exported="false">
+
+        </activity>
     </application>
 
 </manifest>
