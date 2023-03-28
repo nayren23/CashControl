@@ -1,5 +1,6 @@
 package BDD;
 
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -7,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +26,15 @@ public class DatabaseDepense extends SQLiteOpenHelper {
 
     // Table name: Depense.
     private static final String TABLE_DEPENSE = "Depense";
+    private static final String TABLE_UTILISATEUR = "User";
 
     //On creer la structure de la table
     private static final String COLUMN_ID_DEPENSE ="id_depense";
     private static final String COLUMN_DATE_DEPENSE ="date_depense";
     private static final String COLUMN_MONTANT_DEPENSE ="montant_depense";
     private static final String COLUMN_ID_CATEGORIE ="id_categorie";
-    private static final String COLUMN_ID_UTILISATEUR ="id_utilisateur";
-
+    private static final String COLUMN_ID_UTILISATEUR_DEPENSE ="id_utilisateur";
+    private static final String COLUMN_ID_UTILISATEUR = "id_utilisateur";
 
 
     public DatabaseDepense(Context context)  {
@@ -49,7 +50,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                 + COLUMN_ID_DEPENSE + " INTEGER PRIMARY KEY," + COLUMN_DATE_DEPENSE +
                 " TEXT," + COLUMN_MONTANT_DEPENSE +
                 " TEXT," + COLUMN_ID_CATEGORIE +
-                " TEXT," +  COLUMN_ID_UTILISATEUR +
+                " TEXT," + COLUMN_ID_UTILISATEUR_DEPENSE +
                 " TEXT" + ")";
         // Execute Script.
         db.execSQL(script);
@@ -89,7 +90,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         values.put(COLUMN_DATE_DEPENSE, depense.getDate());
         values.put(COLUMN_MONTANT_DEPENSE, depense.getMontant());
         values.put(COLUMN_ID_CATEGORIE, depense.getCategorieId());
-        values.put(COLUMN_ID_UTILISATEUR, depense.getUserId());
+        values.put(COLUMN_ID_UTILISATEUR_DEPENSE, depense.getUserId());
 
 
         db.insert(TABLE_DEPENSE, null, values);
@@ -104,7 +105,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_DEPENSE, new String[] { COLUMN_ID_DEPENSE,
-                        COLUMN_DATE_DEPENSE,COLUMN_MONTANT_DEPENSE, COLUMN_ID_CATEGORIE, COLUMN_ID_UTILISATEUR}, COLUMN_ID_UTILISATEUR + "=?",
+                        COLUMN_DATE_DEPENSE,COLUMN_MONTANT_DEPENSE, COLUMN_ID_CATEGORIE, COLUMN_ID_UTILISATEUR_DEPENSE}, COLUMN_ID_UTILISATEUR_DEPENSE + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -165,10 +166,10 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         values.put(COLUMN_DATE_DEPENSE, depense.getDate());
         values.put(COLUMN_MONTANT_DEPENSE, depense.getMontant());
         values.put(COLUMN_ID_CATEGORIE, depense.getCategorieId());
-        values.put(COLUMN_ID_UTILISATEUR, depense.getUserId());
+        values.put(COLUMN_ID_UTILISATEUR_DEPENSE, depense.getUserId());
 
         // updating row
-        return db.update(TABLE_DEPENSE, values, COLUMN_ID_UTILISATEUR + " = ?",
+        return db.update(TABLE_DEPENSE, values, COLUMN_ID_UTILISATEUR_DEPENSE + " = ?",
                 new String[]{String.valueOf(depense.getUserId())});
     }
 
@@ -176,10 +177,41 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.updateDepense ... " + depense.getUserId());
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_DEPENSE, COLUMN_ID_UTILISATEUR + " = ?",
+        db.delete(TABLE_DEPENSE, COLUMN_ID_UTILISATEUR_DEPENSE + " = ?",
                 new String[] { String.valueOf(depense.getUserId()) });
         db.close();
     }
+
+    /**
+     * permet d'obtenir les depenses d'un utilisateurs, en sachant la catégorie  de la dépense
+     * @param idUtilisateur
+     * @return
+     */
+    public List<Depense> getDepensesUtilisateurCategorie(int idUtilisateur) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Depense> depenses = new ArrayList<>();
+
+        String query = "SELECT " + TABLE_DEPENSE + ".* FROM " + TABLE_DEPENSE +
+                " JOIN " + TABLE_UTILISATEUR + " ON " + TABLE_DEPENSE + "." + COLUMN_ID_UTILISATEUR_DEPENSE + " = " + TABLE_UTILISATEUR + "." + COLUMN_ID_UTILISATEUR +
+                " WHERE " + TABLE_UTILISATEUR + "." + COLUMN_ID_UTILISATEUR + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idUtilisateur)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                Depense depense = new Depense();
+                depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
+                depense.setDate(cursor.getString(1));
+                depense.setMontant(Double.parseDouble(cursor.getString(2)));
+                depense.setCategorieId(Integer.parseInt(cursor.getString(3)));
+                depenses.add(depense);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return depenses;
+    }
+
+
 
 
 
