@@ -1,6 +1,7 @@
 package com.example.cashcontrol;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,9 +24,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
     private int id_Utilisateur_Courant;
 
-
     private ArrayList<Double> sommeDepensesParCategorie;
-
 
 
     @Override
@@ -33,26 +32,22 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
+        //On creer les depenses
         DatabaseDepense databaseDepense = new DatabaseDepense(this);
         databaseDepense.createDefaultDepenseIfNeed();
 
         //récupérer l'ID de l'utilisateur courant stocké dans les préférences partagées.
-        this.id_Utilisateur_Courant= getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour verifier si la case n'est pas null
+        this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour verifier si la case n'est pas null
 
-        System.out.println(" depense la"+databaseDepense.getDepense(0));
+
         ArrayList<Depense> depenses_Utilisateur = new ArrayList<>();
-        ArrayList<Depense> getAllDepense = new ArrayList<>();
 
-        System.out.println("getAllDepense " +  databaseDepense.getAllDepense());
+        //On recupere toutes les depenses de l'utilisateur depuis la BDD
+        depenses_Utilisateur = databaseDepense.getDepensesUtilisateurCategorie(this.id_Utilisateur_Courant);
 
-
-
-        depenses_Utilisateur = databaseDepense.getDepensesUtilisateurCategorie(0);
-
+        //On fait la somme des depenses par catégories
         this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
 
-
-        System.out.println("affichage de la liste sommeDepensesParCategorie " +  sommeDepensesParCategorie);
 
         PieChart camemberDepense = findViewById(R.id.camembert);
 
@@ -69,22 +64,23 @@ public class HomeActivity extends AppCompatActivity {
         depenseUser.add(new PieEntry((this.sommeDepensesParCategorie.get(8)).intValue(),"Santé"));
 
 
-        PieDataSet camembertDataSet = new PieDataSet(depenseUser, "Depense Utilisateurs");
+        //On change quelque parametre
+        PieDataSet camembertDataSet = new PieDataSet(depenseUser, "Dépense Utilisateurs");
         camembertDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        camembertDataSet.setValueTextColor(Color.BLACK);
+        camembertDataSet.setValueTextColor(Color.BLACK); //Couleur des valeurs numériques
         camembertDataSet.setValueTextSize(20f);
         camemberDepense.setCenterTextSize(16f);
 
-
         PieData cameData = new PieData(camembertDataSet);
-
+        //On set les Data au diagramme
         camemberDepense.setData(cameData);
 
         camemberDepense.getDescription().setEnabled(false);
-        camemberDepense.setCenterText("Vos Dépenses");
+        int sommeDepenseMois = calculerSommeDepenses(depenses_Utilisateur);
+        camemberDepense.setCenterText("" +(sommeDepenseMois) +" €");
+        camemberDepense.setCenterTextSize(20f);
+        camemberDepense.setBackgroundColor(Color.GRAY);
         camemberDepense.animate();
-
-
     }
 
     /**
@@ -110,10 +106,16 @@ public class HomeActivity extends AppCompatActivity {
             sommeDepensesParCategorie.set(indiceCategorie, somme);
         }
 
-            System.out.println("mais nannn" + sommeDepensesParCategorie);
-
         // Retourne le tableau de sommes des dépenses par catégorie
         return sommeDepensesParCategorie;
+    }
+
+    public int calculerSommeDepenses(ArrayList<Depense> depenses) {
+        int somme = 0;
+        for (Depense depense : depenses) {
+            somme += depense.getMontant();
+        }
+        return somme;
     }
 
 
