@@ -73,10 +73,14 @@ public class DatabaseUser extends SQLiteOpenHelper {
     public void createDefaultUsersIfNeed()  {
         int count = this.getUserCount();
         if(count ==0 ) {
-            User yassine = new User(0 , "hamidi","yassine",0,"yassine@gmail.com", "yassine", "0781799878");
-            User rayan = new User(0 , "chouchane","rayan",0,"rayan@gmail.com", "rayan", "0781799878");
-            User ayoub = new User(1 , "bouaziz","ayoub", "ayoub@gmail.com", "ayoub","0666766767");
-        }
+            User yassine = new User(0 , "hamidi","yassine",0,"yassine@gmail.com", "yassine", "yassine","0781799878");
+            User rayan = new User(0 , "chouchane","rayan",0,"rayan@gmail.com", "rayan","rayan", "0781799878");
+            User ayoub = new User(1 , "bouaziz","ayoub", "ayoub@gmail.com", "ayoub", "ayoub","0666766767");
+        addUser(yassine);
+        addUser(rayan);
+        addUser(ayoub);
+
+         }
     }
 
     //On ajoute un User
@@ -88,6 +92,7 @@ public class DatabaseUser extends SQLiteOpenHelper {
         ContentValues values = new ContentValues(); //stocker des paires clé-valeur de données à insérer ou mettre à jour dans une base de données SQLite
 
         //on prepare les donnees suivantes
+        values.put(COLUMN_ID_UTILISATEUR, user.getUserId());
         values.put(COLUMN_NOM_UTILISATEUR, user.getNom());
         values.put(COLUMN_PRENOM_UTILISATEUR, user.getPrenom());
         values.put(COLUMN_EMAIL_UTILISATEUR, user.getEmail());

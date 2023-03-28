@@ -68,12 +68,12 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
             Categorie Alimentation = new Categorie(0,"Alimentation & Restauration");
             Categorie Achat = new Categorie(1 , "Achat & Shopping");
             Categorie Loisirs = new Categorie(2 , "Loisirs & Sorties");
-            Categorie Abonnement = new Categorie(2 , "Loisirs & Sorties");
-            Categorie Transports = new Categorie(2 , "Transports & auto");
-            Categorie Divers = new Categorie(2 , "Divers");
-            Categorie Impôts = new Categorie(2 , "Impôts");
-            Categorie Logement = new Categorie(2 , "Logement");
-            Categorie Santé = new Categorie(2 , "santé");
+            Categorie Abonnement = new Categorie(3 , "Abonnement");
+            Categorie Transports = new Categorie(4 , "Transports & auto");
+            Categorie Divers = new Categorie(5 , "Divers");
+            Categorie Impôts = new Categorie(6 , "Impôts");
+            Categorie Logement = new Categorie(7 , "Logement");
+            Categorie Santé = new Categorie(8 , "santé");
 
         }
     }
