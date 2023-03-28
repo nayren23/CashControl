@@ -154,4 +154,19 @@ public class User implements Serializable {
     public void setNumerotelephone(String numerotelephone) {
         this.numerotelephone = numerotelephone;
     }
+
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "UserId=" + UserId +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", argent=" + argent +
+                ", email='" + email + '\'' +
+                ", mot_de_passe='" + mot_de_passe + '\'' +
+                ", cheminimage='" + cheminimage + '\'' +
+                ", numerotelephone='" + numerotelephone + '\'' +
+                '}';
+    }
 }
