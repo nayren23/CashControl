@@ -39,7 +39,6 @@ public class HomeActivity extends AppCompatActivity {
         //récupérer l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour verifier si la case n'est pas null
 
-
         ArrayList<Depense> depenses_Utilisateur = new ArrayList<>();
 
         //On recupere toutes les depenses de l'utilisateur depuis la BDD
@@ -48,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
         //On fait la somme des depenses par catégories
         this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
 
-
+        //Creation du Camembert
         PieChart camemberDepense = findViewById(R.id.camembert);
 
         ArrayList<PieEntry> depenseUser = new ArrayList<>();
@@ -66,7 +65,7 @@ public class HomeActivity extends AppCompatActivity {
 
         //On change quelque parametre
         PieDataSet camembertDataSet = new PieDataSet(depenseUser, "Dépense Utilisateurs");
-        camembertDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        camembertDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         camembertDataSet.setValueTextColor(Color.BLACK); //Couleur des valeurs numériques
         camembertDataSet.setValueTextSize(20f);
         camemberDepense.setCenterTextSize(16f);
@@ -117,6 +116,4 @@ public class HomeActivity extends AppCompatActivity {
         }
         return somme;
     }
-
-
 }

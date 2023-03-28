@@ -74,13 +74,12 @@ public class DatabaseUser extends SQLiteOpenHelper {
         int count = this.getUserCount();
         if(count ==0 ) {
             User yassine = new User(0 , "hamidi","yassine",0,"yassine@gmail.com", "yassine", "yassine","0781799878");
-            User rayan = new User(0 , "chouchane","rayan",0,"rayan@gmail.com", "rayan","rayan", "0781799878");
-            User ayoub = new User(1 , "bouaziz","ayoub", "ayoub@gmail.com", "ayoub", "ayoub","0666766767");
-        addUser(yassine);
-        addUser(rayan);
-        addUser(ayoub);
-
-         }
+            User rayan = new User(1 , "chouchane","rayan",0,"rayan@gmail.com", "rayan","rayan", "0781799878");
+            User ayoub = new User(2 , "bouaziz","ayoub", "ayoub@gmail.com", "ayoub", "ayoub","0666766767");
+            addUser(yassine);
+            addUser(rayan);
+            addUser(ayoub);
+        }
     }
 
     //On ajoute un User

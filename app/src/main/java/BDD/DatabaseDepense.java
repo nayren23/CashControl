@@ -97,10 +97,8 @@ public class DatabaseDepense extends SQLiteOpenHelper {
             addDepense(depense9);
             addDepense(depense10);
 
-
-
-            //  Depense depenseRayan = new Depense(1 , "01/01/2023",1,  1,2);
-            //    Depense depenseAyoub = new Depense(2 , "01/01/2023",0.5,  2,3);
+              Depense depenseRayan = new Depense(1 , "01/01/2023",1,  1,2);
+              Depense depenseAyoub = new Depense(2 , "01/01/2023",0.5,  2,3);
         }
     }
 

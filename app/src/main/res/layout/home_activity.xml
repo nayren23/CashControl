@@ -10,7 +10,6 @@
     android:orientation="vertical"
     >
 
-
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/camembert"
         android:layout_width="match_parent"

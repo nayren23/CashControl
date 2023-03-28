@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         databaseUser.createDefaultUsersIfNeed();
 
 
-        int id = 0;
+        int id = 1;
         //on change la valeur dans les shared preferences
         getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
                 .edit()
