@@ -1,6 +1,7 @@
 package modele;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Depense implements Serializable {
 
@@ -32,6 +33,18 @@ public class Depense implements Serializable {
         this.montant = montant;
     }
 
+    /**
+     * Calcule la somme des montants de toutes les dépenses passées en paramètre.
+     * @param depenses La liste des dépenses pour lesquelles on veut calculer la somme des montants.
+     * @return La somme des montants de toutes les dépenses passées en paramètre.
+     */
+    public static int calculerSommeDepenses(ArrayList<Depense> depenses) {
+        int somme = 0;
+        for (Depense depense : depenses) {
+            somme += depense.getMontant();
+        }
+        return somme;
+    }
 
     public int getDepenseId() {
         return DepenseId;
