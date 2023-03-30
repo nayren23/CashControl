@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
         DatabaseUser databaseUser = new DatabaseUser(this);
 
-
         databaseUser.createDefaultUsersIfNeed();
 
 

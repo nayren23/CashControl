@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import modele.Categorie;
+import modele.Category;
 
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
 public class DatabaseCategorie extends SQLiteOpenHelper {
@@ -65,15 +66,12 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
     public void createDefaultCategorieIfNeed()  {
         int count = this.getCategorieCount();
         if(count == 0 ) {
-            Categorie Alimentation = new Categorie(0,"Alimentation & Restauration");
-            Categorie Achat = new Categorie(1 , "Achat & Shopping");
-            Categorie Loisirs = new Categorie(2 , "Loisirs & Sorties");
-            Categorie Abonnement = new Categorie(3 , "Abonnement");
-            Categorie Transports = new Categorie(4 , "Transports & auto");
-            Categorie Divers = new Categorie(5 , "Divers");
-            Categorie Impôts = new Categorie(6 , "Impôts");
-            Categorie Logement = new Categorie(7 , "Logement");
-            Categorie Santé = new Categorie(8 , "santé");
+            for (Category category : Category.values()) {
+                int categoryId = Category.categories.get(category.getLabel());
+                Categorie c = new Categorie(categoryId, category.getLabel());
+                System.out.println(c);
+            }
+
 
         }
     }
