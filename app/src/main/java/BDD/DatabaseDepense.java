@@ -97,14 +97,14 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                 //Depense depenseYassine = new Depense(0 , "12/13/2013",1920000,  0,1);
 
                 //Test
-                Depense depense1 = new Depense(0, "80/01/2022", 888, 0, 1, "Solde");
-                Depense depense2 = new Depense(1, "02/01/2022", 200, 0, 2, "Disney");
-                Depense depense3 = new Depense(2, "03/01/2022", 300, 0, 3, "Cinéma");
-                Depense depense4 = new Depense(3, "04/01/2022", 400, 0, 4, "navigo");
-                Depense depense5 = new Depense(4, "05/01/2022", 500, 0, 5, "casserole");
-                Depense depense6 = new Depense(5, "06/01/2022", 600, 0, 6, "ursaaf");
+                Depense depense1 = new Depense(0, "08/01/2022", 888, 0, 1, "Solde");
+                Depense depense2 = new Depense(1, "02/05/2022", 200, 0, 2, "Disney");
+                Depense depense3 = new Depense(2, "13/01/2022", 300, 0, 3, "Cinéma");
+                Depense depense4 = new Depense(3, "24/01/2022", 400, 0, 4, "navigo");
+                Depense depense5 = new Depense(4, "08/01/2022", 500, 0, 5, "casserole");
+                Depense depense6 = new Depense(5, "16/01/2022", 600, 0, 6, "ursaaf");
                 Depense depense7 = new Depense(6, "07/01/2022", 700, 0, 7, "loyer");
-                Depense depense8 = new Depense(7, "08/01/2022", 800, 0, 8, "doliprane");
+                Depense depense8 = new Depense(7, "28/01/2022", 800, 0, 8, "doliprane");
                 Depense depense9 = new Depense(8, "09/01/2022", 900, 0, 0, "kebab");
                 Depense depense10 = new Depense(9, "10/01/2022", 150, 0, 1, "jean");
                 Depense depense11 = new Depense(10, "10/01/2022", 25, 0, 1, "tee-shirt");
@@ -112,7 +112,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                 Depense depense13 = new Depense(12, "01/01/2022", 88.99, 0, 1, "solde mamam");
                 Depense depense14 = new Depense(13, "01/01/2022", 76.99, 0, 1, "casquette");
                 Depense depense15 = new Depense(14, "01/01/2022", 87.34, 0, 1, "tong");
-                Depense depense16 = new Depense(15, "01/01/2022", 144.99, 0, 1, "clavier");
+                Depense depense16 = new Depense(15, "01/01/2022", 10000.99, 0, 1, "clavier");
 
 
                 addDepense(depense1);

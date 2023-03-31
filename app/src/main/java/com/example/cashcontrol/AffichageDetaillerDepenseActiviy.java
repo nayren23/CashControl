@@ -69,17 +69,18 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
         listDepense.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int idDepense = arrayAdapter.getItem(position).getId();
+                String nomDepense = arrayAdapter.getItem(position).getDepense().getDescriptionDepense();
+                Double montant = arrayAdapter.getItem(position).getDepense().getMontant();
+
                 // Créer une boîte de dialogue avec un message et un bouton OK
                 AlertDialog.Builder builder = new AlertDialog.Builder(AffichageDetaillerDepenseActiviy.this);
-                builder.setMessage("Voulez-vous vraiment supprimer cette dépense ?")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                builder.setMessage("Voulez-vous vraiment supprimer la dépense suivante: " + nomDepense + ".\nD'un montant de : " + montant + "€ ?")
+                        .setPositiveButton("OUI", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // Ajout ici le code pour supprimer l'élément de la liste
-                                System.out.println("je supprime");
 
-                                int idDepense = arrayAdapter.getItem(position).getId();
-                                //  System.out.println("mais nann c'est l'id custom " + idDepense);
                                 //on supprime la depense de la BDD
                                 databaseDepense.deleteDepense(idDepense);
 
@@ -88,7 +89,7 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
                                 //A voir si on laisse le finish et le start
                                 //  finish();
                                 //   startActivity(getIntent());
-                                Toast.makeText(getApplicationContext(),"Votre dépense a été supprimée avec succès 😋", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Votre dépense "+  nomDepense +  " a été supprimée avec succès 😋", Toast.LENGTH_SHORT).show();
                             }
                         })
                         .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {

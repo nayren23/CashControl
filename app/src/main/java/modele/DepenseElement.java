@@ -21,9 +21,10 @@ public class DepenseElement {
 
     @Override
     public String toString() {
-        return "Montant : " + depense.getMontant() + " €"
-                + "\nDate: " + depense.getDate()
-                + "\nDescription: " + depense.getDescriptionDepense()
+        return  depense.getDate()
+                + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t" //pour un affichge propre de la liste
+                + depense.getMontant() + " €"
+                + "\n" + depense.getDescriptionDepense()
                 +"\n";
     }
 }
