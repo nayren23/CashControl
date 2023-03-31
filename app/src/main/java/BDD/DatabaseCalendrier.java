@@ -10,12 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import modele.Calendrier;
 
-public class DatabaseCalendrier extends SQLiteOpenHelper {
+public class DatabaseCalendrier extends DatabasePrincipale {
 
-    private static final String TAG = "SQLite";
-
-    // Database Version
-    private static final int DATABASE_VERSION = 1;
 
     // Database Name
     private static final String DATABASE_NAME = "Calendrier_Manager";

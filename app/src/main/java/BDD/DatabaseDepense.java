@@ -10,16 +10,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import modele.Depense;
 
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
-public class DatabaseDepense extends SQLiteOpenHelper {
-
-    private static final String TAG = "SQLite";
-
-    // Database Version
-    private static final int DATABASE_VERSION = 1;
+public class DatabaseDepense extends DatabasePrincipale {
 
     // Database Name
     private static final String DATABASE_NAME = "Depense_Manager";
@@ -48,7 +45,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.onCreate ... ");
         try {
 // Commande SQL de suppression de la table
-           String deleteQuery = "DROP TABLE IF EXISTS " + TABLE_DEPENSE;
+            String deleteQuery = "DROP TABLE IF EXISTS " + TABLE_DEPENSE;
 
 // Commande SQL de création de la table
             String createQuery = "CREATE TABLE " + TABLE_DEPENSE + "("
@@ -75,7 +72,6 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.onUpgrade ... ");
 
         try {
-
             // Drop older table if existed
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_DEPENSE);
 
@@ -89,30 +85,26 @@ public class DatabaseDepense extends SQLiteOpenHelper {
     // If depense table has no data
     // default, Insert 2 records.
     public void createDefaultDepenseIfNeed()  {
-
         try {
-
             int count = this.getDepenseCount();
             if (count == 0) {
-                //Depense depenseYassine = new Depense(0 , "12/13/2013",1920000,  0,1);
-
                 //Test
                 Depense depense1 = new Depense(0, "08/01/2022", 888, 0, 1, "Solde");
                 Depense depense2 = new Depense(1, "02/05/2022", 200, 0, 2, "Disney");
                 Depense depense3 = new Depense(2, "13/01/2022", 300, 0, 3, "Cinéma");
-                Depense depense4 = new Depense(3, "24/01/2022", 400, 0, 4, "navigo");
-                Depense depense5 = new Depense(4, "08/01/2022", 500, 0, 5, "casserole");
-                Depense depense6 = new Depense(5, "16/01/2022", 600, 0, 6, "ursaaf");
-                Depense depense7 = new Depense(6, "07/01/2022", 700, 0, 7, "loyer");
-                Depense depense8 = new Depense(7, "28/01/2022", 800, 0, 8, "doliprane");
-                Depense depense9 = new Depense(8, "09/01/2022", 900, 0, 0, "kebab");
-                Depense depense10 = new Depense(9, "10/01/2022", 150, 0, 1, "jean");
-                Depense depense11 = new Depense(10, "10/01/2022", 25, 0, 1, "tee-shirt");
-                Depense depense12 = new Depense(11, "15/01/2021", 12.5, 0, 1, "claquette");
-                Depense depense13 = new Depense(12, "01/01/2022", 88.99, 0, 1, "solde mamam");
-                Depense depense14 = new Depense(13, "01/01/2022", 76.99, 0, 1, "casquette");
-                Depense depense15 = new Depense(14, "01/01/2022", 87.34, 0, 1, "tong");
-                Depense depense16 = new Depense(15, "01/01/2022", 10000.99, 0, 1, "clavier");
+                Depense depense4 = new Depense(3, "24/01/2022", 400, 0, 4, "Navigo");
+                Depense depense5 = new Depense(4, "08/01/2022", 500, 0, 5, "Casserole");
+                Depense depense6 = new Depense(5, "16/01/2022", 600, 0, 6, "Ursaaf");
+                Depense depense7 = new Depense(6, "07/01/2022", 700, 0, 7, "Loyer");
+                Depense depense8 = new Depense(7, "28/01/2022", 800, 0, 8, "Doliprane");
+                Depense depense9 = new Depense(8, "09/01/2022", 900, 0, 0, "Kebab");
+                Depense depense10 = new Depense(9, "10/01/2022", 150, 0, 1, "Jean");
+                Depense depense11 = new Depense(10, "10/01/2022", 25, 0, 1, "Tee-shirt");
+                Depense depense12 = new Depense(11, "15/01/2021", 12.5, 0, 1, "Claquette");
+                Depense depense13 = new Depense(12, "01/01/2022", 88.99, 0, 1, "Solde mamam");
+                Depense depense14 = new Depense(13, "01/01/2022", 76.99, 0, 1, "Casquette");
+                Depense depense15 = new Depense(14, "01/01/2022", 87.34, 0, 1, "Tong");
+                Depense depense16 = new Depense(15, "01/01/2022", 10000.99, 0, 1, "Clavier Gamer");
 
 
                 addDepense(depense1);
@@ -131,12 +123,10 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                 addDepense(depense14);
                 addDepense(depense15);
                 addDepense(depense16);
-
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     //On ajoute un Depense
@@ -144,9 +134,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.addDepense ... " + depense.getDepenseId()); // affiche un message dans la console android
 
         try {
-
             SQLiteDatabase db = this.getWritableDatabase();//ouvre une connexion à la base de données en mode écriture
-
             ContentValues values = new ContentValues(); //stocker des paires clé-valeur de données à insérer ou mettre à jour dans une base de données SQLite
 
             //on prepare les donnees suivantes
@@ -170,7 +158,6 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.getDepense ... " + id);
 
         try {
-
             SQLiteDatabase db = this.getReadableDatabase();
 
             Cursor cursor = db.query(TABLE_DEPENSE, new String[]{COLUMN_ID_DEPENSE,
@@ -321,20 +308,18 @@ public class DatabaseDepense extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(categorieId)});
 
-            // looping through all rows and adding to list
-            if (cursor.moveToFirst()) {
-                do {
-                    Depense depense = new Depense();
-                    depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
-                    depense.setDate((cursor.getString(1)));
-                    depense.setMontant(Double.parseDouble((cursor.getString(2))));
-                    depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
-                    depense.setUserId(Integer.parseInt(cursor.getString(4)));
-                    depense.setDescriptionDepense(cursor.getString(5));
 
-                    // Adding depense to list
-                    depenseList.add(depense);
-                } while (cursor.moveToNext());
+            while (cursor.moveToNext()){
+                Depense depense = new Depense();
+                depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
+                depense.setDate((cursor.getString(1)));
+                depense.setMontant(Double.parseDouble((cursor.getString(2))));
+                depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
+                depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                depense.setDescriptionDepense(cursor.getString(5));
+
+                // Adding depense to list
+                depenseList.add(depense);
             }
 
             cursor.close();
@@ -350,7 +335,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         try {
 
             String countQuery = "SELECT  * FROM " + TABLE_DEPENSE + " WHERE " + COLUMN_ID_CATEGORIE + " = ?";
-            ;
+
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery(countQuery, new String[]{String.valueOf(idCategorie)}, null);
 
@@ -363,6 +348,4 @@ public class DatabaseDepense extends SQLiteOpenHelper {
             throw new RuntimeException(e);
         }
     }
-
-
 }

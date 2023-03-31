@@ -15,12 +15,7 @@ import modele.Categorie;
 import modele.Category;
 
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
-public class DatabaseCategorie extends SQLiteOpenHelper {
-
-    private static final String TAG = "SQLite";
-
-    // Database Version
-    private static final int DATABASE_VERSION = 1;
+public class DatabaseCategorie extends DatabasePrincipale {
 
     // Database Name
     private static final String DATABASE_NAME = "Categorie_Manager";
@@ -69,7 +64,6 @@ public class DatabaseCategorie extends SQLiteOpenHelper {
             for (Category category : Category.values()) {
                 int categoryId = Category.categories.get(category.getLabel());
                 Categorie c = new Categorie(categoryId, category.getLabel());
-                System.out.println(c);
             }
 
 

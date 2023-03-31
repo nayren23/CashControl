@@ -13,12 +13,7 @@ import java.util.List;
 import modele.User;
 
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
-public class DatabaseUser extends SQLiteOpenHelper {
-
-    private static final String TAG = "SQLite";
-
-    // Database Version
-    private static final int DATABASE_VERSION = 1;
+public class DatabaseUser extends DatabasePrincipale {
 
     // Database Name
     private static final String DATABASE_NAME = "User_Manager";
