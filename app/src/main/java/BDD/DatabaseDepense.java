@@ -48,7 +48,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.onCreate ... ");
         try {
 // Commande SQL de suppression de la table
-           // String deleteQuery = "DROP TABLE IF EXISTS " + TABLE_DEPENSE;
+           String deleteQuery = "DROP TABLE IF EXISTS " + TABLE_DEPENSE;
 
 // Commande SQL de création de la table
             String createQuery = "CREATE TABLE " + TABLE_DEPENSE + "("
@@ -60,7 +60,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                     " TEXT" +")";
 
 // Exécution des commandes SQL
-          //  db.execSQL(deleteQuery);
+            db.execSQL(deleteQuery);
             db.execSQL(createQuery);
 
         } catch (SQLException e) {
@@ -109,7 +109,10 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                 Depense depense10 = new Depense(9, "10/01/2022", 150, 0, 1, "jean");
                 Depense depense11 = new Depense(10, "10/01/2022", 25, 0, 1, "tee-shirt");
                 Depense depense12 = new Depense(11, "15/01/2021", 12.5, 0, 1, "claquette");
-                Depense depense13 = new Depense(12, "01/01/2022", 7.30, 0, 1, "solde mamam");
+                Depense depense13 = new Depense(12, "01/01/2022", 88.99, 0, 1, "solde mamam");
+                Depense depense14 = new Depense(13, "01/01/2022", 76.99, 0, 1, "casquette");
+                Depense depense15 = new Depense(14, "01/01/2022", 87.34, 0, 1, "tong");
+                Depense depense16 = new Depense(15, "01/01/2022", 144.99, 0, 1, "clavier");
 
 
                 addDepense(depense1);
@@ -125,6 +128,10 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                 addDepense(depense11);
                 addDepense(depense12);
                 addDepense(depense13);
+                addDepense(depense14);
+                addDepense(depense15);
+                addDepense(depense16);
+
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -282,7 +289,6 @@ public class DatabaseDepense extends SQLiteOpenHelper {
                     depense.setMontant(Double.parseDouble((cursor.getString(2))));
                     depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
                     depense.setUserId(Integer.parseInt(cursor.getString(4)));
-                    depense.setDescriptionDepense(cursor.getString(5));
 
                     // Adding depense to list
                     depenseList.add(depense);

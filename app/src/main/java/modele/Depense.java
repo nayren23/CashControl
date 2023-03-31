@@ -45,7 +45,7 @@ public class Depense implements Serializable {
         for (Depense depense : depenses) {
             somme += depense.getMontant();
         }
-        return somme;
+        return Math.round(somme * 100.0) / 100.0;
     }
 
     public int getDepenseId() {
