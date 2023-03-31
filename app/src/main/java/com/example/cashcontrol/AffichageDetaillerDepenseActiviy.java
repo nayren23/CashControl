@@ -94,31 +94,24 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
                             databaseDepense.deleteDepense(idDepense);
                             //On recharge les données de l'activité
                             refreshActivity();
-                            //A voir si on laisse le finish et le start
-                            //  finish();
-                            //   startActivity(getIntent());
+                            //Le andler.post(() doit etre fait dans le execute
                             handler.post(()-> {
                                 Toast.makeText(getApplicationContext(), "Votre dépense " + nomDepense + " a été supprimée avec succès 😋", Toast.LENGTH_SHORT).show();
                             });
-
                         });
-
-
                     })
                     .setNegativeButton("Annuler", (dialog, which) -> {
                         //Bouton Annulé
-                            Toast.makeText(getApplicationContext(), "Suppression de la dépense annulée", Toast.LENGTH_SHORT).show();
-
-                        });
+                        Toast.makeText(getApplicationContext(), "Suppression de la dépense annulée", Toast.LENGTH_SHORT).show();
+                    });
             AlertDialog dialog = builder.create();
             dialog.show();
-
             return true;
         });
-
     }
 
     /**
+     *L'encapsuler dans un thread
      *Met à jour l'affichage de l'activité en récupérant les nouvelles données de la base de données
      * et en les affichant sur les composants graphiques de l'activité.
      * Cette méthode est appelée à chaque fois que l'utilisateur revient sur l'activité.
@@ -161,6 +154,10 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
 
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
+        //on fait les opérations de la BDD dans un Threads
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            refreshActivity();
+        });
     }
 }
 

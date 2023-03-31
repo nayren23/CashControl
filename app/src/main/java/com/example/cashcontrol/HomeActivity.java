@@ -36,23 +36,18 @@ public class HomeActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_MAIN = 23;
 
     private int id_Utilisateur_Courant;
-
     private ArrayList<Double> sommeDepensesParCategorie;
-
     private ArrayList<Depense> depenses_Utilisateur;
-
     private DatabaseDepense databaseDepense;
-
     private  PieChart camemberDepense;
-
     private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
-        Toast.makeText(getApplicationContext(), "onCreate", Toast.LENGTH_SHORT).show();
 
+        //On creer le handler avec le execute
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
 
@@ -65,8 +60,7 @@ public class HomeActivity extends AppCompatActivity {
         // On crée le camembert
         this.camemberDepense = findViewById(R.id.camembert);
 
-
-        //Threads pour ne pas bloquer le thread principale
+        //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
         FournisseurExecutor.creerExecutor().execute(()->{
             this.databaseDepense.createDefaultDepenseIfNeed();
             // On récupère toutes les dépenses de l'utilisateur depuis la BDD
@@ -83,7 +77,7 @@ public class HomeActivity extends AppCompatActivity {
                 PieEntry pieEntry = (PieEntry) entry;
                 String label = pieEntry.getLabel();
                 float value = pieEntry.getValue();
-                            Toast.makeText(getApplicationContext(), "Voici vos dépenses: " + label + " d'un montant de " + value + " €", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Voici vos dépenses: " + label + " d'un montant de " + value + " €", Toast.LENGTH_SHORT).show();
                 //On démarre une nouvelle activité AffichageDetaillerDepenseActiviy en passant la catégorie sélectionner
                 Intent intent = new Intent(HomeActivity.this, AffichageDetaillerDepenseActiviy.class);
                 intent.putExtra("infoCategorie", label);
@@ -145,7 +139,6 @@ public class HomeActivity extends AppCompatActivity {
     private void refreshActivity() {
         // On récupère les nouvelles données de la base de données
         depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(id_Utilisateur_Courant);
-
         sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
 
         int sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
@@ -180,15 +173,11 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Toast.makeText(getApplicationContext(), "onResume", Toast.LENGTH_SHORT).show();
-
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
-
+        //on fait les opérations de la BDD dans un Threads
         FournisseurExecutor.creerExecutor().execute(()-> {
             refreshActivity();
         });
     }
-
-
 }
