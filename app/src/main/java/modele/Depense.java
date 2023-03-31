@@ -11,26 +11,28 @@ public class Depense implements Serializable {
     private int UserId;
     private int CategorieId;
 
-
+    private String descriptionDepense;
 
     public Depense() {
         this.DepenseId++;
     }
 
 
-    public Depense(int depenseId, String date, double montant, int userId, int categorieId) {
+    public Depense(int depenseId, String date, double montant, int userId, int categorieId, String descriptionDepense) {
         DepenseId = depenseId;
         this.date = date;
         this.montant = montant;
         UserId = userId;
         CategorieId = categorieId;
+        this.descriptionDepense = descriptionDepense;
     }
 
 
-    public Depense(int depenseId, String date, double montant) {
+    public Depense(int depenseId, String date, double montant,String descriptionDepense) {
         DepenseId = depenseId;
         this.date = date;
         this.montant = montant;
+        this.descriptionDepense = descriptionDepense;
     }
 
     /**
@@ -38,8 +40,8 @@ public class Depense implements Serializable {
      * @param depenses La liste des dépenses pour lesquelles on veut calculer la somme des montants.
      * @return La somme des montants de toutes les dépenses passées en paramètre.
      */
-    public static int calculerSommeDepenses(ArrayList<Depense> depenses) {
-        int somme = 0;
+    public static double calculerSommeDepenses(ArrayList<Depense> depenses) {
+        double somme = 0;
         for (Depense depense : depenses) {
             somme += depense.getMontant();
         }
@@ -87,6 +89,14 @@ public class Depense implements Serializable {
     }
 
 
+    public String getDescriptionDepense() {
+        return descriptionDepense;
+    }
+
+    public void setDescriptionDepense(String descriptionDepense) {
+        this.descriptionDepense = descriptionDepense;
+    }
+
     @Override
     public String toString() {
         return "Depense{" +
@@ -95,6 +105,7 @@ public class Depense implements Serializable {
                 ", montant=" + montant +
                 ", UserId=" + UserId +
                 ", CategorieId=" + CategorieId +
+                ", descriptionDepense='" + descriptionDepense + '\'' +
                 '}';
     }
 }

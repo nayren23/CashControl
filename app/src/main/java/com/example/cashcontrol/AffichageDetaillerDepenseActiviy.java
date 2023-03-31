@@ -116,7 +116,7 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
     private  void refreshActivity(){
         this.depenseList = this.databaseDepense.getDepensesUtilisateurCategorie(this.id_Utilisateur_Courant,this.idCategorie);
 
-        int sommeDepenseCat = Depense.calculerSommeDepenses(depenseList);
+        double sommeDepenseCat = Depense.calculerSommeDepenses(depenseList);
         int nombreDepense = databaseDepense.getDepenseCountCategorie(idCategorie);
 
         //Changement du texte des composants en fonction du nombre de depense
