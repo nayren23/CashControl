@@ -133,7 +133,7 @@ public class HomeActivity extends AppCompatActivity {
         // On récupère les nouvelles données de la base de données
         depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(id_Utilisateur_Courant);
         sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
-        int sommeDepenseMois = Depense.calculerSommeDepenses(depenses_Utilisateur);
+        int sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
 
         // On met à jour le camembert avec les nouvelles données
         ArrayList<PieEntry> depenseUser = new ArrayList<>();

@@ -22,6 +22,7 @@ import java.util.Map;
 import BDD.DatabaseDepense;
 import modele.Category;
 import modele.Depense;
+import modele.DepenseElement;
 
 public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
 
@@ -38,6 +39,7 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
     private  ArrayList<Depense> depenseList;
     private DatabaseDepense databaseDepense;
 
+    private ArrayAdapter<DepenseElement> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,25 +69,27 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
         listDepense.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int idDepense = arrayAdapter.getItem(position).getId();
+                String nomDepense = arrayAdapter.getItem(position).getDepense().getDescriptionDepense();
+                Double montant = arrayAdapter.getItem(position).getDepense().getMontant();
+
                 // Créer une boîte de dialogue avec un message et un bouton OK
                 AlertDialog.Builder builder = new AlertDialog.Builder(AffichageDetaillerDepenseActiviy.this);
-                builder.setMessage("Voulez-vous vraiment supprimer cette dépense ?")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                builder.setMessage("Voulez-vous vraiment supprimer la dépense suivante: " + nomDepense + ".\nD'un montant de : " + montant + "€ ?")
+                        .setPositiveButton("OUI", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // Ajout ici le code pour supprimer l'élément de la liste
-                                System.out.println("je supprime");
-                                String ligneDepense = (String) listDepense.getItemAtPosition(position);
-                                int idDepense = Character.getNumericValue(ligneDepense.charAt(0));
 
                                 //on supprime la depense de la BDD
                                 databaseDepense.deleteDepense(idDepense);
 
                                 //On recharge les données de l'activité
                                 refreshActivity();
-                                finish();
-                                startActivity(getIntent());
-                                Toast.makeText(getApplicationContext(),"Votre dépense a été supprimée avec succès 😋", Toast.LENGTH_SHORT).show();
+                                //A voir si on laisse le finish et le start
+                                //  finish();
+                                //   startActivity(getIntent());
+                                Toast.makeText(getApplicationContext(), "Votre dépense "+  nomDepense +  " a été supprimée avec succès 😋", Toast.LENGTH_SHORT).show();
                             }
                         })
                         .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
@@ -113,22 +117,28 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
     private  void refreshActivity(){
         this.depenseList = this.databaseDepense.getDepensesUtilisateurCategorie(this.id_Utilisateur_Courant,this.idCategorie);
 
-        int sommeDepenseCat = Depense.calculerSommeDepenses(depenseList);
+        double sommeDepenseCat = Depense.calculerSommeDepenses(depenseList);
         int nombreDepense = databaseDepense.getDepenseCountCategorie(idCategorie);
 
-        //Changement du texte des composants
-        this.nombreDepense.setText("Dépenses liées à " + this.infoCategorie  + " :" + nombreDepense);
+        //Changement du texte des composants en fonction du nombre de depense
+        if(nombreDepense<=1 && nombreDepense>=0){
+            this.nombreDepense.setText(nombreDepense +  " "  +"dépense liée à " + this.infoCategorie );
+        }
+        else {
+            this.nombreDepense.setText(nombreDepense +  " "  +"dépenses liées à " + this.infoCategorie );
+        }
+
         this.card_title.setText("Montant global des dépenses");
         this.card_subtitle.setText("Total: "+sommeDepenseCat + " €");
 
         //On recupere la liste des dépenses pour la catégories choisit
 
-        List<String> listeNomDepense = new ArrayList<String>();
-
-        for (Depense depense: depenseList){
-            listeNomDepense.add(depense.getDepenseId() +"\t Montant : " + depense.getMontant() + " €");
+        List<DepenseElement> elements = new ArrayList<>();
+        for (Depense depense : depenseList) {
+            elements.add(new DepenseElement(depense, depense.getDepenseId()));
         }
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1 , listeNomDepense);
+        this.arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, elements);
+
         listDepense.setAdapter(arrayAdapter);
     }
 }

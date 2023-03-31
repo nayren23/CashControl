@@ -66,17 +66,7 @@
         android:textSize="20dp"
         />
 
-    <TextView
-        android:id="@+id/hidden_id"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/depense_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
 
 
 </LinearLayout>
