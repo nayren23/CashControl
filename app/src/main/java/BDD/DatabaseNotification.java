@@ -10,12 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import modele.Notification;
 
-public class DatabaseNotification  extends SQLiteOpenHelper {
-
-    private static final String TAG = "SQLite";
-
-    // Database Version
-    private static final int DATABASE_VERSION = 1;
+public class DatabaseNotification  extends DatabasePrincipale {
 
     // Database Name
     private static final String DATABASE_NAME = "Notification_Manager";

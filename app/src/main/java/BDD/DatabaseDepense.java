@@ -10,16 +10,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import modele.Depense;
 
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
-public class DatabaseDepense extends SQLiteOpenHelper {
-
-    private static final String TAG = "SQLite";
-
-    // Database Version
-    private static final int DATABASE_VERSION = 1;
+public class DatabaseDepense extends DatabasePrincipale {
 
     // Database Name
     private static final String DATABASE_NAME = "Depense_Manager";
@@ -48,7 +45,7 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.onCreate ... ");
         try {
 // Commande SQL de suppression de la table
-           String deleteQuery = "DROP TABLE IF EXISTS " + TABLE_DEPENSE;
+            String deleteQuery = "DROP TABLE IF EXISTS " + TABLE_DEPENSE;
 
 // Commande SQL de création de la table
             String createQuery = "CREATE TABLE " + TABLE_DEPENSE + "("
@@ -75,7 +72,6 @@ public class DatabaseDepense extends SQLiteOpenHelper {
         Log.i(TAG, "MyDatabaseHelper.onUpgrade ... ");
 
         try {
-
             // Drop older table if existed
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_DEPENSE);
 
@@ -321,21 +317,24 @@ public class DatabaseDepense extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(categorieId)});
 
-            // looping through all rows and adding to list
-            if (cursor.moveToFirst()) {
-                do {
-                    Depense depense = new Depense();
-                    depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
-                    depense.setDate((cursor.getString(1)));
-                    depense.setMontant(Double.parseDouble((cursor.getString(2))));
-                    depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
-                    depense.setUserId(Integer.parseInt(cursor.getString(4)));
-                    depense.setDescriptionDepense(cursor.getString(5));
 
-                    // Adding depense to list
-                    depenseList.add(depense);
-                } while (cursor.moveToNext());
+            while (cursor.moveToNext()){
+                Depense depense = new Depense();
+                depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
+                depense.setDate((cursor.getString(1)));
+                depense.setMontant(Double.parseDouble((cursor.getString(2))));
+                depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
+                depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                depense.setDescriptionDepense(cursor.getString(5));
+
+                // Adding depense to list
+                depenseList.add(depense);
             }
+
+
+
+
+
 
             cursor.close();
             return depenseList;

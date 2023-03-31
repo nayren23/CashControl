@@ -3,6 +3,8 @@ package com.example.cashcontrol;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -21,6 +23,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import BDD.DatabaseDepense;
+import BDD.FourniseurHandler;
+import BDD.FournisseurExecutor;
 import modele.Category;
 import modele.Depense;
 
@@ -41,28 +45,37 @@ public class HomeActivity extends AppCompatActivity {
 
     private  PieChart camemberDepense;
 
+    private Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+        Toast.makeText(getApplicationContext(), "onCreate", Toast.LENGTH_SHORT).show();
+
+        if(handler == null)
+            handler = FourniseurHandler.creerHandler();
 
         // On crée les dépenses
         this.databaseDepense = new DatabaseDepense(this);
-        this.databaseDepense.createDefaultDepenseIfNeed();
 
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
 
-        // On récupère toutes les dépenses de l'utilisateur depuis la BDD
-        this.depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(this.id_Utilisateur_Courant);
-
-        // On fait la somme des dépenses par catégories
-        this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
-
         // On crée le camembert
         this.camemberDepense = findViewById(R.id.camembert);
 
-        refreshActivity();
+
+        //Threads pour ne pas bloquer le thread principale
+        FournisseurExecutor.creerExecutor().execute(()->{
+            this.databaseDepense.createDefaultDepenseIfNeed();
+            // On récupère toutes les dépenses de l'utilisateur depuis la BDD
+            this.depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(this.id_Utilisateur_Courant);
+
+            // On fait la somme des dépenses par catégories
+            this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
+            refreshActivity();
+        });
 
         this.camemberDepense.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
@@ -70,8 +83,7 @@ public class HomeActivity extends AppCompatActivity {
                 PieEntry pieEntry = (PieEntry) entry;
                 String label = pieEntry.getLabel();
                 float value = pieEntry.getValue();
-                Toast.makeText(getApplicationContext(),"Voici vos dépenses: " + label + " d'un montant de " + value + " €", Toast.LENGTH_SHORT).show();
-
+                            Toast.makeText(getApplicationContext(), "Voici vos dépenses: " + label + " d'un montant de " + value + " €", Toast.LENGTH_SHORT).show();
                 //On démarre une nouvelle activité AffichageDetaillerDepenseActiviy en passant la catégorie sélectionner
                 Intent intent = new Intent(HomeActivity.this, AffichageDetaillerDepenseActiviy.class);
                 intent.putExtra("infoCategorie", label);
@@ -123,6 +135,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     /**
+     * L'encapsuler dans un thread
      * Cette méthode permet de rafraîchir l'activité en mettant à jour le camembert des dépenses de l'utilisateur
      * avec les nouvelles données récupérées depuis la base de données.
      * Elle récupère les dépenses de l'utilisateur courant depuis la base de données, calcule la somme des dépenses par catégorie
@@ -132,7 +145,9 @@ public class HomeActivity extends AppCompatActivity {
     private void refreshActivity() {
         // On récupère les nouvelles données de la base de données
         depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(id_Utilisateur_Courant);
+
         sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
+
         int sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
 
         // On met à jour le camembert avec les nouvelles données
@@ -145,10 +160,17 @@ public class HomeActivity extends AppCompatActivity {
         camembertDataSet.setValueTextColor(Color.BLACK);
         camembertDataSet.setValueTextSize(20f);
         PieData cameData = new PieData(camembertDataSet);
-        camemberDepense.setData(cameData);
         camemberDepense.setCenterText("" + sommeDepenseMois + " €");
+        camemberDepense.setData(cameData);
         camemberDepense.animate();
 
+        // post -> ajoute les instructions à la suite de celles du main thread
+        handler.post(() -> {
+            // Notification du main thread pour qu'il mette à jour la UI
+            // tout ce qui touche à la UI doit être exécuté dans le main thread !!!
+            camemberDepense.setVisibility(View.GONE);
+            camemberDepense.setVisibility(View.VISIBLE);
+        });
     }
 
     /**
@@ -158,7 +180,14 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        refreshActivity();
+        Toast.makeText(getApplicationContext(), "onResume", Toast.LENGTH_SHORT).show();
+
+        if(handler == null)
+            handler = FourniseurHandler.creerHandler();
+
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            refreshActivity();
+        });
     }
 
 

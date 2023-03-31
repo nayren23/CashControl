@@ -3,6 +3,7 @@ package com.example.cashcontrol;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import BDD.DatabaseDepense;
+import BDD.FourniseurHandler;
+import BDD.FournisseurExecutor;
 import modele.Category;
 import modele.Depense;
 import modele.DepenseElement;
@@ -41,11 +44,16 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
 
     private ArrayAdapter<DepenseElement> arrayAdapter;
 
+    private Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.affichage_detailler_depense_activity);
         this.databaseDepense = new DatabaseDepense(this);
+
+        if(handler == null)
+            handler = FourniseurHandler.creerHandler();
 
         //Obtention  des Widgets
         this.listDepense = findViewById(R.id.listeDepense);
@@ -64,46 +72,48 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
         //On recupere l'id de la categorie a partir du String
         this.idCategorie = Category.categories.get(infoCategorie);
 
-        refreshActivity();
+        //Threads pour ne pas bloquer le thread principale
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            refreshActivity();
+        });
 
-        listDepense.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                int idDepense = arrayAdapter.getItem(position).getId();
-                String nomDepense = arrayAdapter.getItem(position).getDepense().getDescriptionDepense();
-                Double montant = arrayAdapter.getItem(position).getDepense().getMontant();
+        listDepense.setOnItemLongClickListener((parent, view, position, id) -> {
+            int idDepense = arrayAdapter.getItem(position).getId();
+            String nomDepense = arrayAdapter.getItem(position).getDepense().getDescriptionDepense();
+            Double montant = arrayAdapter.getItem(position).getDepense().getMontant();
 
-                // Créer une boîte de dialogue avec un message et un bouton OK
-                AlertDialog.Builder builder = new AlertDialog.Builder(AffichageDetaillerDepenseActiviy.this);
-                builder.setMessage("Voulez-vous vraiment supprimer la dépense suivante: " + nomDepense + ".\nD'un montant de : " + montant + "€ ?")
-                        .setPositiveButton("OUI", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // Ajout ici le code pour supprimer l'élément de la liste
+            // Créer une boîte de dialogue avec un message et un bouton OK
+            AlertDialog.Builder builder = new AlertDialog.Builder(AffichageDetaillerDepenseActiviy.this);
+            builder.setMessage("Voulez-vous vraiment supprimer la dépense suivante: " + nomDepense + ".\nD'un montant de : " + montant + "€ ?")
+                    .setPositiveButton("OUI", (dialog, which) -> {
+                        // Ajout ici le code pour supprimer l'élément de la liste
 
-                                //on supprime la depense de la BDD
-                                databaseDepense.deleteDepense(idDepense);
+                        //Threads pour ne pas bloquer le thread principale
+                        FournisseurExecutor.creerExecutor().execute(()-> {
+                            //on supprime la depense de la BDD
+                            databaseDepense.deleteDepense(idDepense);
+                            //On recharge les données de l'activité
+                            refreshActivity();
+                            //A voir si on laisse le finish et le start
+                            //  finish();
+                            //   startActivity(getIntent());
+                            handler.post(()-> {
+                                Toast.makeText(getApplicationContext(), "Votre dépense " + nomDepense + " a été supprimée avec succès 😋", Toast.LENGTH_SHORT).show();
+                            });
 
-                                //On recharge les données de l'activité
-                                refreshActivity();
-                                //A voir si on laisse le finish et le start
-                                //  finish();
-                                //   startActivity(getIntent());
-                                Toast.makeText(getApplicationContext(), "Votre dépense "+  nomDepense +  " a été supprimée avec succès 😋", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Bouton Annulé
-                                Toast.makeText(getApplicationContext(),"Suppression de la dépense annulée", Toast.LENGTH_SHORT).show();
-                            }
                         });
-                AlertDialog dialog = builder.create();
-                dialog.show();
 
-                return true;
-            }
+
+                    })
+                    .setNegativeButton("Annuler", (dialog, which) -> {
+                        //Bouton Annulé
+                            Toast.makeText(getApplicationContext(), "Suppression de la dépense annulée", Toast.LENGTH_SHORT).show();
+
+                        });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            return true;
         });
 
     }
@@ -115,31 +125,42 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
      * @return void
      */
     private  void refreshActivity(){
-        this.depenseList = this.databaseDepense.getDepensesUtilisateurCategorie(this.id_Utilisateur_Courant,this.idCategorie);
 
+        this.depenseList = this.databaseDepense.getDepensesUtilisateurCategorie(this.id_Utilisateur_Courant,this.idCategorie);
         double sommeDepenseCat = Depense.calculerSommeDepenses(depenseList);
         int nombreDepense = databaseDepense.getDepenseCountCategorie(idCategorie);
 
-        //Changement du texte des composants en fonction du nombre de depense
-        if(nombreDepense<=1 && nombreDepense>=0){
-            this.nombreDepense.setText(nombreDepense +  " "  +"dépense liée à " + this.infoCategorie );
-        }
-        else {
-            this.nombreDepense.setText(nombreDepense +  " "  +"dépenses liées à " + this.infoCategorie );
-        }
+        //Tout ce qui a bseoin de toucher à la UI va dans le post
+        handler.post(() -> {
+            //Changement du texte des composants en fonction du nombre de depense
+            if(nombreDepense<=1 && nombreDepense>=0){
+                this.nombreDepense.setText(nombreDepense +  " "  +"dépense liée à " + this.infoCategorie );
+            }
+            else {
+                this.nombreDepense.setText(nombreDepense +  " "  +"dépenses liées à " + this.infoCategorie );
+            }
 
-        this.card_title.setText("Montant global des dépenses");
-        this.card_subtitle.setText("Total: "+sommeDepenseCat + " €");
+            this.card_title.setText("Montant global des dépenses");
+            this.card_subtitle.setText("Total: "+sommeDepenseCat + " €");
 
-        //On recupere la liste des dépenses pour la catégories choisit
+            //On recupere la liste des dépenses pour la catégories choisit
 
-        List<DepenseElement> elements = new ArrayList<>();
-        for (Depense depense : depenseList) {
-            elements.add(new DepenseElement(depense, depense.getDepenseId()));
-        }
-        this.arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, elements);
+            List<DepenseElement> elements = new ArrayList<>();
+            for (Depense depense : depenseList) {
+                elements.add(new DepenseElement(depense, depense.getDepenseId()));
+            }
+            this.arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, elements);
 
-        listDepense.setAdapter(arrayAdapter);
+            listDepense.setAdapter(arrayAdapter);
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(handler == null)
+            handler = FourniseurHandler.creerHandler();
     }
 }
 
