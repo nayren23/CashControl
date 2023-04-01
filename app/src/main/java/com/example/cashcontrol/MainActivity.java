@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mButtonImage;
     private ImageView imageUser;
     private Button mSauvegarde_compte;
-    private Button mVisualisation_users;
+    private Button mConnexion_users;
 
     private boolean tousremplis = true;// pour verifier si tous les champs sont remplit
 
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         this.mButtonImage = this.findViewById(R.id.button_image);
         this.imageUser = (ImageView) this.findViewById(R.id.image_user);
         this.mSauvegarde_compte = this.findViewById(R.id.sauvegarde_compte);
-        this.mVisualisation_users = this.findViewById(R.id.connexion_users);
+        this.mConnexion_users = this.findViewById(R.id.main_connexion_users);
 
         //Set bouton
         this.mSauvegarde_compte.setEnabled(false);
@@ -127,6 +127,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        //Listener pour le bouton de la connexion
+        this.mConnexion_users.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
         EditText[] editTexts = {mMain_champ_identifiant,mMain_champ_email,mMain_champ_numero_telephone, mMain_champ_mot_de_passe}; // Ajoutez tous vos EditText ici
         for (EditText editText : editTexts) {
@@ -169,15 +179,7 @@ public class MainActivity extends AppCompatActivity {
             databaseUser.createDefaultUsersIfNeed();
         });
 
-        int id = 0;
-        //on change la valeur dans les shared preferences
-        getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                .edit()
-                .putInt(SHARED_PREF_USER_INFO_ID, id)
-                .apply();
 
-        //Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-        //startActivity(intent);
     }
 
 

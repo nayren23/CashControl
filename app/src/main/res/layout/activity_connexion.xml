@@ -21,6 +21,7 @@
         android:textSize="20dp"
         android:layout_marginBottom="50dp"
         android:textStyle="italic"
+        android:src="@drawable/logo_cashcontrol"
         />
 
     <EditText
@@ -42,11 +43,36 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="10dp"
         android:hint="Entrer votre mot de passe"
         android:inputType="textPassword"
         android:maxLength="30"
         />
+
+
+    <TextView
+        android:id="@+id/connexion_text_view_inscription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="75dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="16dp"
+        android:text="Si vous n'avez pas de compte, "
+        />
+
+    <TextView
+        android:id="@+id/connexion_text_view_s_inscrire"
+        android:layout_width="75dp"
+        android:layout_height="49dp"
+        android:layout_marginLeft="75dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="60dp"
+        android:text="S'inscrire"
+        android:textColor="@color/blue"
+        android:clickable="true"
+        />
+
 
 
     <Button

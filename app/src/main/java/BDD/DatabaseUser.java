@@ -199,6 +199,79 @@ public class DatabaseUser extends DatabasePrincipale {
 
     }
 
+
+
+
+    public boolean verificationConnexionDansLaBDD(String identifiant, String motdepasse){
+
+
+        try {
+            String query = " SELECT " + COLUMN_IDENTIFIANT_UTILISATEUR + "," + COLUMN_MOT_DE_PASSE_UTILISATEUR + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? AND " + COLUMN_MOT_DE_PASSE_UTILISATEUR + " = ? ";
+
+
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            // Définir la valeur du paramètre
+            String[] selectionArgs = { identifiant, motdepasse };
+
+            // Exécuter la requête préparée avec la valeur du paramètre
+            Cursor cursor = db.rawQuery(query, selectionArgs);
+
+            // Vérifier si le curseur est valide et s'il contient des enregistrements
+            if (cursor != null && cursor.moveToFirst()) {
+
+                return true;
+            }
+            // Fermer le curseur et la base de données
+            if (cursor != null) {
+                cursor.close();
+            }
+            //db.close();
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
+
+
+    }
+
+    public int retourneIdUser(String identifiant){
+
+        try {
+            String query = " SELECT " + COLUMN_ID_UTILISATEUR + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? ";
+
+
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            // Définir la valeur du paramètre
+            String[] selectionArgs = { identifiant};
+
+            // Exécuter la requête préparée avec la valeur du paramètre
+            Cursor cursor = db.rawQuery(query, selectionArgs);
+
+            // Vérifier si le curseur est valide et s'il contient des enregistrements
+            if (cursor != null && cursor.moveToFirst()) {
+
+                return Integer.parseInt(cursor.getString(0));
+            }
+            // Fermer le curseur et la base de données
+            if (cursor != null) {
+                cursor.close();
+            }
+            //db.close();
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return -1;
+    }
+
+
     public int updateUser(User user) {
         Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + user.getIdentifiant());
 
