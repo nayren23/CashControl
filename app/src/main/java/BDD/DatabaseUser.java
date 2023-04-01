@@ -28,7 +28,6 @@ public class DatabaseUser extends DatabasePrincipale {
     private static final String COLUMN_CHEMINIMAGE_UTILISATEUR="cheminimage_utilisateur";
     private static final String COLUMN_NUMEROTELEPHONE_UTILISATEUR ="numerotelephone_utilisateur";
 
-
     public DatabaseUser(Context context)  {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -48,7 +47,6 @@ public class DatabaseUser extends DatabasePrincipale {
         // Execute Script.
         db.execSQL(script);
     }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.i(TAG, "MyDatabaseHelper.onUpgrade ... ");
@@ -88,14 +86,8 @@ public class DatabaseUser extends DatabasePrincipale {
         values.put(COLUMN_MOT_DE_PASSE_UTILISATEUR, user.getMot_de_passe());
         values.put(COLUMN_CHEMINIMAGE_UTILISATEUR, user.getCheminimage());
         values.put(COLUMN_NUMEROTELEPHONE_UTILISATEUR, user.getNumerotelephone());
-
-
-
-        System.out.println(values);
-
         // Inserting Row
         db.insert(TABLE_USER, null, values);
-
         // Closing database connection
         db.close();
     }
@@ -114,7 +106,6 @@ public class DatabaseUser extends DatabasePrincipale {
         User user = new User(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         return user;
     }
-
     public List<User> getAllUser() {
         Log.i(TAG, "MyDatabaseHelper.getAllUsers ... " );
 
@@ -143,24 +134,18 @@ public class DatabaseUser extends DatabasePrincipale {
         }
         return userList;
     }
-
     public int getUserCount() {
         Log.i(TAG, "MyDatabaseHelper.getUsersCount ... " );
 
         String countQuery = "SELECT  * FROM " + TABLE_USER;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
-
         int count = cursor.getCount();
-
         cursor.close();
-
         return count;
     }
 
-
     public boolean verificationExistenceIdentifiantDansLaBDD(String identifiant){
-
 
         try {
             String query = " SELECT " + COLUMN_IDENTIFIANT_UTILISATEUR + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? ";
@@ -179,71 +164,48 @@ public class DatabaseUser extends DatabasePrincipale {
                 // Extraire la valeur de la colonne
                 String identifiantUtilisateur = cursor.getString(0);
                 // Faire quelque chose avec la valeur extraite
-
-
                 return false;
             }
             // Fermer le curseur et la base de données
             if (cursor != null) {
                 cursor.close();
             }
-            //db.close();
-
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return true;
-
-
     }
-
-
-
-
     public boolean verificationConnexionDansLaBDD(String identifiant, String motdepasse){
-
 
         try {
             String query = " SELECT " + COLUMN_IDENTIFIANT_UTILISATEUR + "," + COLUMN_MOT_DE_PASSE_UTILISATEUR + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? AND " + COLUMN_MOT_DE_PASSE_UTILISATEUR + " = ? ";
-
-
             SQLiteDatabase db = this.getReadableDatabase();
-
             // Définir la valeur du paramètre
             String[] selectionArgs = { identifiant, motdepasse };
-
             // Exécuter la requête préparée avec la valeur du paramètre
             Cursor cursor = db.rawQuery(query, selectionArgs);
 
             // Vérifier si le curseur est valide et s'il contient des enregistrements
             if (cursor != null && cursor.moveToFirst()) {
-
                 return true;
             }
+
             // Fermer le curseur et la base de données
             if (cursor != null) {
                 cursor.close();
             }
-            //db.close();
-
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         return false;
-
-
     }
-
     public int retourneIdUser(String identifiant){
 
         try {
             String query = " SELECT " + COLUMN_ID_UTILISATEUR + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? ";
-
-
             SQLiteDatabase db = this.getReadableDatabase();
 
             // Définir la valeur du paramètre
@@ -254,24 +216,19 @@ public class DatabaseUser extends DatabasePrincipale {
 
             // Vérifier si le curseur est valide et s'il contient des enregistrements
             if (cursor != null && cursor.moveToFirst()) {
-
                 return Integer.parseInt(cursor.getString(0));
             }
+
             // Fermer le curseur et la base de données
             if (cursor != null) {
                 cursor.close();
             }
-            //db.close();
-
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
         return -1;
     }
-
-
     public int updateUser(User user) {
         Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + user.getIdentifiant());
 

@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
                 }
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -145,16 +144,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
-
-
-
     private void enregistrementUser(User user) throws IOException {
         DatabaseUser dbUser = new DatabaseUser(this);
         dbUser.addUser(user);
         Toast.makeText(this, "Utilisateurs Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
     }
-
     private void saveImage(Bitmap bp, String nomFichier){
         try  { // use the absolute file path here
             FileOutputStream out = this.openFileOutput(nomFichier, MODE_PRIVATE);
@@ -167,14 +161,12 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
     private void captureImage() {
         // Create an implicit intent, for image capture.
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Start camera and wait for the results.
         this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

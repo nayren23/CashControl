@@ -1,24 +1,18 @@
 package com.example.cashcontrol;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import BDD.DatabaseUser;
@@ -28,45 +22,30 @@ import modele.User;
 
 
 public class ConnexionActivity extends AppCompatActivity {
-
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
-
     private Handler handler;
-
     private boolean tousremplis;
 
     /*Info User*/
     private EditText mConnexion_champ_identifiant;
     private EditText mConnexion_mot_de_passe;
-
     private TextView mConnexion_text_view_s_inscrire;
-
     private Button mButtonConnexion;
-
-
 
     /*User*/
     private DatabaseUser dbUser;
 
-
-    private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
-    private static final int REQUEST_CODE_VISUALISATION_USER = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connexion);
         //Obtention  les Widgets
-
         this.mConnexion_champ_identifiant = findViewById(R.id.connexion_champ_identifiant);
         this.mConnexion_mot_de_passe = findViewById(R.id.connexion_champ_mot_de_passe);
-
         this.mConnexion_text_view_s_inscrire = findViewById(R.id.connexion_text_view_s_inscrire);
-
-
         this.mButtonConnexion = this.findViewById(R.id.connexion_users);
-
 
         //Set bouton
         this.mButtonConnexion.setEnabled(false);
@@ -80,21 +59,10 @@ public class ConnexionActivity extends AppCompatActivity {
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
 
-
-        mConnexion_text_view_s_inscrire.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ConnexionActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        mConnexion_text_view_s_inscrire.setOnClickListener(view -> {
+            Intent intent = new Intent(ConnexionActivity.this, MainActivity.class);
+            startActivity(intent);
         });
-
-
-        //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
-        FournisseurExecutor.creerExecutor().execute(()-> {
-            dbUser.createDefaultUsersIfNeed();
-        });
-
 
         //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
         EditText[] editTexts = {mConnexion_champ_identifiant,mConnexion_mot_de_passe}; // Ajoutez tous vos EditText ici
@@ -103,10 +71,6 @@ public class ConnexionActivity extends AppCompatActivity {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
-
-
-
-
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     tousremplis = true;
@@ -121,8 +85,6 @@ public class ConnexionActivity extends AppCompatActivity {
 
                         String identifiant = mConnexion_champ_identifiant.getText().toString();
                         String motdepasse = mConnexion_mot_de_passe.getText().toString();
-
-
 
                         mButtonConnexion.setOnClickListener(v -> {
 
@@ -151,26 +113,10 @@ public class ConnexionActivity extends AppCompatActivity {
                         });
                     }
                 }
-
-
                 @Override
                 public void afterTextChanged(Editable s) {
                 }
             });
         }
-
-
-
-
-
-
     }
-
-
-    private void enregistrementUser(User user) throws IOException {
-        DatabaseUser dbUser = new DatabaseUser(this);
-        dbUser.addUser(user);
-        Toast.makeText(this, "Utilisateurs Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
-    }
-
 }
