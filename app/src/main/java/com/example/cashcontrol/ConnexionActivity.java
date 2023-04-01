@@ -81,23 +81,19 @@ public class ConnexionActivity extends AppCompatActivity {
             handler = FourniseurHandler.creerHandler();
 
 
+        mConnexion_text_view_s_inscrire.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ConnexionActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
         FournisseurExecutor.creerExecutor().execute(()-> {
             dbUser.createDefaultUsersIfNeed();
         });
-
-        int id = 0;
-        //on change la valeur dans les shared preferences
-        getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                .edit()
-                .putInt(SHARED_PREF_USER_INFO_ID, id)
-                .apply();
-
-        //Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-        //startActivity(intent);
-
-
-
 
 
         //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
@@ -107,6 +103,9 @@ public class ConnexionActivity extends AppCompatActivity {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
+
+
+
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -122,6 +121,7 @@ public class ConnexionActivity extends AppCompatActivity {
 
                         String identifiant = mConnexion_champ_identifiant.getText().toString();
                         String motdepasse = mConnexion_mot_de_passe.getText().toString();
+
 
 
                         mButtonConnexion.setOnClickListener(v -> {
