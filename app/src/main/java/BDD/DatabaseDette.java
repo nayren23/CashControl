@@ -14,12 +14,7 @@ import java.util.List;
 import modele.Dette;
 
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
-public class DatabaseDette extends SQLiteOpenHelper {
-
-    private static final String TAG = "SQLite";
-
-    // Database Version
-    private static final int DATABASE_VERSION = 1;
+public class DatabaseDette extends DatabasePrincipale {
 
     // Database Name
     private static final String DATABASE_NAME = "Dette_Manager";
