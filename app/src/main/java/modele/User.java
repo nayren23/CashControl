@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     private int UserId;
-    private String nom;
-    private String prenom;
+    private String identifiant;
+
     private double argent;
     private String email;
     private String mot_de_passe;
@@ -20,10 +20,9 @@ public class User implements Serializable {
     /**
      *constructeur complet
      * **/
-    public User(int userId, String nom, String prenom, double argent, String email, String mot_de_passe, String cheminimage, String numerotelephone) {
+    public User(int userId, String identifiant,double argent, String email, String mot_de_passe, String cheminimage, String numerotelephone) {
         UserId = userId;
-        this.nom = nom;
-        this.prenom = prenom;
+        this.identifiant = identifiant;
         this.argent = argent;
         this.email = email;
         this.mot_de_passe = mot_de_passe;
@@ -35,17 +34,15 @@ public class User implements Serializable {
     /**
      * constructeur sans le chemin de l'image
      * @param userId
-     * @param nom
-     * @param prenom
+     * @param identifiant
      * @param argent
      * @param email
      * @param mot_de_passe
      * @param numerotelephone
      */
-    public User(int userId, String nom, String prenom, double argent, String email, String mot_de_passe,  String numerotelephone) {
+    public User(int userId, String identifiant, double argent, String email, String mot_de_passe, String numerotelephone) {
         UserId = userId;
-        this.nom = nom;
-        this.prenom = prenom;
+        this.identifiant = identifiant;
         this.argent = argent;
         this.email = email;
         this.mot_de_passe = mot_de_passe;
@@ -55,17 +52,15 @@ public class User implements Serializable {
     /**
      * constructeur sans l'argent
      * @param userId
-     * @param nom
-     * @param prenom
+     * @param identifiant
      * @param email
      * @param mot_de_passe
      * @param cheminimage
      * @param numerotelephone
      */
-    public User(int userId, String nom, String prenom, String email, String mot_de_passe, String cheminimage,  String numerotelephone) {
+    public User(int userId, String identifiant,String email, String mot_de_passe, String cheminimage, String numerotelephone) {
         UserId = userId;
-        this.nom = nom;
-        this.prenom = prenom;
+        this.identifiant = identifiant;
         this.email = email;
         this.mot_de_passe = mot_de_passe;
         this.cheminimage = cheminimage;
@@ -76,20 +71,30 @@ public class User implements Serializable {
     /**
      *constructeur sans argent ni chemin de l'image
      * @param userId
-     * @param nom
-     * @param prenom
+     * @param identifiant
      * @param email
      * @param mot_de_passe
      * @param numerotelephone
      */
-    public User(int userId, String nom, String prenom, String email, String mot_de_passe,  String numerotelephone) {
+    public User(int userId, String identifiant,String email, String mot_de_passe, String numerotelephone) {
         UserId = userId;
-        this.nom = nom;
-        this.prenom = prenom;
+        this.identifiant = identifiant;
         this.email = email;
         this.mot_de_passe = mot_de_passe;
         this.numerotelephone = numerotelephone;
     }
+
+
+    public User(String identifiant,String email, String mot_de_passe,String photodeprofil, String numerotelephone  ) {
+
+        this.identifiant = identifiant;
+        this.email = email;
+        this.mot_de_passe = mot_de_passe;
+        this.cheminimage = photodeprofil;
+        this.numerotelephone = numerotelephone;
+    }
+
+
 
     public double getArgent() {
         return argent;
@@ -107,21 +112,15 @@ public class User implements Serializable {
         UserId = userId;
     }
 
-    public String getNom() {
-        return nom;
+    public String getIdentifiant() {
+        return identifiant;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setIdentifiant(String identifiant) {
+        this.identifiant = identifiant;
     }
 
-    public String getPrenom() {
-        return prenom;
-    }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
 
     public String getEmail() {
         return email;
@@ -160,8 +159,7 @@ public class User implements Serializable {
     public String toString() {
         return "User{" +
                 "UserId=" + UserId +
-                ", nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
+                ", identifiant='" + identifiant + '\'' +
                 ", argent=" + argent +
                 ", email='" + email + '\'' +
                 ", mot_de_passe='" + mot_de_passe + '\'' +

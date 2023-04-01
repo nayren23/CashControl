@@ -10,6 +10,7 @@
     <color name="card_background_color">#394264</color>
     <color name="card_subtitle_color">#FFFFFFFF</color>
     <color name="card_title_color">#FFFFFFFF</color>
+    <color name="blue"> #0000FF</color>
 
     card_title_color
 
