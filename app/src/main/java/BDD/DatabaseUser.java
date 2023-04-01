@@ -85,9 +85,9 @@ public class DatabaseUser extends DatabasePrincipale {
         //on prepare les donnees suivantes
         values.put(COLUMN_IDENTIFIANT_UTILISATEUR, user.getIdentifiant());
         values.put(COLUMN_EMAIL_UTILISATEUR, user.getEmail());
+        values.put(COLUMN_MOT_DE_PASSE_UTILISATEUR, user.getMot_de_passe());
         values.put(COLUMN_CHEMINIMAGE_UTILISATEUR, user.getCheminimage());
         values.put(COLUMN_NUMEROTELEPHONE_UTILISATEUR, user.getNumerotelephone());
-        values.put(COLUMN_MOT_DE_PASSE_UTILISATEUR, user.getMot_de_passe());
 
 
 

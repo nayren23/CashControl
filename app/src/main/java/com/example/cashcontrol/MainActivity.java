@@ -27,32 +27,21 @@ import modele.User;
 
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
-    private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
-
     private Handler handler;
-
-
     /*Info User*/
     private EditText mMain_champ_identifiant;
     private EditText mMain_champ_email;
     private EditText mMain_champ_numero_telephone;
     private EditText mMain_champ_mot_de_passe;
-
     private Button mButtonImage;
     private ImageView imageUser;
     private Button mSauvegarde_compte;
     private Button mConnexion_users;
-
     private boolean tousremplis = true;// pour verifier si tous les champs sont remplit
 
     /*User*/
     private DatabaseUser dbUser;
-
-
     private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
-    private static final int REQUEST_CODE_VISUALISATION_USER = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,71 +69,49 @@ public class MainActivity extends AppCompatActivity {
         dbUser.createDefaultUsersIfNeed();
 
 
-        mSauvegarde_compte.setOnClickListener(new Button.OnClickListener() { // ou view
-            @Override
-            public void onClick(View v) {
-                //On récupere les infos saisit par l'utilisateur
-                String identifiant = mMain_champ_identifiant.getText().toString();
-                String email =  mMain_champ_email.getText().toString();
-                String numeroTelephone =mMain_champ_numero_telephone.getText().toString() ;
-                String photoDeProfil = mMain_champ_identifiant.getText().toString();
-                String motdepasse = mMain_champ_mot_de_passe.getText().toString();
+        // ou view
+        mSauvegarde_compte.setOnClickListener(v -> {
+            //On récupere les infos saisit par l'utilisateur
+            String identifiant = mMain_champ_identifiant.getText().toString();
+            String email =  mMain_champ_email.getText().toString();
+            String numeroTelephone =mMain_champ_numero_telephone.getText().toString() ;
+            String photoDeProfil = mMain_champ_identifiant.getText().toString();
+            String motdepasse = mMain_champ_mot_de_passe.getText().toString();
 
-                //On creer notre Utilisateur
-                User creationUser = new User(identifiant,email,motdepasse,photoDeProfil,numeroTelephone);
+            //On creer notre Utilisateur
+            User creationUser = new User(identifiant,email,motdepasse,photoDeProfil,numeroTelephone);
 
-                System.out.println( "affichage photo" + creationUser);
-
-
-
-                try {
-                    //On creer l'utilisateur dans la BDD
-
-                    if(dbUser.verificationExistenceIdentifiantDansLaBDD(identifiant)){
-                        Toast.makeText(getApplicationContext(), "Le compte a bien été sauvegarder", Toast.LENGTH_SHORT).show();
-
-                        enregistrementUser(creationUser);
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(), "Désolé mais cet identifiant existe deja", Toast.LENGTH_SHORT).show();
-                    }
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            try {
+                //On creer l'utilisateur dans la BDD
+                if(dbUser.verificationExistenceIdentifiantDansLaBDD(identifiant)){
+                    Toast.makeText(getApplicationContext(), "Le compte a bien été sauvegarder", Toast.LENGTH_SHORT).show();
+                    enregistrementUser(creationUser);
                 }
+                else {
+                    Toast.makeText(getApplicationContext(), "Désolé mais cet identifiant existe deja", Toast.LENGTH_SHORT).show();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-
-
         });
 
         //Listener pour le bouton de la photo
-        this.mButtonImage.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                captureImage();
-            }
-        });
-
+        this.mButtonImage.setOnClickListener(v -> captureImage());
 
         //Listener pour le bouton de la connexion
-        this.mConnexion_users.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
-                startActivity(intent);
-            }
+        this.mConnexion_users.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
+            startActivity(intent);
         });
 
-
         //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
-        EditText[] editTexts = {mMain_champ_identifiant,mMain_champ_email,mMain_champ_numero_telephone, mMain_champ_mot_de_passe}; // Ajoutez tous vos EditText ici
+        EditText[] editTexts = {mMain_champ_identifiant,mMain_champ_email,mMain_champ_numero_telephone, mMain_champ_mot_de_passe};
         for (EditText editText : editTexts) {
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
 
+                }
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     tousremplis = true;
@@ -163,9 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
-
-
 
 
         //On creer le handler avec le execute
