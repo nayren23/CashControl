@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -23,8 +22,7 @@ public class DatabaseUser extends DatabasePrincipale {
 
     //On creer la structure de la table
     private static final String COLUMN_ID_UTILISATEUR ="id_utilisateur";
-    private static final String COLUMN_NOM_UTILISATEUR ="nom_utilisateur";
-    private static final String COLUMN_PRENOM_UTILISATEUR ="prenom_utilisateur";
+    private static final String COLUMN_IDENTIFIANT_UTILISATEUR ="identifiant_utilisateur";
     private static final String COLUMN_EMAIL_UTILISATEUR ="email_utilisateur";
     private static final String COLUMN_MOT_DE_PASSE_UTILISATEUR ="mot_de_passe_utilisateur";
     private static final String COLUMN_CHEMINIMAGE_UTILISATEUR="cheminimage_utilisateur";
@@ -41,8 +39,7 @@ public class DatabaseUser extends DatabasePrincipale {
         Log.i(TAG, "MyDatabaseHelper.onCreate ... ");
         // Script.
         String script = "CREATE TABLE " + TABLE_USER + "("
-                + COLUMN_ID_UTILISATEUR + " INTEGER PRIMARY KEY," + COLUMN_NOM_UTILISATEUR +
-                " TEXT," + COLUMN_PRENOM_UTILISATEUR +
+                + COLUMN_ID_UTILISATEUR + " INTEGER PRIMARY KEY," + COLUMN_IDENTIFIANT_UTILISATEUR +
                 " TEXT," + COLUMN_EMAIL_UTILISATEUR +
                 " TEXT," +  COLUMN_MOT_DE_PASSE_UTILISATEUR +
                 " TEXT,"+ COLUMN_CHEMINIMAGE_UTILISATEUR +
@@ -68,9 +65,9 @@ public class DatabaseUser extends DatabasePrincipale {
     public void createDefaultUsersIfNeed()  {
         int count = this.getUserCount();
         if(count ==0 ) {
-            User yassine = new User(0 , "hamidi","yassine",0,"yassine@gmail.com", "yassine", "yassine","0781799878");
-            User rayan = new User(1 , "chouchane","rayan",0,"rayan@gmail.com", "rayan","rayan", "0781799878");
-            User ayoub = new User(2 , "bouaziz","ayoub", "ayoub@gmail.com", "ayoub", "ayoub","0666766767");
+            User yassine = new User(0 , "yhamidi",0,"yassine@gmail.com", "yassine", "yassine","0781799878");
+            User rayan = new User(1 , "rchouchane",0,"rayan@gmail.com", "rayan","rayan", "0781799878");
+            User ayoub = new User(2 , "abouazizi", "ayoub@gmail.com", "ayoub", "ayoub","0666766767");
             addUser(yassine);
             addUser(rayan);
             addUser(ayoub);
@@ -79,21 +76,22 @@ public class DatabaseUser extends DatabasePrincipale {
 
     //On ajoute un User
     public void addUser(User user) {
-        Log.i(TAG, "MyDatabaseHelper.addUser ... " + user.getNom()); // affiche un message dans la console android
+        Log.i(TAG, "MyDatabaseHelper.addUser ... " + user.getIdentifiant()); // affiche un message dans la console android
 
         SQLiteDatabase db = this.getWritableDatabase();//ouvre une connexion à la base de données en mode écriture
 
         ContentValues values = new ContentValues(); //stocker des paires clé-valeur de données à insérer ou mettre à jour dans une base de données SQLite
 
         //on prepare les donnees suivantes
-        values.put(COLUMN_ID_UTILISATEUR, user.getUserId());
-        values.put(COLUMN_NOM_UTILISATEUR, user.getNom());
-        values.put(COLUMN_PRENOM_UTILISATEUR, user.getPrenom());
+        values.put(COLUMN_IDENTIFIANT_UTILISATEUR, user.getIdentifiant());
         values.put(COLUMN_EMAIL_UTILISATEUR, user.getEmail());
-        values.put(COLUMN_MOT_DE_PASSE_UTILISATEUR, user.getMot_de_passe());
         values.put(COLUMN_CHEMINIMAGE_UTILISATEUR, user.getCheminimage());
         values.put(COLUMN_NUMEROTELEPHONE_UTILISATEUR, user.getNumerotelephone());
+        values.put(COLUMN_MOT_DE_PASSE_UTILISATEUR, user.getMot_de_passe());
 
+
+
+        System.out.println(values);
 
         // Inserting Row
         db.insert(TABLE_USER, null, values);
@@ -108,7 +106,7 @@ public class DatabaseUser extends DatabasePrincipale {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_USER, new String[] { COLUMN_ID_UTILISATEUR,
-                        COLUMN_NOM_UTILISATEUR,COLUMN_PRENOM_UTILISATEUR, COLUMN_EMAIL_UTILISATEUR, COLUMN_NUMEROTELEPHONE_UTILISATEUR,COLUMN_CHEMINIMAGE_UTILISATEUR }, COLUMN_ID_UTILISATEUR + "=?",
+                        COLUMN_IDENTIFIANT_UTILISATEUR,COLUMN_EMAIL_UTILISATEUR, COLUMN_NUMEROTELEPHONE_UTILISATEUR,COLUMN_CHEMINIMAGE_UTILISATEUR }, COLUMN_ID_UTILISATEUR + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -133,12 +131,11 @@ public class DatabaseUser extends DatabasePrincipale {
             do {
                 User user = new User();
                 user.setUserId(Integer.parseInt(cursor.getString(0)));
-                user.setNom((cursor.getString(1)));
-                user.setPrenom((cursor.getString(2)));
-                user.setEmail((cursor.getString(3)));
-                user.setMot_de_passe((cursor.getString(4)));
-                user.setNumerotelephone((cursor.getString(5)));
-                user.setCheminimage((cursor.getString(6)));
+                user.setIdentifiant((cursor.getString(1)));
+                user.setEmail((cursor.getString(2)));
+                user.setMot_de_passe((cursor.getString(3)));
+                user.setNumerotelephone((cursor.getString(4)));
+                user.setCheminimage((cursor.getString(5)));
 
                 // Adding user to list
                 userList.add(user);
@@ -161,14 +158,54 @@ public class DatabaseUser extends DatabasePrincipale {
         return count;
     }
 
+
+    public boolean verificationExistenceIdentifiantDansLaBDD(String identifiant){
+
+
+        try {
+            String query = " SELECT " + COLUMN_IDENTIFIANT_UTILISATEUR + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? ";
+
+
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            // Définir la valeur du paramètre
+            String[] selectionArgs = { identifiant };
+
+            // Exécuter la requête préparée avec la valeur du paramètre
+            Cursor cursor = db.rawQuery(query, selectionArgs);
+
+            // Vérifier si le curseur est valide et s'il contient des enregistrements
+            if (cursor != null && cursor.moveToFirst()) {
+                // Extraire la valeur de la colonne
+                String identifiantUtilisateur = cursor.getString(0);
+                // Faire quelque chose avec la valeur extraite
+
+
+                return false;
+            }
+            // Fermer le curseur et la base de données
+            if (cursor != null) {
+                cursor.close();
+            }
+            //db.close();
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return true;
+
+
+    }
+
     public int updateUser(User user) {
-        Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + user.getPrenom());
+        Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + user.getIdentifiant());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(COLUMN_NOM_UTILISATEUR, user.getNom());
-        values.put(COLUMN_PRENOM_UTILISATEUR, user.getPrenom());
+        values.put(COLUMN_IDENTIFIANT_UTILISATEUR, user.getIdentifiant());
         values.put(COLUMN_EMAIL_UTILISATEUR, user.getEmail());
         values.put(COLUMN_NUMEROTELEPHONE_UTILISATEUR, user.getNumerotelephone());
         values.put(COLUMN_CHEMINIMAGE_UTILISATEUR, user.getCheminimage());
@@ -179,7 +216,7 @@ public class DatabaseUser extends DatabasePrincipale {
     }
 
     public void deleteUser(User user) {
-        Log.i(TAG, "MyDatabaseHelper.updateUser ... " + user.getNom());
+        Log.i(TAG, "MyDatabaseHelper.updateUser ... " + user.getIdentifiant());
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_USER, COLUMN_ID_UTILISATEUR + " = ?",
