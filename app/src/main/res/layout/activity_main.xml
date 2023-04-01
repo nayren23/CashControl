@@ -113,7 +113,7 @@
         />
 
     <Button
-        android:id="@+id/connexion_users"
+        android:id="@+id/main_connexion_users"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="150dp"
