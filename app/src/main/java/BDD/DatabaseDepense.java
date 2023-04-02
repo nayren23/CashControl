@@ -89,22 +89,22 @@ public class DatabaseDepense extends DatabasePrincipale {
             int count = this.getDepenseCount();
             if (count == 0) {
                 //Test
-                Depense depense1 = new Depense(0, "08/01/2022", 888, 0, 1, "Solde");
-                Depense depense2 = new Depense(1, "02/05/2022", 200, 0, 2, "Disney");
-                Depense depense3 = new Depense(2, "13/01/2022", 300, 0, 3, "Cinéma");
-                Depense depense4 = new Depense(3, "24/01/2022", 400, 0, 4, "Navigo");
-                Depense depense5 = new Depense(4, "08/01/2022", 500, 0, 5, "Casserole");
-                Depense depense6 = new Depense(5, "16/01/2022", 600, 0, 6, "Ursaaf");
-                Depense depense7 = new Depense(6, "07/01/2022", 700, 0, 7, "Loyer");
-                Depense depense8 = new Depense(7, "28/01/2022", 800, 0, 8, "Doliprane");
-                Depense depense9 = new Depense(8, "09/01/2022", 900, 0, 0, "Kebab");
-                Depense depense10 = new Depense(9, "10/01/2022", 150, 0, 1, "Jean");
-                Depense depense11 = new Depense(10, "10/01/2022", 25, 0, 1, "Tee-shirt");
-                Depense depense12 = new Depense(11, "15/01/2021", 12.5, 0, 1, "Claquette");
-                Depense depense13 = new Depense(12, "01/01/2022", 88.99, 0, 1, "Solde mamam");
-                Depense depense14 = new Depense(13, "01/01/2022", 76.99, 0, 1, "Casquette");
-                Depense depense15 = new Depense(14, "01/01/2022", 87.34, 0, 1, "Tong");
-                Depense depense16 = new Depense(15, "01/01/2022", 10000.99, 0, 1, "Clavier Gamer");
+                Depense depense1 = new Depense(0, "08/01/2022", 888, 1, 1, "Solde");
+                Depense depense2 = new Depense(1, "02/05/2022", 200, 1, 2, "Disney");
+                Depense depense3 = new Depense(2, "13/01/2022", 300, 1, 3, "Cinéma");
+                Depense depense4 = new Depense(3, "24/01/2022", 400, 1, 4, "Navigo");
+                Depense depense5 = new Depense(4, "08/01/2022", 500, 1, 5, "Casserole");
+                Depense depense6 = new Depense(5, "16/01/2022", 600, 1, 6, "Ursaaf");
+                Depense depense7 = new Depense(6, "07/01/2022", 700, 1, 7, "Loyer");
+                Depense depense8 = new Depense(7, "28/01/2022", 800, 1, 8, "Doliprane");
+                Depense depense9 = new Depense(8, "09/01/2022", 900, 1, 0, "Kebab");
+                Depense depense10 = new Depense(9, "10/01/2022", 150, 1, 1, "Jean");
+                Depense depense11 = new Depense(10, "10/01/2022", 25, 1, 1, "Tee-shirt");
+                Depense depense12 = new Depense(11, "15/01/2021", 12.5, 1, 1, "Claquette");
+                Depense depense13 = new Depense(12, "01/01/2022", 88.99, 1, 1, "Solde mamam");
+                Depense depense14 = new Depense(13, "01/01/2022", 76.99, 1, 1, "Casquette");
+                Depense depense15 = new Depense(14, "01/01/2022", 87.34, 1, 1, "Tong");
+                Depense depense16 = new Depense(15, "01/01/2022", 10000.99, 1, 1, "Clavier Gamer");
 
 
                 addDepense(depense1);
