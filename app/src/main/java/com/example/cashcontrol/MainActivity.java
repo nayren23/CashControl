@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -42,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     /*User*/
     private DatabaseUser dbUser;
     private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
+
+    //spécifie le nombre de tours de hachage à effectuer
+    private static final int WORKLOAD = 12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             String email =  mMain_champ_email.getText().toString();
             String numeroTelephone =mMain_champ_numero_telephone.getText().toString() ;
             String photoDeProfil = mMain_champ_identifiant.getText().toString();
-            String motdepasse = mMain_champ_mot_de_passe.getText().toString();
+            String motdepasse = encrypt(mMain_champ_mot_de_passe.getText().toString());
 
             //On creer notre Utilisateur
             User creationUser = new User(identifiant,email,motdepasse,photoDeProfil,numeroTelephone);
@@ -144,6 +149,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+
+
+    public static String encrypt(String password) {
+        String salt = BCrypt.gensalt(WORKLOAD);
+        return BCrypt.hashpw(password, salt);
+    }
+
+
+
+
+
     private void enregistrementUser(User user) throws IOException {
         DatabaseUser dbUser = new DatabaseUser(this);
         dbUser.addUser(user);
