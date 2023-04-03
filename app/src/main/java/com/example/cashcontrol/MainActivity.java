@@ -132,8 +132,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
-
         //On creer le handler avec le execute
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
@@ -144,12 +142,7 @@ public class MainActivity extends AppCompatActivity {
         FournisseurExecutor.creerExecutor().execute(()-> {
             databaseUser.createDefaultUsersIfNeed();
         });
-
-
     }
-
-
-
 
     public static String encrypt(String password) {
         String salt = BCrypt.gensalt(WORKLOAD);
@@ -165,9 +158,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
-
-
-    private void enregistrementUser(User user) throws IOException {
+        private void enregistrementUser(User user) throws IOException {
         DatabaseUser dbUser = new DatabaseUser(this);
         dbUser.addUser(user);
         Toast.makeText(this, "Utilisateurs Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
