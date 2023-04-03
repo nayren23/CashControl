@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mButtonImage;
     private ImageView imageUser;
     private Button mSauvegarde_compte;
-    private Button mConnexion_users;
+    private TextView mConnexion_users;
     private boolean tousremplis = true;// pour verifier si tous les champs sont remplit
 
     /*User*/
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         this.mButtonImage = this.findViewById(R.id.button_image);
         this.imageUser = (ImageView) this.findViewById(R.id.image_user);
         this.mSauvegarde_compte = this.findViewById(R.id.sauvegarde_compte);
-        this.mConnexion_users = this.findViewById(R.id.main_connexion_users);
+        this.mConnexion_users = this.findViewById(R.id.connexion_text_view_connexion);
 
         //Set bouton
         this.mSauvegarde_compte.setEnabled(false);
@@ -108,6 +109,12 @@ public class MainActivity extends AppCompatActivity {
         //Listener pour le bouton de la connexion
         this.mConnexion_users.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ConnexionActivity.class);
+            startActivity(intent);
+        });
+
+
+        mConnexion_users.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ConnexionActivity.class);
             startActivity(intent);
         });
 
