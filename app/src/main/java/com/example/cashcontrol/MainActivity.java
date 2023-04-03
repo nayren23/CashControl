@@ -21,6 +21,8 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import BDD.DatabaseUser;
 import BDD.FourniseurHandler;
@@ -118,15 +120,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    tousremplis = true;
-                    for (EditText editText : editTexts) {
-                        String value = editText.getText().toString().trim();
-                        if (TextUtils.isEmpty(value)) {
-                            tousremplis = false;
-                        }
+                    if(isAllEditTextFilled(Arrays.asList(editTexts))){
+                        mButtonImage.setEnabled(true);
                     }
-                    if(tousremplis){
-                        mButtonImage.setEnabled(!s.toString().isEmpty());
+                    else {
+                        mButtonImage.setEnabled(false);
                     }
                 }
                 @Override
@@ -159,7 +157,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    public boolean isAllEditTextFilled(List<EditText> editTextList) {
+        for (EditText editText : editTextList) {
+            if (editText.getText().toString().trim().length() == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 
     private void enregistrementUser(User user) throws IOException {
