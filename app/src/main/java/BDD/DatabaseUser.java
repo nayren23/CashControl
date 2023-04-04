@@ -176,13 +176,13 @@ public class DatabaseUser extends DatabasePrincipale {
 
         return true;
     }
-    public boolean verificationConnexionDansLaBDD(String identifiant, String motdepasse){
+    public boolean verificationConnexionDansLaBDD(String identifiant){
 
         try {
-            String query = " SELECT " + COLUMN_IDENTIFIANT_UTILISATEUR + "," + COLUMN_MOT_DE_PASSE_UTILISATEUR + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? AND " + COLUMN_MOT_DE_PASSE_UTILISATEUR + " = ? ";
+            String query = " SELECT " + COLUMN_IDENTIFIANT_UTILISATEUR  + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? ";
             SQLiteDatabase db = this.getReadableDatabase();
             // Définir la valeur du paramètre
-            String[] selectionArgs = { identifiant, motdepasse };
+            String[] selectionArgs = { identifiant};
             // Exécuter la requête préparée avec la valeur du paramètre
             Cursor cursor = db.rawQuery(query, selectionArgs);
 

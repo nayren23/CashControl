@@ -1,5 +1,7 @@
 package com.example.cashcontrol;
 
+import static com.example.cashcontrol.MainActivity.encrypt;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -20,6 +22,7 @@ import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
 import modele.User;
 
+import org.mindrot.jbcrypt.BCrypt;
 
 public class ConnexionActivity extends AppCompatActivity {
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
@@ -35,6 +38,8 @@ public class ConnexionActivity extends AppCompatActivity {
 
     /*User*/
     private DatabaseUser dbUser;
+
+
 
 
     @Override
@@ -86,9 +91,13 @@ public class ConnexionActivity extends AppCompatActivity {
                         String identifiant = mConnexion_champ_identifiant.getText().toString();
                         String motdepasse = mConnexion_mot_de_passe.getText().toString();
 
+                        Boolean mdp = checkPassword(motdepasse, encrypt(motdepasse));
+
+                        System.out.println("voici le mot de passe "  + mdp);
                         mButtonConnexion.setOnClickListener(v -> {
 
-                            if (dbUser.verificationConnexionDansLaBDD(identifiant, motdepasse)) {
+
+                            if (dbUser.verificationConnexionDansLaBDD(identifiant) && mdp) {
                                 Toast.makeText(getApplicationContext(), "Bienvenue " + identifiant, Toast.LENGTH_SHORT).show();
 
                                 int id = dbUser.retourneIdUser(identifiant);
@@ -119,4 +128,18 @@ public class ConnexionActivity extends AppCompatActivity {
             });
         }
     }
+
+
+    public static boolean checkPassword(String password, String hashedPassword) {
+        if (hashedPassword == null || !hashedPassword.startsWith("$2a$")) {
+            throw new IllegalArgumentException("Invalid hash provided for comparison");
+        }
+        return BCrypt.checkpw(password, hashedPassword);
+    }
+
+
+
+
+
+
 }

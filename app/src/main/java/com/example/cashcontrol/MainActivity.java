@@ -15,10 +15,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import BDD.DatabaseUser;
 import BDD.FourniseurHandler;
@@ -36,12 +41,15 @@ public class MainActivity extends AppCompatActivity {
     private Button mButtonImage;
     private ImageView imageUser;
     private Button mSauvegarde_compte;
-    private Button mConnexion_users;
+    private TextView mConnexion_users;
     private boolean tousremplis = true;// pour verifier si tous les champs sont remplit
 
     /*User*/
     private DatabaseUser dbUser;
     private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
+
+    //spécifie le nombre de tours de hachage à effectuer
+    private static final int WORKLOAD = 12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         this.mButtonImage = this.findViewById(R.id.button_image);
         this.imageUser = (ImageView) this.findViewById(R.id.image_user);
         this.mSauvegarde_compte = this.findViewById(R.id.sauvegarde_compte);
-        this.mConnexion_users = this.findViewById(R.id.main_connexion_users);
+        this.mConnexion_users = this.findViewById(R.id.connexion_text_view_connexion);
 
         //Set bouton
         this.mSauvegarde_compte.setEnabled(false);
@@ -76,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             String email =  mMain_champ_email.getText().toString();
             String numeroTelephone =mMain_champ_numero_telephone.getText().toString() ;
             String photoDeProfil = mMain_champ_identifiant.getText().toString();
-            String motdepasse = mMain_champ_mot_de_passe.getText().toString();
+            String motdepasse = encrypt(mMain_champ_mot_de_passe.getText().toString());
 
             //On creer notre Utilisateur
             User creationUser = new User(identifiant,email,motdepasse,photoDeProfil,numeroTelephone);
@@ -104,6 +112,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+
+        mConnexion_users.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ConnexionActivity.class);
+            startActivity(intent);
+        });
+
         //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
         EditText[] editTexts = {mMain_champ_identifiant,mMain_champ_email,mMain_champ_numero_telephone, mMain_champ_mot_de_passe};
         for (EditText editText : editTexts) {
@@ -113,15 +127,11 @@ public class MainActivity extends AppCompatActivity {
                 }
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    tousremplis = true;
-                    for (EditText editText : editTexts) {
-                        String value = editText.getText().toString().trim();
-                        if (TextUtils.isEmpty(value)) {
-                            tousremplis = false;
-                        }
+                    if(isAllEditTextFilled(Arrays.asList(editTexts))){
+                        mButtonImage.setEnabled(true);
                     }
-                    if(tousremplis){
-                        mButtonImage.setEnabled(!s.toString().isEmpty());
+                    else {
+                        mButtonImage.setEnabled(false);
                     }
                 }
                 @Override
@@ -129,8 +139,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
-
         //On creer le handler avec le execute
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
@@ -141,10 +149,23 @@ public class MainActivity extends AppCompatActivity {
         FournisseurExecutor.creerExecutor().execute(()-> {
             databaseUser.createDefaultUsersIfNeed();
         });
-
-
     }
-    private void enregistrementUser(User user) throws IOException {
+
+    public static String encrypt(String password) {
+        String salt = BCrypt.gensalt(WORKLOAD);
+        return BCrypt.hashpw(password, salt);
+    }
+
+
+    public boolean isAllEditTextFilled(List<EditText> editTextList) {
+        for (EditText editText : editTextList) {
+            if (editText.getText().toString().trim().length() == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+        private void enregistrementUser(User user) throws IOException {
         DatabaseUser dbUser = new DatabaseUser(this);
         dbUser.addUser(user);
         Toast.makeText(this, "Utilisateurs Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
