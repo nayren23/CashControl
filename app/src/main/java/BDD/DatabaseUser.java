@@ -66,8 +66,8 @@ public class DatabaseUser extends DatabasePrincipale {
             User yassine = new User(0 , "yhamidi",0,"yassine@gmail.com", "yassine", "yassine","0781799878");
             User rayan = new User(1 , "rchouchane",0,"rayan@gmail.com", "rayan","rayan", "0781799878");
             User ayoub = new User(2 , "abouazizi", "ayoub@gmail.com", "ayoub", "ayoub","0666766767");
-            addUser(yassine);
             addUser(rayan);
+            addUser(yassine);
             addUser(ayoub);
         }
     }
