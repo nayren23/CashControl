@@ -11,6 +11,8 @@
     <color name="card_subtitle_color">#FFFFFFFF</color>
     <color name="card_title_color">#FFFFFFFF</color>
     <color name="blue"> #0000FF</color>
+    <color name="bouton"> #00ADB5</color>
+
 
     card_title_color
 

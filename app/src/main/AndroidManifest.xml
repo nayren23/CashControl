@@ -33,6 +33,10 @@
 
         </activity>
 
+        <activity
+            android:name=".AffichageChangementDepenseActivity"
+            android:exported="false">
+        </activity>
 
         <activity
             android:name=".ConnexionActivity"

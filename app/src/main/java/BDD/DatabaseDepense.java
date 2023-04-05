@@ -161,7 +161,7 @@ public class DatabaseDepense extends DatabasePrincipale {
             SQLiteDatabase db = this.getReadableDatabase();
 
             Cursor cursor = db.query(TABLE_DEPENSE, new String[]{COLUMN_ID_DEPENSE,
-                            COLUMN_DATE_DEPENSE, COLUMN_MONTANT_DEPENSE, COLUMN_ID_CATEGORIE, COLUMN_ID_UTILISATEUR_DEPENSE, COLUMN_DESCRIPTION_DEPENSE}, COLUMN_ID_UTILISATEUR_DEPENSE + "=?",
+                            COLUMN_DATE_DEPENSE, COLUMN_MONTANT_DEPENSE, COLUMN_ID_CATEGORIE, COLUMN_ID_UTILISATEUR_DEPENSE, COLUMN_DESCRIPTION_DEPENSE}, COLUMN_ID_DEPENSE + "=?",
                     new String[]{String.valueOf(id)}, null, null, null, null);
             if (cursor != null)
                 cursor.moveToFirst();
@@ -231,8 +231,8 @@ public class DatabaseDepense extends DatabasePrincipale {
 
 
         // updating row
-        return db.update(TABLE_DEPENSE, values, COLUMN_ID_UTILISATEUR_DEPENSE + " = ?",
-                new String[]{String.valueOf(depense.getUserId())});
+        return db.update(TABLE_DEPENSE, values, COLUMN_ID_DEPENSE + " = ?",
+                new String[]{String.valueOf(depense.getDepenseId())});
     }
 
     public void deleteDepense(int depense) {

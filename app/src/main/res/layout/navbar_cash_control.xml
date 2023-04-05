@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:orientation="vertical"
+    >
+<com.google.android.material.appbar.AppBarLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/card_subtitle_color"
+        android:title="@string/app_name"
+        android:titleTextColor="@android:color/white" >
+
+        <Button
+            android:id="@+id/jour_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jour"
+            android:layout_margin="3dp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/bouton"
+            android:layout_gravity="start"/>
+        <Button
+            android:id="@+id/semaine_button"
+            android:layout_margin="3dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Semaine"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/bouton"
+            android:layout_gravity="start"/>
+        <Button
+            android:id="@+id/mois_button"
+            android:layout_margin="3dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mois"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/bouton"
+            android:layout_gravity="start"/>
+        <Button
+            android:id="@+id/annee_button"
+            android:layout_margin="3dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Année"
+            android:backgroundTint="@color/bouton"
+            android:textColor="@android:color/white"
+            android:layout_gravity="start"/>
+    </androidx.appcompat.widget.Toolbar>
+
+</com.google.android.material.appbar.AppBarLayout>
+
+</LinearLayout>

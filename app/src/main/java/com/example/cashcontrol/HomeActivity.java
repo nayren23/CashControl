@@ -5,10 +5,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -180,4 +183,19 @@ public class HomeActivity extends AppCompatActivity {
             refreshActivity();
         });
     }
+
+    /*
+    // Click listeners des pickers de date
+    private void setPickersFromView() {
+        final EditText datePicker = findViewById(R.id.date_picker);
+        datePicker.setOnClickListener(this::showDatePicker);
+    }
+
+    // Lorsqu'on clique sur le champ de date, la pop up de choix de date s'ouvre.
+    private void showDatePicker(@NonNull View view) {
+        final DialogFragment datePickerFragment = new DatePickerFragment();
+        datePickerFragment.show(requireActivity().getSupportFragmentManager(), DatePickerFragment.TAG);
+    }
+
+     */
 }
