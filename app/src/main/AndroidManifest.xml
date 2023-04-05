@@ -39,6 +39,11 @@
             android:exported="false">
 
         </activity>
+        <activity
+            android:name=".AjoutDepenseActivity"
+            android:exported="false">
+
+        </activity>
     </application>
 
 </manifest>

@@ -26,6 +26,13 @@ public class Depense implements Serializable {
         CategorieId = categorieId;
         this.descriptionDepense = descriptionDepense;
     }
+    public Depense( String date, double montant, int userId, int categorieId, String descriptionDepense) {
+        this.date = date;
+        this.montant = montant;
+        UserId = userId;
+        CategorieId = categorieId;
+        this.descriptionDepense = descriptionDepense;
+    }
 
 
     public Depense(int depenseId, String date, double montant,String descriptionDepense) {

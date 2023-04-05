@@ -138,7 +138,7 @@ public class DatabaseDepense extends DatabasePrincipale {
             ContentValues values = new ContentValues(); //stocker des paires clé-valeur de données à insérer ou mettre à jour dans une base de données SQLite
 
             //on prepare les donnees suivantes
-            values.put(COLUMN_ID_DEPENSE, depense.getDepenseId());
+//          values.put(COLUMN_ID_DEPENSE, depense.getDepenseId());
             values.put(COLUMN_DATE_DEPENSE, depense.getDate());
             values.put(COLUMN_MONTANT_DEPENSE, depense.getMontant());
             values.put(COLUMN_ID_CATEGORIE, depense.getCategorieId());

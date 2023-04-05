@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -42,6 +43,9 @@ public class HomeActivity extends AppCompatActivity {
     private  PieChart camemberDepense;
     private Handler handler;
 
+    private Button ajouterDepenseBtn;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +54,8 @@ public class HomeActivity extends AppCompatActivity {
         //On creer le handler avec le execute
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
+
+        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
 
         // On crée les dépenses
         this.databaseDepense = new DatabaseDepense(this);
@@ -69,6 +75,15 @@ public class HomeActivity extends AppCompatActivity {
             // On fait la somme des dépenses par catégories
             this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
             refreshActivity();
+        });
+
+
+        this.ajouterDepenseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this , AjoutDepenseActivity.class);
+                startActivity(intent);
+            }
         });
 
         this.camemberDepense.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
