@@ -53,7 +53,7 @@ public class AffichageChangementDepenseActivity  extends AppCompatActivity {
     private void miseAJourDepense(int idDepense){
         try {
             String date = card_date.getText().toString();
-            Double montant = Double.valueOf(card_prix.getText().toString());
+            double montant = Double.valueOf(card_prix.getText().toString());
             String description = card_description.getText().toString();
 
             Depense nouvelleDepense = new Depense();

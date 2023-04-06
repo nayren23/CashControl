@@ -31,7 +31,7 @@ import BDD.FournisseurExecutor;
 import modele.Category;
 import modele.Depense;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements DatePickerFragment.OnDateSetListener {
 
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
@@ -45,6 +45,8 @@ public class HomeActivity extends AppCompatActivity {
     private  PieChart camemberDepense;
     private Handler handler;
 
+    private String dateSelectionner;
+    private EditText datePicker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +61,8 @@ public class HomeActivity extends AppCompatActivity {
 
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
+
+        this.datePicker = findViewById(R.id.date_picker);
 
         // On crée le camembert
         this.camemberDepense = findViewById(R.id.camembert);
@@ -92,6 +96,8 @@ public class HomeActivity extends AppCompatActivity {
                 // do nothing
             }
         });
+
+        setPickersFromView();
     }
 
     /**
@@ -184,18 +190,25 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    /*
-    // Click listeners des pickers de date
+    /**
+     * Fonction pour avoir la date selectionner par l'user
+     */
+    
+    // Click listeners des pickers de date, appeller dans le onCreate
     private void setPickersFromView() {
-        final EditText datePicker = findViewById(R.id.date_picker);
         datePicker.setOnClickListener(this::showDatePicker);
     }
 
     // Lorsqu'on clique sur le champ de date, la pop up de choix de date s'ouvre.
     private void showDatePicker(@NonNull View view) {
         final DialogFragment datePickerFragment = new DatePickerFragment();
-        datePickerFragment.show(requireActivity().getSupportFragmentManager(), DatePickerFragment.TAG);
+        datePickerFragment.show(this.getSupportFragmentManager(), DatePickerFragment.TAG);
     }
 
-     */
+    @Override
+    public void onDateSet(int year, int month, int dayOfMonth) {
+        datePicker.setText(dayOfMonth+"/" + month + "/" +  year );
+        dateSelectionner = dayOfMonth + "/" + month + "/" +  year;
+        System.out.println("voici la date Selectionner " + dateSelectionner );
+    }
 }
