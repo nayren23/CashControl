@@ -50,6 +50,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private Button mois_button;
     private Button annee_button;
 
+    private Button ajouterDepenseBtn ;
+
     private int boutonActuel;
 
     @Override
@@ -60,6 +62,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         //On creer le handler avec le execute
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
+
+        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
 
         // On crée les dépenses
         this.databaseDepense = new DatabaseDepense(this);
@@ -90,6 +94,15 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             // On fait la somme des dépenses par catégories
             this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
             refreshActivity();
+        });
+
+
+        this.ajouterDepenseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this , AjoutDepenseActivity.class);
+                startActivity(intent);
+            }
         });
 
         this.camemberDepense.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {

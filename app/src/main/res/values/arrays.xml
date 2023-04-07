@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category_list">
+        <item id="0">Alimentation &amp; Restauration</item>
+        <item id="1">Achat &amp; Shopping</item>
+        <item id="2">Loisirs &amp; Sorties</item>
+        <item id="3">Abonnement</item>
+        <item id="4">Transports &amp; Auto</item>
+        <item id="5">Divers</item>
+        <item id="6">Impôts</item>
+        <item id="7">Logement</item>
+        <item id="8">Santé</item>
+    </string-array>
+</resources>
+

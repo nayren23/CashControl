@@ -11,12 +11,22 @@ public class Depense implements Serializable {
     private int UserId;
     private int CategorieId;
 
+    private String cheminimage;
+
     private String descriptionDepense;
 
     public Depense() {
         this.DepenseId++;
     }
 
+
+    public String getCheminimage() {
+        return cheminimage;
+    }
+
+    public void setCheminimage(String cheminimage) {
+        this.cheminimage = cheminimage;
+    }
 
     public Depense(int depenseId, String date, double montant, int userId, int categorieId, String descriptionDepense) {
         DepenseId = depenseId;
@@ -25,6 +35,15 @@ public class Depense implements Serializable {
         UserId = userId;
         CategorieId = categorieId;
         this.descriptionDepense = descriptionDepense;
+
+    }
+    public Depense( String date, double montant, int userId, int categorieId, String descriptionDepense,String cheminimage) {
+        this.date = date;
+        this.montant = montant;
+        UserId = userId;
+        CategorieId = categorieId;
+        this.descriptionDepense = descriptionDepense;
+        this.cheminimage = cheminimage ;
     }
 
 
@@ -105,6 +124,7 @@ public class Depense implements Serializable {
                 ", montant=" + montant +
                 ", UserId=" + UserId +
                 ", CategorieId=" + CategorieId +
+                ", cheminimage='" + cheminimage + '\'' +
                 ", descriptionDepense='" + descriptionDepense + '\'' +
                 '}';
     }

@@ -37,6 +37,8 @@ public class DatabaseDepense extends DatabasePrincipale {
 
     private static final String COLUMN_DESCRIPTION_DEPENSE ="description_depense";
 
+    private static final String COLUMN_CHEMIN_IMAGE ="chemin_image";
+
 
     public DatabaseDepense(Context context)  {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,6 +59,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                     " TEXT," + COLUMN_ID_CATEGORIE +
                     " TEXT," + COLUMN_ID_UTILISATEUR_DEPENSE +
                     " TEXT," +  COLUMN_DESCRIPTION_DEPENSE+
+                    " TEXT," +  COLUMN_CHEMIN_IMAGE+
                     " TEXT" +")";
 
 // Exécution des commandes SQL
@@ -152,12 +155,14 @@ public class DatabaseDepense extends DatabasePrincipale {
             ContentValues values = new ContentValues(); //stocker des paires clé-valeur de données à insérer ou mettre à jour dans une base de données SQLite
 
             //on prepare les donnees suivantes
-            values.put(COLUMN_ID_DEPENSE, depense.getDepenseId());
+//          values.put(COLUMN_ID_DEPENSE, depense.getDepenseId());
             values.put(COLUMN_DATE_DEPENSE, depense.getDate());
             values.put(COLUMN_MONTANT_DEPENSE, depense.getMontant());
             values.put(COLUMN_ID_CATEGORIE, depense.getCategorieId());
             values.put(COLUMN_ID_UTILISATEUR_DEPENSE, depense.getUserId());
             values.put(COLUMN_DESCRIPTION_DEPENSE, depense.getDescriptionDepense());
+            if (depense.getCheminimage() != null)
+            values.put(COLUMN_CHEMIN_IMAGE , depense.getCheminimage());
 
             db.insert(TABLE_DEPENSE, null, values);
 
@@ -242,6 +247,8 @@ public class DatabaseDepense extends DatabasePrincipale {
         values.put(COLUMN_ID_CATEGORIE, depense.getCategorieId());
         values.put(COLUMN_ID_UTILISATEUR_DEPENSE, depense.getUserId());
         values.put(COLUMN_DESCRIPTION_DEPENSE, depense.getDescriptionDepense());
+        values.put(COLUMN_CHEMIN_IMAGE , depense.getCheminimage());
+
 
 
         // updating row
@@ -290,6 +297,8 @@ public class DatabaseDepense extends DatabasePrincipale {
                     depense.setMontant(Double.parseDouble((cursor.getString(2))));
                     depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
                     depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
+                    depense.setCheminimage((cursor.getString(6)));
 
                     // Adding depense to list
                     depenseList.add(depense);
@@ -331,6 +340,8 @@ public class DatabaseDepense extends DatabasePrincipale {
                 depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
                 depense.setUserId(Integer.parseInt(cursor.getString(4)));
                 depense.setDescriptionDepense(cursor.getString(5));
+                depense.setCheminimage((cursor.getString(6)));
+
 
                 // Adding depense to list
                 depenseList.add(depense);
@@ -343,15 +354,15 @@ public class DatabaseDepense extends DatabasePrincipale {
         }
     }
 
-    public int getDepenseCountCategorie(int idCategorie) {
+    public int getDepenseCountCategorie(int idCategorie, int idUser) {
         Log.i(TAG, "MyDatabaseHelper.getDepenseCount ... " );
 
         try {
 
-            String countQuery = "SELECT  * FROM " + TABLE_DEPENSE + " WHERE " + COLUMN_ID_CATEGORIE + " = ?";
+            String countQuery = "SELECT  * FROM " + TABLE_DEPENSE + " WHERE " + COLUMN_ID_CATEGORIE + " = ?" + " AND " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" ;
 
             SQLiteDatabase db = this.getReadableDatabase();
-            Cursor cursor = db.rawQuery(countQuery, new String[]{String.valueOf(idCategorie)}, null);
+            Cursor cursor = db.rawQuery(countQuery, new String[]{String.valueOf(idCategorie), String.valueOf((idUser))}, null);
 
             int count = cursor.getCount();
 
