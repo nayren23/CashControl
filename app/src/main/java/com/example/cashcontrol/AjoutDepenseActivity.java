@@ -13,19 +13,24 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 
 import BDD.DatabaseDepense;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
 import modele.Category;
 import modele.Depense;
+import utilitaires.DateUtil;
 
-public class AjoutDepenseActivity extends AppCompatActivity {
+
+public class AjoutDepenseActivity extends AppCompatActivity implements DatePickerFragment.OnDateSetListener {
 
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
@@ -39,8 +44,10 @@ public class AjoutDepenseActivity extends AppCompatActivity {
     private EditText montant ;
 
     private EditText description ;
+    private EditText date ;
 
     private String nomFichier ;
+    private  String [] dateSelectionner;
     private int id_Utilisateur_Courant;
 
     private DatabaseDepense dbDepense;
@@ -58,17 +65,25 @@ public class AjoutDepenseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ajout_depense_activity);
+
         this.listCategorie = findViewById(R.id.category_spinner);
         this.ajoutDepensebtn = (Button) (findViewById(R.id.button_ajout_depense));
         this.photoBtn = findViewById(R.id.button_prendre_photo);
         this.montant = findViewById(R.id.edittext_montant_depense);
         this.description = (EditText) (findViewById(R.id.edittext_description_depense));
+        this.date = findViewById(R.id.date_picker_depense);
         this.dbDepense = new DatabaseDepense(this);
         this.depenseImage = findViewById(R.id.image_depense);
+
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
 
-//On creer le handler avec le execute
+        // Initialize dateSelectionner to current date
+        Calendar calendar = Calendar.getInstance();
+
+        dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
+
+        //On creer le handler avec le execute
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
 
@@ -109,7 +124,7 @@ public class AjoutDepenseActivity extends AppCompatActivity {
             }
         });
 
-
+        setPickersFromView();
 
     }
 
@@ -122,7 +137,8 @@ public class AjoutDepenseActivity extends AppCompatActivity {
         int idCategorie =this.idCategorie ;
 
         String cheminimage = nomFichier  ;
-        String date ="0" ;
+        String date = this.dateSelectionner[2] + "-" + this.dateSelectionner[1] + "-" + this.dateSelectionner[0] ;
+
         Depense depense = new Depense(date,montant,idUser,idCategorie,description,cheminimage);
 
 
@@ -167,7 +183,7 @@ public class AjoutDepenseActivity extends AppCompatActivity {
 
                 //Image sauvegarder dans le fichier
                 String i = String.valueOf(Math.random() +10);
-                 nomFichier = description.getText().toString() + i ;
+                nomFichier = description.getText().toString() + i ;
 
                 saveImage(bp,nomFichier);
 
@@ -179,4 +195,38 @@ public class AjoutDepenseActivity extends AppCompatActivity {
         }
     }
 
+    /*
+     * Récupère les vues pour les pickers de date et les initialise en ajoutant les listeners correspondants.
+     * Cette fonction doit être appelée dans la méthode onCreate de l'activité.
+     */
+    private void setPickersFromView() {
+        date.setOnClickListener(this::showDatePicker);
+
+    }
+
+
+    /*
+     * Affiche la pop-up de choix de date lorsqu'on clique sur le champ de date correspondant.
+     * @param view La vue correspondant au champ de date.
+     */
+    private void showDatePicker(@NonNull View view) {
+        final DialogFragment datePickerFragment = new DatePickerFragment();
+        datePickerFragment.show(this.getSupportFragmentManager(), DatePickerFragment.TAG);
+    }
+
+
+    @Override
+    public void onDateSet(int annee, int mois, int jour) {
+
+        dateSelectionner[0] =  DateUtil.getFormattedDateTimeComponent(jour);
+        dateSelectionner[1] =  DateUtil.getFormattedDateTimeComponent(mois);
+        dateSelectionner[2] =  DateUtil.getFormattedDateTimeComponent(annee);
+
+
+        String dateSelectionner = jour + "/" + mois + "/" +  annee;
+        date.setText(dateSelectionner);
+
+
+
+    }
 }

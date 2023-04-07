@@ -31,7 +31,7 @@
                 android:text="Jour"
                 android:layout_marginRight="3dp"
                 android:textColor="@android:color/white"
-                android:backgroundTint="@color/bouton"
+                android:backgroundTint="@color/bleuUnPeuClair"
                 android:layout_gravity="start"/>
             <Button
                 android:id="@+id/semaine_button"
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="Semaine"
                 android:textColor="@android:color/white"
-                android:backgroundTint="@color/bouton"
+                android:backgroundTint="@color/bleuUnPeuClair"
                 android:layout_gravity="start"/>
             <Button
                 android:id="@+id/mois_button"
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:text="Mois"
                 android:textColor="@android:color/white"
-                android:backgroundTint="@color/bouton"
+                android:backgroundTint="@color/bleuUnPeuClair"
                 android:layout_gravity="start"/>
             <Button
                 android:id="@+id/annee_button"
@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Année"
-                android:backgroundTint="@color/bouton"
+                android:backgroundTint="@color/bleuUnPeuClair"
                 android:textColor="@android:color/white"
                 android:layout_gravity="start"/>
 
@@ -74,13 +74,15 @@
         android:focusable="false"
         android:inputType="none"
         android:drawableStart="@drawable/baseline_today_24"
-        android:drawableTint="@color/blue"
+        android:drawableTint="@color/bleuGris"
         android:drawablePadding="15dp" />
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/camembert"
         android:layout_width="398dp"
-        android:layout_height="460dp">
+        android:layout_height="460dp"
+        android:backgroundTint="@color/black">
+
 
     </com.github.mikephil.charting.charts.PieChart>
 
@@ -89,11 +91,11 @@
         android:layout_width="wrap_content"
         android:layout_height="58dp"
         android:layout_marginLeft="300dp"
-        android:background="@drawable/round_button"
+        android:backgroundTint="@color/white"
         android:padding="12dp"
         android:text="+"
-        android:textColor="@android:color/white"
-        android:textSize="24sp" />
+        android:textColor="@color/grey"
+        android:textSize="25sp" />
 
 
 </LinearLayout>
