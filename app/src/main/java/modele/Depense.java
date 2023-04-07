@@ -46,6 +46,16 @@ public class Depense implements Serializable {
         this.cheminimage = cheminimage ;
     }
 
+    public Depense( int depenseId , String date, double montant, int userId, int categorieId, String descriptionDepense,String cheminimage) {
+        DepenseId = depenseId;
+        this.date = date;
+        this.montant = montant;
+        UserId = userId;
+        CategorieId = categorieId;
+        this.descriptionDepense = descriptionDepense;
+        this.cheminimage = cheminimage ;
+    }
+
 
     public Depense(int depenseId, String date, double montant,String descriptionDepense) {
         DepenseId = depenseId;

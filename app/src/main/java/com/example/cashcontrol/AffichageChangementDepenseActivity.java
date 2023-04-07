@@ -1,74 +1,277 @@
 package com.example.cashcontrol;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Calendar;
 
 import BDD.DatabaseDepense;
+import BDD.FourniseurHandler;
+import BDD.FournisseurExecutor;
 import modele.Depense;
+import utilitaires.DateUtil;
 
-public class AffichageChangementDepenseActivity  extends AppCompatActivity {
+public class AffichageChangementDepenseActivity extends AppCompatActivity  implements DatePickerFragment.OnDateSetListener {
 
-    private EditText card_description;
-    private EditText card_prix;
-    private EditText card_date;
+    private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
+    private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
 
-    private Button button_sauvegarder;
-    private DatabaseDepense databaseDepense;
+    private static final int REQUEST_ID_IMAGE_CAPTURE = 990;
+    private Spinner listCategorie;
 
-    private Depense depenseAmodifier;
+    private Button modifierDepensebtn;
+    private Button photoBtn;
+
+    private EditText montant ;
+
+    private EditText description ;
+    private EditText date ;
+
+    private String nomFichier ;
+    private  String [] dateSelectionner;
+    private int id_Utilisateur_Courant;
+
+    private DatabaseDepense dbDepense;
+
+    private int idCategorie ;
+
+    private ImageView depenseImage;
+
+    private Handler handler;
+
+    private int idDepense;
+
+    private Depense ancienneDepense;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.affichage_changement_depense);
 
+        this.listCategorie = findViewById(R.id.category_spinner);
+        this.modifierDepensebtn = (Button) (findViewById(R.id.button_ajout_depense));
+        this.photoBtn = findViewById(R.id.button_prendre_photo);
+        this.montant = findViewById(R.id.edittext_montant_depense);
+        this.description = (EditText) (findViewById(R.id.edittext_description_depense));
+        this.date = findViewById(R.id.date_picker_depense);
+        this.dbDepense = new DatabaseDepense(this);
+        this.depenseImage = findViewById(R.id.image_depense);
+
+        // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
+        this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
+
         //On recuperer les extra de l'ancienne activité
         Intent intent = getIntent();
-        int idDepense  = intent.getIntExtra("idDepense",-1);
+        idDepense  = intent.getIntExtra("idDepense",-1);
         System.out.println("l'id de la depense est : " + idDepense);
 
-        //Récrupération des Widgets
-        this.card_description = findViewById(R.id.card_description);
-        this.card_prix = findViewById(R.id.card_prix);
-        this.card_date = findViewById(R.id.card_date);
-        this.button_sauvegarder = findViewById(R.id.button_sauvegarder);
+        // Initialize dateSelectionner to current date
+        Calendar calendar = Calendar.getInstance();
+        dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
 
-        this.databaseDepense = new DatabaseDepense(this);
-        this.depenseAmodifier = databaseDepense.getDepense(idDepense);
+        ancienneDepense = dbDepense.getDepense(idDepense);
 
-        this.card_description.setText(depenseAmodifier.getDescriptionDepense());
-        this.card_prix.setText(Double.toString(depenseAmodifier.getMontant()));
-        this.card_date.setText(depenseAmodifier.getDate());
+        //On creer le handler avec le execute
+        if(handler == null)
+            handler = FourniseurHandler.creerHandler();
 
-        button_sauvegarder.setOnClickListener(view -> {
-            miseAJourDepense(idDepense);
+        preremplirChamp();
+
+        listCategorie.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                // Récupération de l'objet sélectionné dans le Spinner
+                Object selectedItem = adapterView.getItemAtPosition(position);
+
+                // Récupération de l'ID de l'objet sélectionné
+                int selectedItemId = (int) id;
+
+                // Utilisation de l'ID pour effectuer des actions
+                idCategorie = selectedItemId ;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // Code à exécuter lorsque aucun élément n'est sélectionné
+            }
         });
+
+
+        this.modifierDepensebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Depense depense= updatedepense();
+                Toast.makeText(getApplicationContext(), "Votre dépense " + depense.getDescriptionDepense() + " d'un montant de " + depense.getMontant() + " a été modifié avec succés 👍🏼 " , Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AffichageChangementDepenseActivity.this , HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        this.photoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                captureImage();
+            }
+        });
+
+        setPickersFromView();
 
     }
 
-    private void miseAJourDepense(int idDepense){
+    private Depense updatedepense(){
+
         try {
-            String date = card_date.getText().toString();
-            double montant = Double.valueOf(card_prix.getText().toString());
-            String description = card_description.getText().toString();
+            //On récupere les infos saisit par l'utilisateur
+            int idUser = this.id_Utilisateur_Courant;
+            String description =  this.description.getText().toString();
+            double montant = Double.parseDouble(this.montant.getText().toString());
+            int idCategorie =this.idCategorie ;
+            String cheminimage = nomFichier  ;
+            String date = this.dateSelectionner[2] + "-" + this.dateSelectionner[1] + "-" + this.dateSelectionner[0] ;
 
-            Depense nouvelleDepense = new Depense();
-            nouvelleDepense.setDepenseId(idDepense);
-            nouvelleDepense.setDescriptionDepense(description);
-            nouvelleDepense.setMontant(montant);
-            nouvelleDepense.setDate(date);
+            Depense depense = new Depense(date,montant,idUser,idCategorie,description,cheminimage);
 
-            //rajouter la catégorie a modifier si jamais
-            System.out.println("voici la nv depense" + nouvelleDepense);
-            databaseDepense.updateDepense(nouvelleDepense);
+            //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
+            FournisseurExecutor.creerExecutor().execute(()->{
+                dbDepense.updateDepense(depense,idDepense);
+            });
+
+            return  depense;
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
 
+
     }
 
+    private void saveImage(Bitmap bp, String nomFichier){
+        try  { // use the absolute file path here
+            FileOutputStream out = this.openFileOutput(nomFichier, MODE_PRIVATE);
+            bp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+            out.close();
+            Toast.makeText(this,"Image Sauvegarder !",Toast.LENGTH_SHORT).show();
+            // PNG is a lossless format, the compression factor (100) is ignored
+        } catch (IOException e) {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+    private void captureImage() {
+        // Create an implicit intent, for image capture.
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Start camera and wait for the results.
+        this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //Camera
+        if (requestCode == REQUEST_ID_IMAGE_CAPTURE) {
+            if (resultCode == RESULT_OK) {
+                Bitmap bp = (Bitmap) data.getExtras().get("data");
+                this.depenseImage.setImageBitmap(bp);
+
+                //Image sauvegarder dans le fichier
+                String i = String.valueOf(Math.random() +10);
+                nomFichier = description.getText().toString() + i ;
+
+                saveImage(bp,nomFichier);
+
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Action canceled", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Action Failed", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /*
+     * Récupère les vues pour les pickers de date et les initialise en ajoutant les listeners correspondants.
+     * Cette fonction doit être appelée dans la méthode onCreate de l'activité.
+     */
+    private void setPickersFromView() {
+        date.setOnClickListener(this::showDatePicker);
+
+    }
+
+
+    /*
+     * Affiche la pop-up de choix de date lorsqu'on clique sur le champ de date correspondant.
+     * @param view La vue correspondant au champ de date.
+     */
+    private void showDatePicker(@NonNull View view) {
+        final DialogFragment datePickerFragment = new DatePickerFragment();
+        datePickerFragment.show(this.getSupportFragmentManager(), DatePickerFragment.TAG);
+    }
+
+
+    @Override
+    public void onDateSet(int annee, int mois, int jour) {
+
+        dateSelectionner[0] =  DateUtil.getFormattedDateTimeComponent(jour);
+        dateSelectionner[1] =  DateUtil.getFormattedDateTimeComponent(mois);
+        dateSelectionner[2] =  DateUtil.getFormattedDateTimeComponent(annee);
+
+
+        String dateSelectionner = jour + "/" + mois + "/" +  annee;
+        date.setText(dateSelectionner);
+
+
+
+    }
+
+    private void preremplirChamp(){
+        listCategorie.setSelection(idCategorie);
+        String i = String.valueOf(ancienneDepense.getMontant());
+        montant.setText(i);
+        description.setText(ancienneDepense.getDescriptionDepense());
+        date.setText(ancienneDepense.getDate());
+
+        System.out.println("ahahahah" + ancienneDepense.getCheminimage());
+        if(ancienneDepense.getCheminimage()!=null){
+            System.out.println("je rentre");
+            Bitmap imageDepense = readImage(ancienneDepense.getCheminimage());
+            depenseImage.setImageBitmap(imageDepense);
+        }
+
+    }
+
+    private Bitmap readImage(String nomFichier) {
+        Bitmap bitmap = null;
+        try {
+            // Open stream to read file.
+            FileInputStream in = new FileInputStream(this.getFilesDir()+"/"+nomFichier);
+
+            // Decode file input stream into a bitmap.
+            bitmap = BitmapFactory.decodeStream(in);
+
+            // Close the input stream.
+            in.close();
+
+        } catch (Exception e) {
+            Toast.makeText(this,"Error Impossible c'est une nouvelle instance de l'app:"+ e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+        return bitmap;
+    }
 }
