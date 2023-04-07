@@ -50,6 +50,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private Button mois_button;
     private Button annee_button;
 
+    private Button ajouterDepenseBtn ;
+
     private int boutonActuel;
 
     @Override

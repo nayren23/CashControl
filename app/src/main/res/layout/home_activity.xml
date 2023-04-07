@@ -79,9 +79,8 @@
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/camembert"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_width="398dp"
+        android:layout_height="460dp">
 
     </com.github.mikephil.charting.charts.PieChart>
 
