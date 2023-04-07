@@ -92,27 +92,27 @@ public class DatabaseDepense extends DatabasePrincipale {
             int count = this.getDepenseCount();
             if (count == 0) {
                 //Test
-                Depense depense1 = new Depense(0, "2022-01-08", 888, 1, 1, "Solde");
-                Depense depense2 = new Depense(1, "2022-05-02", 200, 1, 2, "Disney");
-                Depense depense3 = new Depense(2, "2022-01-13", 300, 1, 3, "Cinéma");
-                Depense depense4 = new Depense(3, "2022-01-24", 400, 1, 4, "Navigo");
-                Depense depense5 = new Depense(4, "2022-01-08", 500, 1, 5, "Casserole");
-                Depense depense6 = new Depense(5, "2022-01-16", 600, 1, 6, "Ursaaf");
-                Depense depense7 = new Depense(6, "2022-01-07", 700, 1, 7, "Loyer");
-                Depense depense8 = new Depense(7, "2022-01-28", 800, 1, 8, "Doliprane");
-                Depense depense9 = new Depense(8, "2022-01-09", 900, 1, 0, "Kebab");
-                Depense depense10 = new Depense(9, "2022-01-10", 150, 1, 1, "Jean");
-                Depense depense11 = new Depense(10, "2022-01-10", 25, 1, 1, "Tee-shirt");
-                Depense depense12 = new Depense(11, "2021-01-15", 12.5, 1, 1, "Claquette");
-                Depense depense13 = new Depense(12, "2022-01-01", 88.99, 1, 1, "Solde mamam");
-                Depense depense14 = new Depense(13, "2022-01-01", 76.99, 1, 1, "Casquette");
-                Depense depense15 = new Depense(14, "2022-01-01", 87.34, 1, 1, "Tong");
-                Depense depense16 = new Depense(15, "2022-01-01", 10000.99, 1, 1, "Clavier Gamer");
-                Depense depense17 = new Depense(16, "2023-01-01", 10000.99, 1, 1, "Clavier Gamer");
-                Depense depense18 = new Depense(17, "2023-04-07", 10000.99, 1, 1, "Clavier Gamer");
-                Depense depense19 = new Depense(18, "2023-04-06", 10000.99, 1, 1, "Clavier Gamer");
-                Depense depense20 = new Depense(19, "2023-04-06", 10000.99, 1, 7, "Loyer");
-                Depense depense21 = new Depense(20, "2023-04-21", 10000.99, 1, 6, "Ursaaf");
+                Depense depense1 = new Depense(0, "2023-01-08", 888.20, 1, 1, "Solde");
+                Depense depense2 = new Depense(1, "2023-05-02", 200, 1, 2, "Disney");
+                Depense depense3 = new Depense(2, "2023-01-13", 300, 1, 3, "Cinéma");
+                Depense depense4 = new Depense(3, "2023-01-24", 400, 1, 4, "Navigo");
+                Depense depense5 = new Depense(4, "2023-01-08", 500, 1, 5, "Casserole");
+                Depense depense6 = new Depense(5, "2023-01-16", 600, 1, 6, "Ursaaf");
+                Depense depense7 = new Depense(6, "2023-01-07", 700, 1, 7, "Loyer");
+                Depense depense8 = new Depense(7, "2023-01-28", 800, 1, 8, "Doliprane");
+                Depense depense9 = new Depense(8, "2023-01-09", 900, 1, 0, "Kebab");
+                Depense depense10 = new Depense(9, "2023-01-10", 150, 1, 1, "Jean");
+                Depense depense11 = new Depense(10, "2023-01-10", 25, 1, 1, "Tee-shirt");
+                Depense depense12 = new Depense(11, "2023-01-15", 12.5, 1, 1, "Claquette");
+                Depense depense13 = new Depense(12, "2023-01-01", 88.99, 1, 1, "Solde mamam");
+                Depense depense14 = new Depense(13, "2023-01-01", 76.99, 1, 1, "Casquette");
+                Depense depense15 = new Depense(14, "2023-01-01", 87.34, 1, 1, "Tong");
+                Depense depense16 = new Depense(15, "2023-01-01", 100.99, 1, 1, "Clavier Gamer");
+                Depense depense17 = new Depense(16, "2023-01-01", 100.9, 1, 1, "Clavier Gamer");
+                Depense depense18 = new Depense(17, "2023-04-07", 120.19, 1, 1, "Clavier Gamer");
+                Depense depense19 = new Depense(18, "2023-04-06", 180.89, 1, 1, "Clavier Gamer");
+                Depense depense20 = new Depense(19, "2023-04-06", 190.79, 1, 7, "Loyer");
+                Depense depense21 = new Depense(20, "2023-04-21", 10.19, 1, 6, "Ursaaf");
 
 
                 addDepense(depense1);
@@ -386,6 +386,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                     depense.setMontant(Double.parseDouble((cursor.getString(2))));
                     depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
                     depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
 
                     // Adding depense to list
                     depenseList.add(depense);
@@ -412,7 +413,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                     " AND strftime('%m-%d', " + COLUMN_DATE_DEPENSE + ") = strftime('%m-%d', 'now')";
 
             SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.format("%02d", LocalDate.now().getDayOfMonth())});
+                Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.format("%02d", Calendar.getInstance().get(Calendar.DAY_OF_MONTH))});
 
             // looping through all rows and adding to list
             if (cursor.moveToFirst()) {
@@ -423,6 +424,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                     depense.setMontant(Double.parseDouble((cursor.getString(2))));
                     depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
                     depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
 
                     // Adding depense to list
                     depenseList.add(depense);
@@ -469,6 +471,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                     depense.setMontant(Double.parseDouble((cursor.getString(2))));
                     depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
                     depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
 
                     // Add depense to list
                     depenseList.add(depense);
@@ -518,6 +521,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                     depense.setMontant(Double.parseDouble((cursor.getString(2))));
                     depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
                     depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
 
                     // Ajouter la dépense à la liste
                     depenseList.add(depense);
@@ -555,6 +559,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                 depense.setMontant(Double.parseDouble(cursor.getString(2)));
                 depense.setCategorieId(Integer.parseInt(cursor.getString(3)));
                 depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                depense.setDescriptionDepense(cursor.getString(5));
 
                 // Adding depense to list
                 depenseList.add(depense);
@@ -564,4 +569,208 @@ public class DatabaseDepense extends DatabasePrincipale {
         cursor.close();
         return depenseList;
     }
+
+    //Fonction modifier
+
+    public ArrayList<Depense> getDepensesByUserIdAndCurrentMonthAndIdCategorie(int userId, int idCategorie) {
+        Log.i(TAG, "MyDatabaseHelper.getDepensesByUserIdAndCurrentMonth for user " + userId);
+
+        try {
+            ArrayList<Depense> depenseList = new ArrayList<>();
+
+            // Select Query
+            String selectQuery = "SELECT * FROM " + TABLE_DEPENSE +
+                    " WHERE " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" +
+                    " AND " + COLUMN_ID_CATEGORIE + " = ?" +
+                    " AND strftime('%m', " + COLUMN_DATE_DEPENSE + ") = strftime('%m', 'now')";
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(idCategorie)});
+
+            // looping through all rows and adding to list
+            if (cursor.moveToFirst()) {
+                do {
+                    Depense depense = new Depense();
+                    depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
+                    depense.setDate((cursor.getString(1)));
+                    depense.setMontant(Double.parseDouble((cursor.getString(2))));
+                    depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
+                    depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
+
+                    // Adding depense to list
+                    depenseList.add(depense);
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+            return depenseList;
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Depense> getDepensesParUserIdEtJourActuelAndIdCategorie(int userId, int idCategorie) {
+        Log.i(TAG, "MyDatabaseHelper.getDepensesParUserIdEtJourActuel for user " + userId);
+
+        try {
+            ArrayList<Depense> depenseList = new ArrayList<>();
+
+            // Select Query
+            String selectQuery = "SELECT * FROM " + TABLE_DEPENSE +
+                    " WHERE " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" +
+                    " AND " + COLUMN_ID_CATEGORIE + " = ?" +
+                    " AND strftime('%d', " + COLUMN_DATE_DEPENSE + ") = ?" +
+                    " AND strftime('%m-%d', " + COLUMN_DATE_DEPENSE + ") = strftime('%m-%d', 'now')";
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(idCategorie), String.format("%02d", Calendar.getInstance().get(Calendar.DAY_OF_MONTH))});
+
+            // looping through all rows and adding to list
+            if (cursor.moveToFirst()) {
+                do {
+                    Depense depense = new Depense();
+                    depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
+                    depense.setDate((cursor.getString(1)));
+                    depense.setMontant(Double.parseDouble((cursor.getString(2))));
+                    depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
+                    depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
+
+                    // Adding depense to list
+                    depenseList.add(depense);
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+            return depenseList;
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public ArrayList<Depense> getDepensesSemaineActuelleAndIdCategorie(int userId, int idCategorie) {
+        Log.i(TAG, "MyDatabaseHelper.getDepensesSemaineActuelle for user " + userId);
+
+        try {
+            ArrayList<Depense> depenseList = new ArrayList<>();
+
+            // Get the current day of the week (0-6, where 0 is Sunday)
+            Calendar calendar = Calendar.getInstance();
+            int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+
+            // Calculate the date of the first day of the week (Sunday)
+            calendar.add(Calendar.DAY_OF_WEEK, -currentDayOfWeek);
+            String firstDayOfWeek = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+
+            // Select Query
+            String selectQuery = "SELECT * FROM " + TABLE_DEPENSE +
+                    " WHERE " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" +
+                    " AND " + COLUMN_DATE_DEPENSE + " >= date('" + firstDayOfWeek + "')" +
+                    " AND " + COLUMN_DATE_DEPENSE + " <= date('now')" +
+                    " AND " + COLUMN_ID_CATEGORIE + " = ?";
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(idCategorie)});
+
+            // Loop through all rows and add to list
+            if (cursor.moveToFirst()) {
+                do {
+                    Depense depense = new Depense();
+                    depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
+                    depense.setDate((cursor.getString(1)));
+                    depense.setMontant(Double.parseDouble((cursor.getString(2))));
+                    depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
+                    depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
+
+                    // Add depense to list
+                    depenseList.add(depense);
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+            return depenseList;
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public ArrayList<Depense> getDepensesByUserIdAndCurrentYearAndIdCategorie(int userId, int idCategorie) {
+        Log.i(TAG, "MyDatabaseHelper.getDepensesByUserIdAndCurrentYear for user " + userId);
+
+        ArrayList<Depense> depenseList = new ArrayList<>();
+
+        try {
+            // Récupérer l'année en cours
+            Calendar cal = Calendar.getInstance();
+            int currentYear = cal.get(Calendar.YEAR);
+
+            // Requête SELECT
+            String selectQuery = "SELECT * FROM " + TABLE_DEPENSE +
+                    " WHERE " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" +
+                    " AND strftime('%Y', " + COLUMN_DATE_DEPENSE + ") = ?" +
+                    " AND " + COLUMN_ID_CATEGORIE + " = ?";
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(currentYear), String.valueOf(idCategorie)});
+            Log.i(TAG, "MyDatabaseHelper.getDepensesByUserIdAndCurrentYear: nombre de lignes " + cursor.getCount());
+
+            // Boucle à travers toutes les lignes et ajoute chaque dépense à la liste
+            if (cursor.moveToFirst()) {
+                do {
+                    Depense depense = new Depense();
+                    depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
+                    depense.setDate((cursor.getString(1)));
+                    depense.setMontant(Double.parseDouble((cursor.getString(2))));
+                    depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
+                    depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                    depense.setDescriptionDepense(cursor.getString(5));
+
+                    // Ajouter la dépense à la liste
+                    depenseList.add(depense);
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
+
+        return depenseList;
+    }
+
+
+    public ArrayList<Depense> getDepensesParUserIdDateCompleteAndIdCategorie(int userId, String jour, String mois, String annee, int idCategorie) {
+        ArrayList<Depense> depenseList = new ArrayList<>();
+
+        // Select Query
+        String selectQuery = "SELECT * FROM " + TABLE_DEPENSE +
+                " WHERE " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" +
+                " AND strftime('%d', " + COLUMN_DATE_DEPENSE + ") = ?" +
+                " AND strftime('%m', " + COLUMN_DATE_DEPENSE + ") = ?" +
+                " AND strftime('%Y', " + COLUMN_DATE_DEPENSE + ") = ?" +
+                " AND " + COLUMN_ID_CATEGORIE + " = ?";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), jour, mois, annee, String.valueOf(idCategorie)});
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Depense depense = new Depense();
+                depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
+                depense.setDate(cursor.getString(1));
+                depense.setMontant(Double.parseDouble(cursor.getString(2)));
+                depense.setCategorieId(Integer.parseInt(cursor.getString(3)));
+                depense.setUserId(Integer.parseInt(cursor.getString(4)));
+                depense.setDescriptionDepense(cursor.getString(5));
+
+                // Adding depense to list
+                depenseList.add(depense);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return depenseList;
+    }
+
 }

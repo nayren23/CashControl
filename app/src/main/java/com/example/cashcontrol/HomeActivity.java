@@ -41,7 +41,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private DatabaseDepense databaseDepense;
     private  PieChart camemberDepense;
     private Handler handler;
-    private int [] dateSelectionner;
+    private String [] dateSelectionner;
     private EditText datePicker;
 
     //Button
@@ -74,7 +74,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // Initialize dateSelectionner to current date
         Calendar calendar = Calendar.getInstance();
-        dateSelectionner = new int[]{calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)};
+        dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
 
         this.datePicker = findViewById(R.id.date_picker);
 
@@ -99,9 +99,20 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 String label = pieEntry.getLabel();
                 float value = pieEntry.getValue();
                 Toast.makeText(getApplicationContext(), "Voici vos dépenses: " + label + " d'un montant de " + value + " €", Toast.LENGTH_SHORT).show();
+
+                // Créer l'objet Bundle
+                Bundle bundle = new Bundle();
+
+                String [] tab1 = new String[2];
+                tab1[0] = label;
+                tab1[1] = String.valueOf(boutonActuel);
+                String[] tab2 = dateSelectionner;
+
+                bundle.putStringArray("tableau1", tab1);
+                bundle.putStringArray("tableau2", tab2);
                 //On démarre une nouvelle activité AffichageDetaillerDepenseActiviy en passant la catégorie sélectionner
                 Intent intent = new Intent(HomeActivity.this, AffichageDetaillerDepenseActiviy.class);
-                intent.putExtra("infoCategorie", label);
+                intent.putExtra("bundle", bundle);
                 startActivity(intent);
             }
 
@@ -165,9 +176,9 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 break;
             case 4://choix date
                 //On  met au bon format par ex un 2 sera changer en 02 (c'est pour la requetes SQL)
-                String jour = DateUtil.getFormattedDateTimeComponent(dateSelectionner[0]);
-                String mois  = DateUtil.getFormattedDateTimeComponent(dateSelectionner[1]);
-                String annee = DateUtil.getFormattedDateTimeComponent(dateSelectionner[2]);
+                String jour = dateSelectionner[0];
+                String mois  =dateSelectionner[1];
+                String annee = dateSelectionner[2];
                 depenses_Utilisateur = databaseDepense.getDepensesParUserIdDateComplete(id_Utilisateur_Courant,jour, mois,annee );
                 break;
             default:
@@ -251,9 +262,11 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
      */
     @Override
     public void onDateSet(int annee, int mois, int jour) {
-        dateSelectionner[0] = jour;
-        dateSelectionner[1] = mois;
-        dateSelectionner[2] = annee;
+
+        dateSelectionner[0] =  DateUtil.getFormattedDateTimeComponent(jour);
+        dateSelectionner[1] =  DateUtil.getFormattedDateTimeComponent(mois);
+        dateSelectionner[2] =  DateUtil.getFormattedDateTimeComponent(annee);
+
 
         String dateSelectionner = jour + "/" + mois + "/" +  annee;
         datePicker.setText(dateSelectionner);
