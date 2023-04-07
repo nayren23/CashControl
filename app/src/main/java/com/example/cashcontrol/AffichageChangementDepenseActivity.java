@@ -83,13 +83,13 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         //On recuperer les extra de l'ancienne activité
         Intent intent = getIntent();
         idDepense  = intent.getIntExtra("idDepense",-1);
-        System.out.println("l'id de la depense est : " + idDepense);
+        ancienneDepense = dbDepense.getDepense(idDepense);
 
         // Initialize dateSelectionner to current date
-        Calendar calendar = Calendar.getInstance();
-        dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
+        String dateStr = ancienneDepense.getDate();
+        String[] parts = dateStr.split("-");
+        dateSelectionner = new String[]{(parts[0]),(parts[1]),(parts[2])};
 
-        ancienneDepense = dbDepense.getDepense(idDepense);
 
         //On creer le handler avec le execute
         if(handler == null)
@@ -117,22 +117,14 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         });
 
 
-        this.modifierDepensebtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Depense depense= updatedepense();
-                Toast.makeText(getApplicationContext(), "Votre dépense " + depense.getDescriptionDepense() + " d'un montant de " + depense.getMontant() + " a été modifié avec succés 👍🏼 " , Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(AffichageChangementDepenseActivity.this , HomeActivity.class);
-                startActivity(intent);
-            }
+        this.modifierDepensebtn.setOnClickListener(v -> {
+            Depense depense= updatedepense();
+            Toast.makeText(getApplicationContext(), "Votre dépense " + depense.getDescriptionDepense() + " d'un montant de " + depense.getMontant() + " a été modifié avec succés 👍🏼 " , Toast.LENGTH_SHORT).show();
+            Intent intent1 = new Intent(AffichageChangementDepenseActivity.this , HomeActivity.class);
+            startActivity(intent1);
         });
 
-        this.photoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                captureImage();
-            }
-        });
+        this.photoBtn.setOnClickListener(v -> captureImage());
 
         setPickersFromView();
 
@@ -147,9 +139,18 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
             double montant = Double.parseDouble(this.montant.getText().toString());
             int idCategorie =this.idCategorie ;
             String cheminimage = nomFichier  ;
-            String date = this.dateSelectionner[2] + "-" + this.dateSelectionner[1] + "-" + this.dateSelectionner[0] ;
+            dateSelectionner[0] =  DateUtil.getFormattedDateTimeComponent(Integer.parseInt(dateSelectionner[0]));
+            dateSelectionner[1] =  DateUtil.getFormattedDateTimeComponent(Integer.parseInt(dateSelectionner[1]));
+            dateSelectionner[2] =  DateUtil.getFormattedDateTimeComponent(Integer.parseInt(dateSelectionner[2]));
 
-            Depense depense = new Depense(date,montant,idUser,idCategorie,description,cheminimage);
+            String date = this.dateSelectionner[0] + "-" + this.dateSelectionner[1] + "-" + this.dateSelectionner[2] ;
+
+            Depense depense;
+            if(cheminimage ==null){
+                cheminimage = ancienneDepense.getCheminimage();
+            }
+
+            depense = new Depense(date,montant,idUser,idCategorie,description,cheminimage);
 
             //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
             FournisseurExecutor.creerExecutor().execute(()->{
@@ -212,7 +213,6 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
      */
     private void setPickersFromView() {
         date.setOnClickListener(this::showDatePicker);
-
     }
 
 
@@ -236,9 +236,6 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
 
         String dateSelectionner = jour + "/" + mois + "/" +  annee;
         date.setText(dateSelectionner);
-
-
-
     }
 
     private void preremplirChamp(){
@@ -248,9 +245,7 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         description.setText(ancienneDepense.getDescriptionDepense());
         date.setText(ancienneDepense.getDate());
 
-        System.out.println("ahahahah" + ancienneDepense.getCheminimage());
         if(ancienneDepense.getCheminimage()!=null){
-            System.out.println("je rentre");
             Bitmap imageDepense = readImage(ancienneDepense.getCheminimage());
             depenseImage.setImageBitmap(imageDepense);
         }
