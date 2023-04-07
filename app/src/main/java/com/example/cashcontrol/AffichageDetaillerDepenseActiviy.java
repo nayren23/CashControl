@@ -77,6 +77,18 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
             refreshActivity();
         });
 
+        //Pour modifier sa dépense
+        listDepense.setOnItemClickListener((adapterView, view, i, l) -> {
+            int position = listDepense.getPositionForView(view);
+            int idDepense = arrayAdapter.getItem(position).getId();
+            System.out.println("voici l'id de la dépense" + idDepense);
+            Intent intent1 = new Intent(AffichageDetaillerDepenseActiviy.this, AffichageChangementDepenseActivity.class);
+            intent1.putExtra("idDepense",idDepense );
+            startActivity(intent1);
+
+
+        });
+
         listDepense.setOnItemLongClickListener((parent, view, position, id) -> {
             int idDepense = arrayAdapter.getItem(position).getId();
             String nomDepense = arrayAdapter.getItem(position).getDepense().getDescriptionDepense();
