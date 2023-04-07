@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,12 +25,14 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import BDD.DatabaseDepense;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
 import modele.Category;
 import modele.Depense;
+import utilitaires.DateUtil;
 
 public class HomeActivity extends AppCompatActivity implements DatePickerFragment.OnDateSetListener {
 
@@ -45,8 +48,19 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private  PieChart camemberDepense;
     private Handler handler;
 
-    private String dateSelectionner;
+    private int [] dateSelectionner;
     private EditText datePicker;
+
+    //Button
+
+    private Button jour_button;
+    private Button semaine_button;
+    private Button mois_button;
+    private Button annee_button;
+
+    private int boutonActuel;
+
+    private int infoDate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +75,16 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
+
+
+        this.jour_button = findViewById(R.id.jour_button);
+        this.semaine_button = findViewById(R.id.semaine_button);
+        this.mois_button = findViewById(R.id.mois_button);
+        this.annee_button = findViewById(R.id.annee_button);
+
+        // Initialize dateSelectionner to current date
+        Calendar calendar = Calendar.getInstance();
+        dateSelectionner = new int[]{calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)};
 
         this.datePicker = findViewById(R.id.date_picker);
 
@@ -98,6 +122,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         });
 
         setPickersFromView();
+        listenersBoutons();
     }
 
     /**
@@ -146,8 +171,43 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
      * @throws SQLException si une erreur se produit lors de la récupération des données depuis la base de données
      */
     private void refreshActivity() {
+        System.out.println("boutonActuel  " + boutonActuel);
+        switch (boutonActuel) {
+            case 0://jour
+                depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
+                System.out.println("voici la liste retourner getDepensesParUserIdEtDayId " +  depenses_Utilisateur);
+
+                break;
+            case 1://semaine
+                depenses_Utilisateur = databaseDepense.getDepensesSemaineActuelle(id_Utilisateur_Courant);
+                System.out.println("voici la liste retourner getDepensesSemaineJusquauJour " +  depenses_Utilisateur);
+
+                break;
+            case 2://mois
+                int dates = Integer.parseInt(DateUtil.getFormattedDateTimeComponent(infoDate));
+                depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
+                System.out.println("voici la liste retourner getDepensesByUserIdAndMonthId " +  depenses_Utilisateur);
+
+                break;
+            case 3://année
+                depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndYear(id_Utilisateur_Courant,infoDate);
+                System.out.println("voici la liste retourner getDepensesByUserIdAndYear " +  depenses_Utilisateur);
+                break;
+            case 4://choix date
+                String jour = DateUtil.getFormattedDateTimeComponent(dateSelectionner[0]);
+                String mois  = DateUtil.getFormattedDateTimeComponent(dateSelectionner[1]);
+                String annee = DateUtil.getFormattedDateTimeComponent(dateSelectionner[2]);
+
+                depenses_Utilisateur = databaseDepense.getDepensesParUserIdDateComplete(id_Utilisateur_Courant,jour, mois,annee );
+                System.out.println("voici la liste retourner getDepensesParUserIdDateComplete " +  depenses_Utilisateur);
+                break;
+            default:
+                System.out.println("je suis dans le default");
+                depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
+                break;
+        }
+
         // On récupère les nouvelles données de la base de données
-        depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(id_Utilisateur_Courant);
         sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
 
         int sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
@@ -193,22 +253,83 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     /**
      * Fonction pour avoir la date selectionner par l'user
      */
-    
-    // Click listeners des pickers de date, appeller dans le onCreate
+
+    /**
+     * Récupère les vues pour les pickers de date et les initialise en ajoutant les listeners correspondants.
+     * Cette fonction doit être appelée dans la méthode onCreate de l'activité.
+     */
     private void setPickersFromView() {
         datePicker.setOnClickListener(this::showDatePicker);
     }
 
-    // Lorsqu'on clique sur le champ de date, la pop up de choix de date s'ouvre.
+    /**
+     * Affiche la pop-up de choix de date lorsqu'on clique sur le champ de date correspondant.
+     * @param view La vue correspondant au champ de date.
+     */
     private void showDatePicker(@NonNull View view) {
         final DialogFragment datePickerFragment = new DatePickerFragment();
         datePickerFragment.show(this.getSupportFragmentManager(), DatePickerFragment.TAG);
     }
 
+    /**
+     *
+     * Fonction appelée lorsque l'utilisateur a sélectionné une date dans la pop-up de choix de date.
+     * Met à jour le champ de date avec la date sélectionnée et rafraîchit l'activité.
+     * @param annee L'année sélectionnée.
+     * @param mois Le mois sélectionné (janvier = 1).
+     * @param jour Le jour du mois sélectionné.
+     */
     @Override
-    public void onDateSet(int year, int month, int dayOfMonth) {
-        datePicker.setText(dayOfMonth+"/" + month + "/" +  year );
-        dateSelectionner = dayOfMonth + "/" + month + "/" +  year;
+    public void onDateSet(int annee, int mois, int jour) {
+        dateSelectionner[0] = jour;
+        dateSelectionner[1] = mois;
+        dateSelectionner[2] = annee;
+
+        String dateSelectionner = jour + "/" + mois + "/" +  annee;
+
+        datePicker.setText(dateSelectionner);
         System.out.println("voici la date Selectionner " + dateSelectionner );
+        this.boutonActuel = 4;
+        FournisseurExecutor.creerExecutor().execute(()-> {
+
+            refreshActivity();
+        });    }
+
+    public void listenersBoutons (){
+
+        jour_button.setOnClickListener(view -> {
+            Calendar cal = Calendar.getInstance();
+            infoDate = cal.get(Calendar.DAY_OF_MONTH);
+            this.boutonActuel = 0;
+            datePicker.setText(" ");
+
+            FournisseurExecutor.creerExecutor().execute(()-> {
+
+                refreshActivity();
+            });
+        });
+        semaine_button.setOnClickListener(view -> {
+            Calendar cal = Calendar.getInstance();
+            infoDate = cal.get(Calendar.DAY_OF_MONTH);
+            this.boutonActuel = 1;
+            datePicker.setText(" ");
+            refreshActivity();
+
+        });
+        mois_button.setOnClickListener(view -> {
+            Calendar cal = Calendar.getInstance();
+            infoDate = cal.get(Calendar.MONTH); // récupère le mois actuel (0 pour janvier, 1 pour février, etc.)
+            this.boutonActuel = 2;
+            datePicker.setText(" ");
+            refreshActivity();
+
+        });
+        annee_button.setOnClickListener(view -> {
+            Calendar cal = Calendar.getInstance();
+            infoDate = cal.get(Calendar.YEAR);
+            this.boutonActuel = 3;
+            datePicker.setText(" ");
+            refreshActivity();
+        });
     }
 }
