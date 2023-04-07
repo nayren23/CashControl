@@ -112,6 +112,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                 Depense depense18 = new Depense(17, "2023-04-07", 10000.99, 1, 1, "Clavier Gamer");
                 Depense depense19 = new Depense(18, "2023-04-06", 10000.99, 1, 1, "Clavier Gamer");
                 Depense depense20 = new Depense(19, "2023-04-06", 10000.99, 1, 7, "Loyer");
+                Depense depense21 = new Depense(20, "2023-04-21", 10000.99, 1, 6, "Ursaaf");
 
 
                 addDepense(depense1);
@@ -134,6 +135,8 @@ public class DatabaseDepense extends DatabasePrincipale {
                 addDepense(depense18);
                 addDepense(depense19);
                 addDepense(depense20);
+                addDepense(depense21);
+
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -481,21 +484,32 @@ public class DatabaseDepense extends DatabasePrincipale {
 
 
 
-    public ArrayList<Depense> getDepensesByUserIdAndYear(int userId, int annee) {
-        Log.i(TAG, "MyDatabaseHelper.getDepensesByUserIdAndYear for user " + userId + " year " + annee);
+    /**
+     * Récupère toutes les dépenses de l'année en cours pour un utilisateur donné.
+     *
+     * @param userId L'ID de l'utilisateur.
+     * @return Une liste de toutes les dépenses de l'année en cours pour l'utilisateur donné.
+     */
+    public ArrayList<Depense> getDepensesByUserIdAndCurrentYear(int userId) {
+        Log.i(TAG, "MyDatabaseHelper.getDepensesByUserIdAndCurrentYear for user " + userId);
+
+        ArrayList<Depense> depenseList = new ArrayList<>();
 
         try {
-            ArrayList<Depense> depenseList = new ArrayList<>();
+            // Récupérer l'année en cours
+            Calendar cal = Calendar.getInstance();
+            int currentYear = cal.get(Calendar.YEAR);
 
-            // Select Query
+            // Requête SELECT
             String selectQuery = "SELECT * FROM " + TABLE_DEPENSE +
                     " WHERE " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" +
                     " AND strftime('%Y', " + COLUMN_DATE_DEPENSE + ") = ?";
 
             SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(annee)});
-            System.out.println("nombre de lignes " + cursor.getCount());
-            // looping through all rows and adding to list
+            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(currentYear)});
+            Log.i(TAG, "MyDatabaseHelper.getDepensesByUserIdAndCurrentYear: nombre de lignes " + cursor.getCount());
+
+            // Boucle à travers toutes les lignes et ajoute chaque dépense à la liste
             if (cursor.moveToFirst()) {
                 do {
                     Depense depense = new Depense();
@@ -505,17 +519,19 @@ public class DatabaseDepense extends DatabasePrincipale {
                     depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
                     depense.setUserId(Integer.parseInt(cursor.getString(4)));
 
-                    // Adding depense to list
+                    // Ajouter la dépense à la liste
                     depenseList.add(depense);
                 } while (cursor.moveToNext());
             }
 
             cursor.close();
-            return depenseList;
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
+
+        return depenseList;
     }
+
 
     public ArrayList<Depense> getDepensesParUserIdDateComplete(int userId, String jour, String mois, String annee) {
         ArrayList<Depense> depenseList = new ArrayList<>();

@@ -133,6 +133,14 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
      * @param depenses_Utilisateur
      * @return
      */
+    /**
+     * Cette méthode prend en entrée un tableau de dépenses depenses_Utilisateur,
+     * et retourne un tableau de sommes des dépenses par catégorie sommeDepensesParCategorie.
+     * Le tableau retourné a la même longueur que le nombre de catégories possibles,
+     * et chaque case correspond à l'id de la catégorie.
+     * @param depenses_Utilisateur
+     * @return
+     */
     public ArrayList<Double> calculSommeDepensesParCategorie(ArrayList<Depense> depenses_Utilisateur) {
 
         // Déclaration et initialisation du tableau de sommes des dépenses par catégorie
@@ -141,26 +149,17 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             sommeDepensesParCategorie.add(0.0);
         }
 
-        // Vérification que la liste de dépenses par utilisateur n'est pas nulle
-        if (depenses_Utilisateur == null) {
-            throw new IllegalArgumentException("La liste de dépenses par utilisateur ne peut pas être nulle");
-        }
-
-        // Parcours du tableau de dépenses et calcul des sommes par catégorie
+        // Calcul de la somme des dépenses par catégorie
         for (Depense depense : depenses_Utilisateur) {
-            // Vérification que la dépense n'est pas nulle
-            if (depense == null) {
-                throw new IllegalArgumentException("La dépense ne peut pas être nulle");
-            }
-            int indiceCategorie = depense.getCategorieId();
-            double somme = sommeDepensesParCategorie.get(indiceCategorie) + depense.getMontant();
-            sommeDepensesParCategorie.set(indiceCategorie, somme);
+            int idCategorie = depense.getCategorieId();
+            double montant = depense.getMontant();
+            double somme = sommeDepensesParCategorie.get(idCategorie);
+            sommeDepensesParCategorie.set(idCategorie, somme + montant);
         }
 
-
-        // Retourne le tableau de sommes des dépenses par catégorie
         return sommeDepensesParCategorie;
     }
+
 
     /**
      * L'encapsuler dans un thread
@@ -171,38 +170,27 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
      * @throws SQLException si une erreur se produit lors de la récupération des données depuis la base de données
      */
     private void refreshActivity() {
-        System.out.println("boutonActuel  " + boutonActuel);
         switch (boutonActuel) {
             case 0://jour
                 depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
-                System.out.println("voici la liste retourner getDepensesParUserIdEtDayId " +  depenses_Utilisateur);
-
                 break;
             case 1://semaine
                 depenses_Utilisateur = databaseDepense.getDepensesSemaineActuelle(id_Utilisateur_Courant);
-                System.out.println("voici la liste retourner getDepensesSemaineJusquauJour " +  depenses_Utilisateur);
-
                 break;
             case 2://mois
-                int dates = Integer.parseInt(DateUtil.getFormattedDateTimeComponent(infoDate));
                 depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
-                System.out.println("voici la liste retourner getDepensesByUserIdAndMonthId " +  depenses_Utilisateur);
-
                 break;
             case 3://année
-                depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndYear(id_Utilisateur_Courant,infoDate);
-                System.out.println("voici la liste retourner getDepensesByUserIdAndYear " +  depenses_Utilisateur);
+                depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentYear(id_Utilisateur_Courant);
                 break;
             case 4://choix date
+                //On  met au bon format par ex un 2 sera changer en 02 (c'est pour la requetes SQL)
                 String jour = DateUtil.getFormattedDateTimeComponent(dateSelectionner[0]);
                 String mois  = DateUtil.getFormattedDateTimeComponent(dateSelectionner[1]);
                 String annee = DateUtil.getFormattedDateTimeComponent(dateSelectionner[2]);
-
                 depenses_Utilisateur = databaseDepense.getDepensesParUserIdDateComplete(id_Utilisateur_Courant,jour, mois,annee );
-                System.out.println("voici la liste retourner getDepensesParUserIdDateComplete " +  depenses_Utilisateur);
                 break;
             default:
-                System.out.println("je suis dans le default");
                 depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
                 break;
         }
@@ -215,7 +203,10 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         // On met à jour le camembert avec les nouvelles données
         ArrayList<PieEntry> depenseUser = new ArrayList<>();
         for (Category category : Category.values()) {
-            depenseUser.add(new PieEntry(sommeDepensesParCategorie.get(Category.categories.get(category.getLabel())).intValue(), category.getLabel()));
+            float sommeDepense = sommeDepensesParCategorie.get(Category.categories.get(category.getLabel())).intValue();
+            if (sommeDepense > 0) { // On n'ajoute le label que si la somme est supérieure à 0
+                depenseUser.add(new PieEntry(sommeDepense, category.getLabel()));
+            }
         }
         PieDataSet camembertDataSet = new PieDataSet(depenseUser, "Dépense Utilisateurs");
         camembertDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
@@ -235,6 +226,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         });
     }
 
+
     /**
      * Appelée lorsque l'activité est reprise après avoir été mise en pause.
      * Appelle la méthode refreshActivity() pour mettre à jour l'affichage de l'activité.
@@ -250,9 +242,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         });
     }
 
-    /**
-     * Fonction pour avoir la date selectionner par l'user
-     */
+
+     //Liste de Fonction pour avoir la date selectionner par l'user
 
     /**
      * Récupère les vues pour les pickers de date et les initialise en ajoutant les listeners correspondants.
@@ -286,50 +277,56 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         dateSelectionner[2] = annee;
 
         String dateSelectionner = jour + "/" + mois + "/" +  annee;
-
         datePicker.setText(dateSelectionner);
-        System.out.println("voici la date Selectionner " + dateSelectionner );
         this.boutonActuel = 4;
+        //On refresh l'affichage
         FournisseurExecutor.creerExecutor().execute(()-> {
-
-            refreshActivity();
-        });    }
-
-    public void listenersBoutons (){
-
-        jour_button.setOnClickListener(view -> {
-            Calendar cal = Calendar.getInstance();
-            infoDate = cal.get(Calendar.DAY_OF_MONTH);
-            this.boutonActuel = 0;
-            datePicker.setText(" ");
-
-            FournisseurExecutor.creerExecutor().execute(()-> {
-
-                refreshActivity();
-            });
-        });
-        semaine_button.setOnClickListener(view -> {
-            Calendar cal = Calendar.getInstance();
-            infoDate = cal.get(Calendar.DAY_OF_MONTH);
-            this.boutonActuel = 1;
-            datePicker.setText(" ");
-            refreshActivity();
-
-        });
-        mois_button.setOnClickListener(view -> {
-            Calendar cal = Calendar.getInstance();
-            infoDate = cal.get(Calendar.MONTH); // récupère le mois actuel (0 pour janvier, 1 pour février, etc.)
-            this.boutonActuel = 2;
-            datePicker.setText(" ");
-            refreshActivity();
-
-        });
-        annee_button.setOnClickListener(view -> {
-            Calendar cal = Calendar.getInstance();
-            infoDate = cal.get(Calendar.YEAR);
-            this.boutonActuel = 3;
-            datePicker.setText(" ");
             refreshActivity();
         });
     }
+
+    /**
+     * Attache les listeners aux boutons pour la sélection de la date.
+     * Chaque bouton envoie la vue à la méthode onClickDateButton pour le traitement de la sélection de la date.
+     */
+    public void listenersBoutons() {
+        jour_button.setOnClickListener(this::onClickDateButton);
+        semaine_button.setOnClickListener(this::onClickDateButton);
+        mois_button.setOnClickListener(this::onClickDateButton);
+        annee_button.setOnClickListener(this::onClickDateButton);
+    }
+
+    /**
+     * Méthode appelée lorsqu'un bouton de sélection de date est cliqué.
+     * Met à jour la variable infoDate avec la date sélectionnée en fonction du bouton cliqué.
+     * Met à jour la variable boutonActuel avec l'identifiant du bouton cliqué.
+     * Réinitialise le champ datePicker.
+     * Lance la méthode refreshActivity pour rafraîchir l'affichage.
+     * @param view La vue du bouton cliqué.
+     */
+    public void onClickDateButton(View view) {
+        Button button = (Button) view;
+        Calendar cal = Calendar.getInstance();
+
+        switch (button.getId()) {
+            case R.id.jour_button:
+                boutonActuel = 0;
+                break;
+            case R.id.semaine_button:
+                boutonActuel = 1;
+                break;
+            case R.id.mois_button:
+                boutonActuel = 2;
+                break;
+            case R.id.annee_button:
+                infoDate = cal.get(Calendar.YEAR);
+                boutonActuel = 3;
+                break;
+        }
+        datePicker.setText(" ");
+
+        // On refresh l'affichage
+        FournisseurExecutor.creerExecutor().execute(this::refreshActivity);
+    }
+
 }
