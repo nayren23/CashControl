@@ -121,7 +121,7 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
 
         this.depenseList = this.databaseDepense.getDepensesUtilisateurCategorie(this.id_Utilisateur_Courant,this.idCategorie);
         double sommeDepenseCat = Depense.calculerSommeDepenses(depenseList);
-        int nombreDepense = databaseDepense.getDepenseCountCategorie(idCategorie);
+        int nombreDepense = databaseDepense.getDepenseCountCategorie(idCategorie, this.id_Utilisateur_Courant);
 
         //Tout ce qui a bseoin de toucher à la UI va dans le post
         handler.post(() -> {
