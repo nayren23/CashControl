@@ -1,5 +1,7 @@
 package com.example.cashcontrol;
 
+import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -50,6 +52,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private Button mois_button;
     private Button annee_button;
 
+    private Button ajouterDepenseBtn ;
+
     private int boutonActuel;
 
     @Override
@@ -60,6 +64,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         //On creer le handler avec le execute
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
+
+        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
 
         // On crée les dépenses
         this.databaseDepense = new DatabaseDepense(this);
@@ -90,6 +96,15 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             // On fait la somme des dépenses par catégories
             this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
             refreshActivity();
+        });
+
+
+        this.ajouterDepenseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this , AjoutDepenseActivity.class);
+                startActivity(intent);
+            }
         });
 
         this.camemberDepense.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -200,7 +215,11 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             }
         }
         PieDataSet camembertDataSet = new PieDataSet(depenseUser, "Dépense Utilisateurs");
-        camembertDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+         int[] MATERIAL_COLORS ={
+            rgb("#064663"), rgb("#541212"), rgb("#8B9A46"), rgb("#ECB365"), rgb("#041C32"), rgb("#ff5722"), rgb("#795548"),rgb("#E6B325"),rgb("#85586F")
+        };
+
+        camembertDataSet.setColors(MATERIAL_COLORS);
         camembertDataSet.setValueTextColor(Color.BLACK);
         camembertDataSet.setValueTextSize(20f);
         PieData cameData = new PieData(camembertDataSet);

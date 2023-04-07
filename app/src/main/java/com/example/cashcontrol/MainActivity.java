@@ -151,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    
+
     public static String encrypt(String password) {
         String salt = BCrypt.gensalt(WORKLOAD);
         return BCrypt.hashpw(password, salt);
