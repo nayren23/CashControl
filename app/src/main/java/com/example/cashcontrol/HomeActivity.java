@@ -8,12 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -26,7 +23,6 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import BDD.DatabaseDepense;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
@@ -39,20 +35,16 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
 
-    private static final int REQUEST_CODE_MAIN = 23;
-
     private int id_Utilisateur_Courant;
     private ArrayList<Double> sommeDepensesParCategorie;
     private ArrayList<Depense> depenses_Utilisateur;
     private DatabaseDepense databaseDepense;
     private  PieChart camemberDepense;
     private Handler handler;
-
     private int [] dateSelectionner;
     private EditText datePicker;
 
     //Button
-
     private Button jour_button;
     private Button semaine_button;
     private Button mois_button;
@@ -60,7 +52,6 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
     private int boutonActuel;
 
-    private int infoDate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +66,6 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
-
 
         this.jour_button = findViewById(R.id.jour_button);
         this.semaine_button = findViewById(R.id.semaine_button);
@@ -120,19 +110,10 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 // do nothing
             }
         });
-
         setPickersFromView();
         listenersBoutons();
     }
 
-    /**
-     * Cette méthode prend en entrée un tableau de dépenses depenses_Utilisateur,
-     * et retourne un tableau de sommes des dépenses par catégorie sommeDepensesParCategorie.
-     * Le tableau retourné a la même longueur que le nombre de catégories possibles,
-     * et chaque case correspond à l'id de la catégorie.
-     * @param depenses_Utilisateur
-     * @return
-     */
     /**
      * Cette méthode prend en entrée un tableau de dépenses depenses_Utilisateur,
      * et retourne un tableau de sommes des dépenses par catégorie sommeDepensesParCategorie.
@@ -156,7 +137,6 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             double somme = sommeDepensesParCategorie.get(idCategorie);
             sommeDepensesParCategorie.set(idCategorie, somme + montant);
         }
-
         return sommeDepensesParCategorie;
     }
 
@@ -226,7 +206,6 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         });
     }
 
-
     /**
      * Appelée lorsque l'activité est reprise après avoir été mise en pause.
      * Appelle la méthode refreshActivity() pour mettre à jour l'affichage de l'activité.
@@ -242,8 +221,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         });
     }
 
-
-     //Liste de Fonction pour avoir la date selectionner par l'user
+    //Liste de Fonction pour avoir la date selectionner par l'user
 
     /**
      * Récupère les vues pour les pickers de date et les initialise en ajoutant les listeners correspondants.
@@ -252,6 +230,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private void setPickersFromView() {
         datePicker.setOnClickListener(this::showDatePicker);
     }
+
 
     /**
      * Affiche la pop-up de choix de date lorsqu'on clique sur le champ de date correspondant.
@@ -306,8 +285,6 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
      */
     public void onClickDateButton(View view) {
         Button button = (Button) view;
-        Calendar cal = Calendar.getInstance();
-
         switch (button.getId()) {
             case R.id.jour_button:
                 boutonActuel = 0;
@@ -319,7 +296,6 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 boutonActuel = 2;
                 break;
             case R.id.annee_button:
-                infoDate = cal.get(Calendar.YEAR);
                 boutonActuel = 3;
                 break;
         }
@@ -328,5 +304,4 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         // On refresh l'affichage
         FournisseurExecutor.creerExecutor().execute(this::refreshActivity);
     }
-
 }

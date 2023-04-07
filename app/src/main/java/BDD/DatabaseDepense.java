@@ -564,6 +564,4 @@ public class DatabaseDepense extends DatabasePrincipale {
         cursor.close();
         return depenseList;
     }
-
-
 }
