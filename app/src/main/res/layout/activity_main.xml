@@ -77,7 +77,9 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="100dp"
         android:layout_weight="0"
+        android:backgroundTint="@color/black"
         android:text="Prendre une Photo 😍"
+        android:textColor="@color/space"
         />
 
 
@@ -103,6 +105,8 @@
         android:layout_marginLeft="139dp"
         android:layout_marginTop="10dp"
         android:text="S'inscrire 👋🏻"
+        android:textColor="@color/space"
+        android:backgroundTint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText"
@@ -129,6 +133,6 @@
         android:layout_marginBottom="60dp"
         android:clickable="true"
         android:text="Se connecter"
-        android:textColor="@color/blue" />
+        android:textColor="@color/navy" />
 
 </LinearLayout>

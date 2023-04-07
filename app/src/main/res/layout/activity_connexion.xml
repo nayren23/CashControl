@@ -21,6 +21,7 @@
         android:textSize="20dp"
         android:layout_marginBottom="50dp"
         android:textStyle="italic"
+
         android:src="@drawable/logo_cashcontrol"
         />
 
@@ -69,7 +70,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="60dp"
         android:text="S'inscrire"
-        android:textColor="@color/blue"
+        android:textColor="@color/navy"
         android:clickable="true"
         />
 
@@ -82,6 +83,8 @@
         android:layout_marginLeft="150dp"
         android:layout_marginTop="10dp"
         android:text="Connexion"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/space"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_message"

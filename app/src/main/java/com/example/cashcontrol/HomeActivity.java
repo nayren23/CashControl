@@ -1,5 +1,7 @@
 package com.example.cashcontrol;
 
+import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -213,7 +215,11 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             }
         }
         PieDataSet camembertDataSet = new PieDataSet(depenseUser, "Dépense Utilisateurs");
-        camembertDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+         int[] MATERIAL_COLORS ={
+            rgb("#064663"), rgb("#541212"), rgb("#8B9A46"), rgb("#ECB365"), rgb("#041C32"), rgb("#ff5722"), rgb("#795548"),rgb("#E6B325"),rgb("#85586F")
+        };
+
+        camembertDataSet.setColors(MATERIAL_COLORS);
         camembertDataSet.setValueTextColor(Color.BLACK);
         camembertDataSet.setValueTextSize(20f);
         PieData cameData = new PieData(camembertDataSet);
