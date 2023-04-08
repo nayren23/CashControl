@@ -20,9 +20,6 @@ public class Notification implements Serializable {
         this.id_utilisateur = id_utilisateur;
     }
 
-
-
-
     @Override
     public String toString() {
         return "Notification{" +

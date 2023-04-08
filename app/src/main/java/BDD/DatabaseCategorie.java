@@ -4,15 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 import modele.Categorie;
-import modele.Category;
+import utilitaires.Enum_Categories;
 
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
 public class DatabaseCategorie extends DatabasePrincipale {
@@ -61,8 +59,8 @@ public class DatabaseCategorie extends DatabasePrincipale {
     public void createDefaultCategorieIfNeed()  {
         int count = this.getCategorieCount();
         if(count == 0 ) {
-            for (Category category : Category.values()) {
-                int categoryId = Category.categories.get(category.getLabel());
+            for (Enum_Categories category : Enum_Categories.values()) {
+                int categoryId = Enum_Categories.categories.get(category.getLabel());
                 Categorie c = new Categorie(categoryId, category.getLabel());
             }
 

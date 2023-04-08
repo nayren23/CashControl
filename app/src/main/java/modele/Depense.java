@@ -10,22 +10,11 @@ public class Depense implements Serializable {
     private double montant;
     private int UserId;
     private int CategorieId;
-
     private String cheminimage;
-
     private String descriptionDepense;
 
     public Depense() {
         this.DepenseId++;
-    }
-
-
-    public String getCheminimage() {
-        return cheminimage;
-    }
-
-    public void setCheminimage(String cheminimage) {
-        this.cheminimage = cheminimage;
     }
 
     public Depense(int depenseId, String date, double montant, int userId, int categorieId, String descriptionDepense) {
@@ -56,15 +45,6 @@ public class Depense implements Serializable {
         this.cheminimage = cheminimage ;
     }
 
-
-    public Depense( String date, double montant, int userId, int categorieId, String descriptionDepense) {
-        this.date = date;
-        this.montant = montant;
-        UserId = userId;
-        CategorieId = categorieId;
-        this.descriptionDepense = descriptionDepense;
-    }
-
     /**
      * Calcule la somme des montants de toutes les dépenses passées en paramètre.
      * @param depenses La liste des dépenses pour lesquelles on veut calculer la somme des montants.
@@ -76,6 +56,14 @@ public class Depense implements Serializable {
             somme += depense.getMontant();
         }
         return Math.round(somme * 100.0) / 100.0;
+    }
+
+    public String getCheminimage() {
+        return cheminimage;
+    }
+
+    public void setCheminimage(String cheminimage) {
+        this.cheminimage = cheminimage;
     }
 
     public int getDepenseId() {
