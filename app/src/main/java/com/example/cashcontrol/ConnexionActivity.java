@@ -25,10 +25,10 @@ import modele.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class ConnexionActivity extends AppCompatActivity {
+
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
     private Handler handler;
-    private boolean tousremplis;
 
     /*Info User*/
     private EditText mConnexion_champ_identifiant;
@@ -39,11 +39,13 @@ public class ConnexionActivity extends AppCompatActivity {
     /*User*/
     private DatabaseUser dbUser;
 
-    private Boolean verifConnexion;
-
-    private Boolean mdp;
-
+    /*Attributs*/
+    private boolean tousremplis;
+    private boolean verifConnexion;
+    private boolean mdp;
     private String mdpHashDansLaBdd;
+    private String identifiant;
+    private String motdepasse;
 
 
     @Override
@@ -105,14 +107,11 @@ public class ConnexionActivity extends AppCompatActivity {
             });
 
             mButtonConnexion.setOnClickListener(view -> {
-
-                String identifiant = mConnexion_champ_identifiant.getText().toString();
-                String motdepasse = mConnexion_mot_de_passe.getText().toString();
-
+                identifiant = mConnexion_champ_identifiant.getText().toString();
+                motdepasse = mConnexion_mot_de_passe.getText().toString();
                 //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
                 FournisseurExecutor.creerExecutor().execute(() -> {
                     verifConnexion = dbUser.verificationConnexionDansLaBDD(identifiant);
-
                     mdpHashDansLaBdd = dbUser.verifMdpIdentifiant(identifiant);
                     if (!mdpHashDansLaBdd.equals("")) {
                         mdp = checkPassword(motdepasse, dbUser.verifMdpIdentifiant(identifiant));
@@ -123,7 +122,6 @@ public class ConnexionActivity extends AppCompatActivity {
                                 // tout ce qui touche à la UI doit être exécuté dans le main thread
                                 Toast.makeText(getApplicationContext(), "Bienvenue " + identifiant, Toast.LENGTH_SHORT).show();
                             });
-
                             int id = dbUser.retourneIdUser(identifiant);
 
                             if (id != -1) {
@@ -137,29 +135,25 @@ public class ConnexionActivity extends AppCompatActivity {
                                 startActivity(intent);
                             } else {
                                 handler.post(() -> {
-
-                                    Toast.makeText(getApplicationContext(), "Impossible de trouvé l'utilisateur" + identifiant, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Impossible de trouvé l'utilisateur " + identifiant, Toast.LENGTH_SHORT).show();
                                 });
                             }
-
                         } else {
                             handler.post(() -> {
-                                Toast.makeText(getApplicationContext(), "Connexion impossible" + identifiant, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Connexion impossible " + identifiant, Toast.LENGTH_SHORT).show();
                             });
                         }
                     }
-
                     else{
                         handler.post(() -> {
-                            Toast.makeText(getApplicationContext(), "Compte inexistant" + identifiant, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Compte inexistant " + identifiant, Toast.LENGTH_SHORT).show();
                         });
                     }
                 });
             });
-
-
         }
     }
+
 
     public static boolean checkPassword(String password, String hashedPassword) {
         if (hashedPassword == null || !hashedPassword.startsWith("$2a$")) {
