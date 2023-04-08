@@ -162,7 +162,7 @@ public class DatabaseDepense extends DatabasePrincipale {
             values.put(COLUMN_ID_UTILISATEUR_DEPENSE, depense.getUserId());
             values.put(COLUMN_DESCRIPTION_DEPENSE, depense.getDescriptionDepense());
             if (depense.getCheminimage() != null)
-            values.put(COLUMN_CHEMIN_IMAGE , depense.getCheminimage());
+                values.put(COLUMN_CHEMIN_IMAGE , depense.getCheminimage());
 
             db.insert(TABLE_DEPENSE, null, values);
 
@@ -180,12 +180,12 @@ public class DatabaseDepense extends DatabasePrincipale {
             SQLiteDatabase db = this.getReadableDatabase();
 
             Cursor cursor = db.query(TABLE_DEPENSE, new String[]{COLUMN_ID_DEPENSE,
-                            COLUMN_DATE_DEPENSE, COLUMN_MONTANT_DEPENSE, COLUMN_ID_CATEGORIE, COLUMN_ID_UTILISATEUR_DEPENSE, COLUMN_DESCRIPTION_DEPENSE}, COLUMN_ID_DEPENSE + "=?",
+                            COLUMN_DATE_DEPENSE, COLUMN_MONTANT_DEPENSE, COLUMN_ID_UTILISATEUR_DEPENSE ,COLUMN_ID_CATEGORIE , COLUMN_DESCRIPTION_DEPENSE, COLUMN_CHEMIN_IMAGE}, COLUMN_ID_DEPENSE + "=?",
                     new String[]{String.valueOf(id)}, null, null, null, null);
             if (cursor != null)
                 cursor.moveToFirst();
 
-            Depense depense = new Depense(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), Integer.parseInt(cursor.getString(3)), Integer.parseInt(cursor.getString(4)), cursor.getString(5));
+            Depense depense = new Depense(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), Integer.parseInt(cursor.getString(3)), Integer.parseInt(cursor.getString(4)), cursor.getString(5),cursor.getString(6));
             return depense;
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
@@ -236,7 +236,7 @@ public class DatabaseDepense extends DatabasePrincipale {
     }
 
 
-    public int updateDepense(Depense depense) {
+    public int updateDepense(Depense depense, int idDepense) {
         Log.i(TAG, "MyDatabaseHelper.updateDepense ... "  + depense.getDepenseId());
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -249,11 +249,9 @@ public class DatabaseDepense extends DatabasePrincipale {
         values.put(COLUMN_DESCRIPTION_DEPENSE, depense.getDescriptionDepense());
         values.put(COLUMN_CHEMIN_IMAGE , depense.getCheminimage());
 
-
-
         // updating row
         return db.update(TABLE_DEPENSE, values, COLUMN_ID_DEPENSE + " = ?",
-                new String[]{String.valueOf(depense.getDepenseId())});
+                new String[]{String.valueOf(idDepense)});
     }
 
     public void deleteDepense(int depense) {
@@ -424,7 +422,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                     " AND strftime('%m-%d', " + COLUMN_DATE_DEPENSE + ") = strftime('%m-%d', 'now')";
 
             SQLiteDatabase db = this.getWritableDatabase();
-                Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.format("%02d", Calendar.getInstance().get(Calendar.DAY_OF_MONTH))});
+            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.format("%02d", Calendar.getInstance().get(Calendar.DAY_OF_MONTH))});
 
             // looping through all rows and adding to list
             if (cursor.moveToFirst()) {
