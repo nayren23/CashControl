@@ -27,7 +27,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardBackgroundColor="@color/space"
-        android:layout_marginTop="50dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true">
@@ -118,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:backgroundTint="@color/black"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="5dp"
                 android:text="Ajouter" />
 
         </LinearLayout>
