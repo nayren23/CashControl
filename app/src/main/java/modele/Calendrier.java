@@ -7,7 +7,6 @@ public class Calendrier {
     private String nom_evenement;
     private int id_utilisateur;
 
-
     public Calendrier() {
         this.id_calendrier++;
     }
