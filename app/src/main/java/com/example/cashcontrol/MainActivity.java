@@ -31,7 +31,7 @@ import BDD.FournisseurExecutor;
 import modele.User;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ImageActivity {
     private Handler handler;
     /*Info User*/
     private EditText mMain_champ_identifiant;
@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
     /*User*/
     private DatabaseUser dbUser;
-    private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
 
     //spécifie le nombre de tours de hachage à effectuer
     private static final int WORKLOAD = 12;
@@ -172,24 +171,7 @@ public class MainActivity extends AppCompatActivity {
         dbUser.addUser(user);
         Toast.makeText(this, "Utilisateurs Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
     }
-    private void saveImage(Bitmap bp, String nomFichier){
-        try  { // use the absolute file path here
-            FileOutputStream out = this.openFileOutput(nomFichier, MODE_PRIVATE);
-            bp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            out.close();
-            Toast.makeText(this,"Image Sauvegarder !",Toast.LENGTH_SHORT).show();
-            // PNG is a lossless format, the compression factor (100) is ignored
-        } catch (IOException e) {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-    private void captureImage() {
-        // Create an implicit intent, for image capture.
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Start camera and wait for the results.
-        this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
-    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

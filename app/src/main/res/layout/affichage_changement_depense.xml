@@ -16,7 +16,6 @@
         android:text="Modifier ma dépense"
         android:layout_gravity="center"
         android:layout_margin="16dp"
-        android:padding="8dp"
         android:textSize="20dp"
         android:textStyle="italic"
         />
@@ -26,7 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardBackgroundColor="@color/space"
-        android:layout_marginTop="50dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:cardUseCompatPadding="true">
@@ -103,13 +101,29 @@
                 app:srcCompat="@drawable/ic_launcher_foreground"
                 tools:ignore="VectorDrawableCompat" />
 
-            <Button
-                android:id="@+id/button_prendre_photo"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:backgroundTint="@color/black"
-                android:text="Prendre une Photo" />
+                android:orientation="horizontal"
+                android:paddingLeft="20dp">
+
+                <Button
+                    android:id="@+id/button_prendre_photo"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/black"
+                    android:text="Prendre une Photo" />
+
+                <Button
+                    android:id="@+id/button_sauvegarder_image"
+                    android:layout_width="150dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/black"
+                    android:text="Télécharger l'image" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/button_ajout_depense"
@@ -123,15 +137,5 @@
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
-    <Button
-        android:id="@+id/button_sauvegarder"
-        android:layout_width="300dp"
-        android:layout_height="70dp"
-        android:layout_margin="50dp"
-        android:text="Sauvegarder"
-        android:backgroundTint="@color/black"
-        ></Button>
-
 
 </LinearLayout>
