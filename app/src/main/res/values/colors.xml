@@ -5,13 +5,27 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="card_background_color">#394264</color>
     <color name="card_subtitle_color">#FFFFFFFF</color>
     <color name="card_title_color">#FFFFFFFF</color>
     <color name="blue"> #0000FF</color>
+    <color name="grey"> #393E46</color>
+    <color name="Teal"> #00ADB5</color>
+    <color name="space"> #EEEEEE</color>
+    <color name="black">#222831</color>
+    <color name="navy">#16213E</color>
+    <color name="bleuUnPeuClair">#0F3460</color>
+    <color name="bleuGris">#86A3B8</color>
 
-    card_title_color
+    <array name="color_diagramme">
+        <item type="color">#064663</item>
+        <item type="color">#541212</item>
+        <item type="color">#8B9A46</item>
+        <item type="color">#ECB365</item>
+        <item type="color">#041C32</item>
+        <item type="color">#ff5722</item>
+        <item type="color">#795548</item>
+    </array>
 
 </resources>
