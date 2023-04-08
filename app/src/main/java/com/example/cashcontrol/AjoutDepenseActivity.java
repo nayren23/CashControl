@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -58,6 +61,8 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
 
     private Handler handler;
 
+    private boolean tousremplis ;
+
 
 
 
@@ -74,7 +79,8 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
         this.date = findViewById(R.id.date_picker_depense);
         this.dbDepense = new DatabaseDepense(this);
         this.depenseImage = findViewById(R.id.image_depense);
-
+        this.ajoutDepensebtn.setEnabled(false);
+        blocageBouton();
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
 
@@ -99,6 +105,7 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
                 // Utilisation de l'ID pour effectuer des actions
                 idCategorie = selectedItemId ;
             }
+
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -126,7 +133,45 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
 
         setPickersFromView();
 
+
     }
+
+    public void blocageBouton() {
+        //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
+        EditText[] editTexts = {montant, description, date}; // Ajoutez tous vos EditText ici
+        for (EditText editText : editTexts) {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    tousremplis = true;
+                    for (EditText editText : editTexts) {
+                        String value = editText.getText().toString().trim();
+                        if (TextUtils.isEmpty(value)) {
+                            tousremplis = false;
+                        }
+                    }
+                    if (tousremplis) {
+                        ajoutDepensebtn.setEnabled(true);
+                    } else {
+                        ajoutDepensebtn.setEnabled(false);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+
+
+            });
+        }
+    }
+
+
+
 
     private Depense ajouterdepense(){
 
