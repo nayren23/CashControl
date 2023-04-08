@@ -222,11 +222,7 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
         dateSelectionner[1] =  DateUtil.getFormattedDateTimeComponent(mois);
         dateSelectionner[2] =  DateUtil.getFormattedDateTimeComponent(annee);
 
-
         String dateSelectionner = jour + "/" + mois + "/" +  annee;
         date.setText(dateSelectionner);
-
-
-
     }
 }

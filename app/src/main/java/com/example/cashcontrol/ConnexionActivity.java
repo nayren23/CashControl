@@ -1,6 +1,6 @@
 package com.example.cashcontrol;
 
-import static com.example.cashcontrol.MainActivity.encrypt;
+import static com.example.cashcontrol.InscriptionActivity.encrypt;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,17 +10,13 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.io.IOException;
 
 import BDD.DatabaseUser;
 import BDD.FourniseurHandler;
-import BDD.FournisseurExecutor;
-import modele.User;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -65,7 +61,7 @@ public class ConnexionActivity extends AppCompatActivity {
             handler = FourniseurHandler.creerHandler();
 
         mConnexion_text_view_s_inscrire.setOnClickListener(view -> {
-            Intent intent = new Intent(ConnexionActivity.this, MainActivity.class);
+            Intent intent = new Intent(ConnexionActivity.this, InscriptionActivity.class);
             startActivity(intent);
         });
 

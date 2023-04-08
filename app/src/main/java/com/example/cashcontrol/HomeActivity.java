@@ -214,9 +214,12 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 depenseUser.add(new PieEntry(sommeDepense, category.getLabel()));
             }
         }
-        PieDataSet camembertDataSet = new PieDataSet(depenseUser, "Dépense Utilisateurs");
-         int[] MATERIAL_COLORS ={
-            rgb("#064663"), rgb("#541212"), rgb("#8B9A46"), rgb("#ECB365"), rgb("#041C32"), rgb("#ff5722"), rgb("#795548"),rgb("#E6B325"),rgb("#85586F")
+
+        PieDataSet camembertDataSet = new PieDataSet(depenseUser, "");
+
+        //Couleurs des segments du diagramme
+        int[] MATERIAL_COLORS ={
+                rgb("#064663"), rgb("#541212"), rgb("#8B9A46"), rgb("#ECB365"), rgb("#041C32"), rgb("#ff5722"), rgb("#795548"),rgb("#E6B325"),rgb("#85586F")
         };
 
         camembertDataSet.setColors(MATERIAL_COLORS);
