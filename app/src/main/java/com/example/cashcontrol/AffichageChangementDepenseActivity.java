@@ -3,6 +3,7 @@ package com.example.cashcontrol;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -22,6 +23,7 @@ import androidx.fragment.app.DialogFragment;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Calendar;
 
 import BDD.DatabaseDepense;
@@ -30,16 +32,18 @@ import BDD.FournisseurExecutor;
 import modele.Depense;
 import utilitaires.DateUtil;
 
-public class AffichageChangementDepenseActivity extends AppCompatActivity  implements DatePickerFragment.OnDateSetListener {
+public class AffichageChangementDepenseActivity extends ImageActivity implements DatePickerFragment.OnDateSetListener {
 
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
 
-    private static final int REQUEST_ID_IMAGE_CAPTURE = 990;
     private Spinner listCategorie;
 
     private Button modifierDepensebtn;
     private Button photoBtn;
+
+    private Button sauvegarder_imagebtn;
+
     private EditText montant ;
     private EditText description ;
     private EditText date ;
@@ -52,7 +56,6 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
     private Handler handler;
     private int idDepense;
     private Depense ancienneDepense;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,8 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         this.description = (EditText) (findViewById(R.id.edittext_description_depense));
         this.date = findViewById(R.id.date_picker_depense);
         this.depenseImage = findViewById(R.id.image_depense);
+        this.sauvegarder_imagebtn = findViewById(R.id.button_sauvegarder_image);
+
 
         this.dbDepense = new DatabaseDepense(this);
 
@@ -96,10 +101,29 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
             //On separe les elemeents de la date par ex 2023-04-27 deviens 2023   04   27 separer dans un tab
             String[] parts = dateStr.split("-");
             dateSelectionner = new String[]{(parts[2]),(parts[1]),(parts[0])};
+            if(ancienneDepense.getCheminimage()!=null){
+                bitmap = readImage(ancienneDepense.getCheminimage());
+            }
 
             preremplirChamp();
+
         });
 
+
+        sauvegarder_imagebtn.setOnClickListener(view -> {
+            if(this.bitmap !=null){
+                FournisseurExecutor.creerExecutor().execute(()-> {
+                    saveBitmapToFile(bitmap,this);
+                    handler.post(() -> {
+                        Toast.makeText(this, "Le téléchargement de votre image va commencer! 😍", Toast.LENGTH_LONG).show();
+                    });
+                });
+            }
+            else {
+                Toast.makeText(this, "Aucune image n'a été donnée, une erreur est survenue! 😥", Toast.LENGTH_LONG).show();
+
+            }
+        });
 
         listCategorie.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -161,25 +185,6 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         }
     }
 
-    private void saveImage(Bitmap bp, String nomFichier){
-        try  { // use the absolute file path here
-            FileOutputStream out = this.openFileOutput(nomFichier, MODE_PRIVATE);
-            bp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            out.close();
-            Toast.makeText(this,"Image Sauvegarder !",Toast.LENGTH_SHORT).show();
-            // PNG is a lossless format, the compression factor (100) is ignored
-        } catch (IOException e) {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-    private void captureImage() {
-        // Create an implicit intent, for image capture.
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Start camera and wait for the results.
-        this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -187,6 +192,7 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         if (requestCode == REQUEST_ID_IMAGE_CAPTURE) {
             if (resultCode == RESULT_OK) {
                 Bitmap bp = (Bitmap) data.getExtras().get("data");
+                bitmap = bp;
                 this.depenseImage.setImageBitmap(bp);
 
                 //Image sauvegarder dans le fichier
@@ -201,7 +207,22 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
                 Toast.makeText(this, "Action Failed", Toast.LENGTH_LONG).show();
             }
         }
-    }
+            else if (requestCode == SAVE_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
+                Uri uri = data.getData();
+
+                try {
+                    OutputStream outputStream = getContentResolver().openOutputStream(uri);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    outputStream.close();
+                    Toast.makeText(this, "Félicitations, votre image a été téléchargée avec succès! 😉", Toast.LENGTH_LONG).show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
 
     /*
      * Récupère les vues pour les pickers de date et les initialise en ajoutant les listeners correspondants.
@@ -244,21 +265,5 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         }
     }
 
-    private Bitmap readImage(String nomFichier) {
-        Bitmap bitmap = null;
-        try {
-            // Open stream to read file.
-            FileInputStream in = new FileInputStream(this.getFilesDir()+"/"+nomFichier);
 
-            // Decode file input stream into a bitmap.
-            bitmap = BitmapFactory.decodeStream(in);
-
-            // Close the input stream.
-            in.close();
-
-        } catch (Exception e) {
-            Toast.makeText(this,"Error Impossible c'est une nouvelle instance de l'app:"+ e.getMessage(),Toast.LENGTH_SHORT).show();
-        }
-        return bitmap;
-    }
 }

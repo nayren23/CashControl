@@ -33,12 +33,11 @@ import modele.Depense;
 import utilitaires.DateUtil;
 
 
-public class AjoutDepenseActivity extends AppCompatActivity implements DatePickerFragment.OnDateSetListener {
+public class AjoutDepenseActivity extends ImageActivity implements DatePickerFragment.OnDateSetListener {
 
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
 
-    private static final int REQUEST_ID_IMAGE_CAPTURE = 270;
     private Spinner listCategorie;
 
     private Button ajoutDepensebtn;
@@ -198,31 +197,17 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
 
     }
 
-    private void saveImage(Bitmap bp, String nomFichier){
-        try  { // use the absolute file path here
-            FileOutputStream out = this.openFileOutput(nomFichier, MODE_PRIVATE);
-            bp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            out.close();
-            Toast.makeText(this,"Image Sauvegarder !",Toast.LENGTH_SHORT).show();
-            // PNG is a lossless format, the compression factor (100) is ignored
-        } catch (IOException e) {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-    private void captureImage() {
-        // Create an implicit intent, for image capture.
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Start camera and wait for the results.
-        this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Camera
         if (requestCode == REQUEST_ID_IMAGE_CAPTURE) {
+            System.out.println("c'est presque bon chef");
+
             if (resultCode == RESULT_OK) {
+                System.out.println("c'est bon chef");
                 Bitmap bp = (Bitmap) data.getExtras().get("data");
                 this.depenseImage.setImageBitmap(bp);
 

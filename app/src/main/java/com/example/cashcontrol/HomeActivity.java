@@ -219,7 +219,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         //Couleurs des segments du diagramme
         int[] MATERIAL_COLORS ={
-                rgb("#064663"), rgb("#541212"), rgb("#8B9A46"), rgb("#ECB365"), rgb("#041C32"), rgb("#ff5722"), rgb("#795548"),rgb("#E6B325"),rgb("#85586F")
+                rgb("#003366"), rgb("#007A33"), rgb("#FF0000"), rgb("#CCCCCC"), rgb("#FFA500"), rgb("#660099"), rgb("#FFC0CB"),rgb("#ADD8E6"),rgb("#FFFF00")
         };
 
         camembertDataSet.setColors(MATERIAL_COLORS);
