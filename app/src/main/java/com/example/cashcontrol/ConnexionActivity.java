@@ -85,47 +85,58 @@ public class ConnexionActivity extends AppCompatActivity {
                             tousremplis = false;
                         }
                     }
+                    System.out.println(tousremplis);
                     if(tousremplis){
-                        mButtonConnexion.setEnabled(!s.toString().isEmpty());
-
-                        String identifiant = mConnexion_champ_identifiant.getText().toString();
-                        String motdepasse = mConnexion_mot_de_passe.getText().toString();
-
-                        Boolean mdp = checkPassword(motdepasse, encrypt(motdepasse));
-
-                        System.out.println("voici le mot de passe "  + mdp);
-                        mButtonConnexion.setOnClickListener(v -> {
-
-
-                            if (dbUser.verificationConnexionDansLaBDD(identifiant) && mdp) {
-                                Toast.makeText(getApplicationContext(), "Bienvenue " + identifiant, Toast.LENGTH_SHORT).show();
-
-                                int id = dbUser.retourneIdUser(identifiant);
-
-                                if(id != -1){
-                                    //on change la valeur dans les shared preferences
-                                    getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                                            .edit()
-                                            .putInt(SHARED_PREF_USER_INFO_ID, id)
-                                            .apply();
-
-                                    Intent intent = new Intent(ConnexionActivity.this, HomeActivity.class);
-                                    startActivity(intent);
-                                }
-                                else {
-                                    Toast.makeText(getApplicationContext(), "Impossible de trouvé l'utilisateur " + identifiant, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(), "Connexion impossible " + identifiant, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        mButtonConnexion.setEnabled(true);
+                    }
+                    else {
+                        mButtonConnexion.setEnabled(false);
                     }
                 }
                 @Override
                 public void afterTextChanged(Editable s) {
                 }
+
+
+
             });
+
+            mButtonConnexion.setOnClickListener(view -> {
+
+                String identifiant = mConnexion_champ_identifiant.getText().toString();
+                String motdepasse = mConnexion_mot_de_passe.getText().toString();
+
+                System.out.println(identifiant);
+
+
+                Boolean mdp = checkPassword(motdepasse, encrypt(motdepasse));
+
+                System.out.println("voici le mot de passe "  + mdp);
+
+
+                    if (dbUser.verificationConnexionDansLaBDD(identifiant) && mdp) {
+                        Toast.makeText(getApplicationContext(), "Bienvenue " + identifiant, Toast.LENGTH_SHORT).show();
+
+                        int id = dbUser.retourneIdUser(identifiant);
+
+                        if(id != -1){
+                            //on change la valeur dans les shared preferences
+                            getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
+                                    .edit()
+                                    .putInt(SHARED_PREF_USER_INFO_ID, id)
+                                    .apply();
+
+                            Intent intent = new Intent(ConnexionActivity.this, HomeActivity.class);
+                            startActivity(intent);
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Impossible de trouvé l'utilisateur " + identifiant, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Connexion impossible " + identifiant, Toast.LENGTH_SHORT).show();
+                    }
+                });
         }
     }
 
