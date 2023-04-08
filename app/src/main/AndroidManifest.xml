@@ -28,6 +28,12 @@
         </activity>
 
         <activity
+            android:name=".InscriptionActivity"
+            android:exported="false">
+
+        </activity>
+
+        <activity
             android:name=".AffichageDetaillerDepenseActiviy"
             android:exported="false">
 
