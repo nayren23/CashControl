@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -30,12 +33,11 @@ import modele.Depense;
 import utilitaires.DateUtil;
 
 
-public class AjoutDepenseActivity extends AppCompatActivity implements DatePickerFragment.OnDateSetListener {
+public class AjoutDepenseActivity extends ImageActivity implements DatePickerFragment.OnDateSetListener {
 
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
 
-    private static final int REQUEST_ID_IMAGE_CAPTURE = 270;
     private Spinner listCategorie;
 
     private Button ajoutDepensebtn;
@@ -58,6 +60,8 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
 
     private Handler handler;
 
+    private boolean tousremplis ;
+
 
 
 
@@ -74,7 +78,8 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
         this.date = findViewById(R.id.date_picker_depense);
         this.dbDepense = new DatabaseDepense(this);
         this.depenseImage = findViewById(R.id.image_depense);
-
+        this.ajoutDepensebtn.setEnabled(false);
+        blocageBouton();
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
 
@@ -99,6 +104,7 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
                 // Utilisation de l'ID pour effectuer des actions
                 idCategorie = selectedItemId ;
             }
+
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -126,7 +132,45 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
 
         setPickersFromView();
 
+
     }
+
+    public void blocageBouton() {
+        //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
+        EditText[] editTexts = {montant, description, date}; // Ajoutez tous vos EditText ici
+        for (EditText editText : editTexts) {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    tousremplis = true;
+                    for (EditText editText : editTexts) {
+                        String value = editText.getText().toString().trim();
+                        if (TextUtils.isEmpty(value)) {
+                            tousremplis = false;
+                        }
+                    }
+                    if (tousremplis) {
+                        ajoutDepensebtn.setEnabled(true);
+                    } else {
+                        ajoutDepensebtn.setEnabled(false);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+
+
+            });
+        }
+    }
+
+
+
 
     private Depense ajouterdepense(){
 
@@ -153,31 +197,17 @@ public class AjoutDepenseActivity extends AppCompatActivity implements DatePicke
 
     }
 
-    private void saveImage(Bitmap bp, String nomFichier){
-        try  { // use the absolute file path here
-            FileOutputStream out = this.openFileOutput(nomFichier, MODE_PRIVATE);
-            bp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            out.close();
-            Toast.makeText(this,"Image Sauvegarder !",Toast.LENGTH_SHORT).show();
-            // PNG is a lossless format, the compression factor (100) is ignored
-        } catch (IOException e) {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-    private void captureImage() {
-        // Create an implicit intent, for image capture.
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Start camera and wait for the results.
-        this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Camera
         if (requestCode == REQUEST_ID_IMAGE_CAPTURE) {
+            System.out.println("c'est presque bon chef");
+
             if (resultCode == RESULT_OK) {
+                System.out.println("c'est bon chef");
                 Bitmap bp = (Bitmap) data.getExtras().get("data");
                 this.depenseImage.setImageBitmap(bp);
 
