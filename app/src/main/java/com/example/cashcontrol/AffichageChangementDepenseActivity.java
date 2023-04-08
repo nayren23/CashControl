@@ -40,26 +40,17 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
 
     private Button modifierDepensebtn;
     private Button photoBtn;
-
     private EditText montant ;
-
     private EditText description ;
     private EditText date ;
-
     private String nomFichier ;
     private  String [] dateSelectionner;
     private int id_Utilisateur_Courant;
-
     private DatabaseDepense dbDepense;
-
     private int idCategorie ;
-
     private ImageView depenseImage;
-
     private Handler handler;
-
     private int idDepense;
-
     private Depense ancienneDepense;
 
 
@@ -68,14 +59,20 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         super.onCreate(savedInstanceState);
         setContentView(R.layout.affichage_changement_depense);
 
+        //On creer le handler avec le execute
+        if(handler == null)
+            handler = FourniseurHandler.creerHandler();
+
+        //On recupere les Widgets
         this.listCategorie = findViewById(R.id.category_spinner);
         this.modifierDepensebtn = (Button) (findViewById(R.id.button_ajout_depense));
         this.photoBtn = findViewById(R.id.button_prendre_photo);
         this.montant = findViewById(R.id.edittext_montant_depense);
         this.description = (EditText) (findViewById(R.id.edittext_description_depense));
         this.date = findViewById(R.id.date_picker_depense);
-        this.dbDepense = new DatabaseDepense(this);
         this.depenseImage = findViewById(R.id.image_depense);
+
+        this.dbDepense = new DatabaseDepense(this);
 
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
@@ -83,39 +80,41 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         //On recuperer les extra de l'ancienne activité
         Intent intent = getIntent();
         idDepense  = intent.getIntExtra("idDepense",-1);
-        ancienneDepense = dbDepense.getDepense(idDepense);
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            ancienneDepense = dbDepense.getDepense(idDepense);
+        });
 
-        // Initialize dateSelectionner to current date
-        String dateStr = ancienneDepense.getDate();
-        String[] parts = dateStr.split("-");
-        dateSelectionner = new String[]{(parts[0]),(parts[1]),(parts[2])};
+        // post -> ajoute les instructions à la suite de celles du main thread
+        handler.post(() -> {
+            // Notification du main thread pour qu'il mette à jour la UI
+            // tout ce qui touche à la UI doit être exécuté dans le main thread !!!
+            idCategorie = ancienneDepense.getCategorieId();
 
+            // Initialize dateSelectionner to current date
+            String dateStr = ancienneDepense.getDate();
 
-        //On creer le handler avec le execute
-        if(handler == null)
-            handler = FourniseurHandler.creerHandler();
+            //On separe les elemeents de la date par ex 2023-04-27 deviens 2023   04   27 separer dans un tab
+            String[] parts = dateStr.split("-");
+            dateSelectionner = new String[]{(parts[2]),(parts[1]),(parts[0])};
 
-        preremplirChamp();
+            preremplirChamp();
+        });
+
 
         listCategorie.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                // Récupération de l'objet sélectionné dans le Spinner
-                Object selectedItem = adapterView.getItemAtPosition(position);
-
                 // Récupération de l'ID de l'objet sélectionné
                 int selectedItemId = (int) id;
 
                 // Utilisation de l'ID pour effectuer des actions
                 idCategorie = selectedItemId ;
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 // Code à exécuter lorsque aucun élément n'est sélectionné
             }
         });
-
 
         this.modifierDepensebtn.setOnClickListener(v -> {
             Depense depense= updatedepense();
@@ -125,9 +124,7 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         });
 
         this.photoBtn.setOnClickListener(v -> captureImage());
-
         setPickersFromView();
-
     }
 
     private Depense updatedepense(){
@@ -143,7 +140,8 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
             dateSelectionner[1] =  DateUtil.getFormattedDateTimeComponent(Integer.parseInt(dateSelectionner[1]));
             dateSelectionner[2] =  DateUtil.getFormattedDateTimeComponent(Integer.parseInt(dateSelectionner[2]));
 
-            String date = this.dateSelectionner[0] + "-" + this.dateSelectionner[1] + "-" + this.dateSelectionner[2] ;
+            //format 2023-04-21
+            String date = this.dateSelectionner[2] + "-" + this.dateSelectionner[1] + "-" + this.dateSelectionner[0] ;
 
             Depense depense;
             if(cheminimage ==null){
@@ -161,8 +159,6 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     private void saveImage(Bitmap bp, String nomFichier){
@@ -215,7 +211,6 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         date.setOnClickListener(this::showDatePicker);
     }
 
-
     /*
      * Affiche la pop-up de choix de date lorsqu'on clique sur le champ de date correspondant.
      * @param view La vue correspondant au champ de date.
@@ -225,14 +220,12 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
         datePickerFragment.show(this.getSupportFragmentManager(), DatePickerFragment.TAG);
     }
 
-
     @Override
     public void onDateSet(int annee, int mois, int jour) {
 
         dateSelectionner[0] =  DateUtil.getFormattedDateTimeComponent(jour);
         dateSelectionner[1] =  DateUtil.getFormattedDateTimeComponent(mois);
         dateSelectionner[2] =  DateUtil.getFormattedDateTimeComponent(annee);
-
 
         String dateSelectionner = jour + "/" + mois + "/" +  annee;
         date.setText(dateSelectionner);
@@ -249,7 +242,6 @@ public class AffichageChangementDepenseActivity extends AppCompatActivity  imple
             Bitmap imageDepense = readImage(ancienneDepense.getCheminimage());
             depenseImage.setImageBitmap(imageDepense);
         }
-
     }
 
     private Bitmap readImage(String nomFichier) {

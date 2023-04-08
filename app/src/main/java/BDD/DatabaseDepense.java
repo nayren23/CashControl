@@ -180,7 +180,7 @@ public class DatabaseDepense extends DatabasePrincipale {
             SQLiteDatabase db = this.getReadableDatabase();
 
             Cursor cursor = db.query(TABLE_DEPENSE, new String[]{COLUMN_ID_DEPENSE,
-                            COLUMN_DATE_DEPENSE, COLUMN_MONTANT_DEPENSE, COLUMN_ID_CATEGORIE, COLUMN_ID_UTILISATEUR_DEPENSE, COLUMN_DESCRIPTION_DEPENSE, COLUMN_CHEMIN_IMAGE}, COLUMN_ID_DEPENSE + "=?",
+                            COLUMN_DATE_DEPENSE, COLUMN_MONTANT_DEPENSE, COLUMN_ID_UTILISATEUR_DEPENSE ,COLUMN_ID_CATEGORIE , COLUMN_DESCRIPTION_DEPENSE, COLUMN_CHEMIN_IMAGE}, COLUMN_ID_DEPENSE + "=?",
                     new String[]{String.valueOf(id)}, null, null, null, null);
             if (cursor != null)
                 cursor.moveToFirst();

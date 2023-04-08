@@ -11,6 +11,17 @@
     android:orientation="vertical"
     >
 
+    <TextView
+        android:id="@+id/depenseParCateorie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ajouter une dépense"
+        android:layout_gravity="center"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:textSize="20dp"
+        android:textStyle="italic"
+        />
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_view_Affichage_Detailler"
         android:layout_width="match_parent"

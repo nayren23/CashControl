@@ -198,6 +198,3 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
         });
     }
 }
-
-
-
