@@ -85,7 +85,6 @@ public class ConnexionActivity extends AppCompatActivity {
                             tousremplis = false;
                         }
                     }
-                    System.out.println(tousremplis);
                     if(tousremplis){
                         mButtonConnexion.setEnabled(true);
                     }
@@ -106,37 +105,36 @@ public class ConnexionActivity extends AppCompatActivity {
                 String identifiant = mConnexion_champ_identifiant.getText().toString();
                 String motdepasse = mConnexion_mot_de_passe.getText().toString();
 
-                System.out.println(identifiant);
 
 
                 Boolean mdp = checkPassword(motdepasse, encrypt(motdepasse));
 
-                System.out.println("voici le mot de passe "  + mdp);
 
 
-                    if (dbUser.verificationConnexionDansLaBDD(identifiant) && mdp) {
-                        Toast.makeText(getApplicationContext(), "Bienvenue " + identifiant, Toast.LENGTH_SHORT).show();
 
-                        int id = dbUser.retourneIdUser(identifiant);
+                if (dbUser.verificationConnexionDansLaBDD(identifiant) && mdp) {
+                    Toast.makeText(getApplicationContext(), "Bienvenue " + identifiant, Toast.LENGTH_SHORT).show();
 
-                        if(id != -1){
-                            //on change la valeur dans les shared preferences
-                            getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
-                                    .edit()
-                                    .putInt(SHARED_PREF_USER_INFO_ID, id)
-                                    .apply();
+                    int id = dbUser.retourneIdUser(identifiant);
 
-                            Intent intent = new Intent(ConnexionActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                        }
-                        else {
-                            Toast.makeText(getApplicationContext(), "Impossible de trouvé l'utilisateur " + identifiant, Toast.LENGTH_SHORT).show();
-                        }
+                    if(id != -1){
+                        //on change la valeur dans les shared preferences
+                        getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE)
+                                .edit()
+                                .putInt(SHARED_PREF_USER_INFO_ID, id)
+                                .apply();
+
+                        Intent intent = new Intent(ConnexionActivity.this, HomeActivity.class);
+                        startActivity(intent);
                     }
                     else {
-                        Toast.makeText(getApplicationContext(), "Connexion impossible " + identifiant, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Impossible de trouvé l'utilisateur " + identifiant, Toast.LENGTH_SHORT).show();
                     }
-                });
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Connexion impossible " + identifiant, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
