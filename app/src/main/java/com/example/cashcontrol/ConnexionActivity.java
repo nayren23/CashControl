@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import BDD.DatabaseUser;
 import BDD.FourniseurHandler;
+import BDD.FournisseurExecutor;
 
 import org.mindrot.jbcrypt.BCrypt;
 
