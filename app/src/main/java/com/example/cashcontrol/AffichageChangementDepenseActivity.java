@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -57,6 +60,9 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
     private int idDepense;
     private Depense ancienneDepense;
 
+    private boolean tousremplis ;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +81,8 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
         this.date = findViewById(R.id.date_picker_depense);
         this.depenseImage = findViewById(R.id.image_depense);
         this.sauvegarder_imagebtn = findViewById(R.id.button_sauvegarder_image);
-
+        this.modifierDepensebtn.setEnabled(false);
+        blocageBouton();
 
         this.dbDepense = new DatabaseDepense(this);
 
@@ -222,7 +229,39 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
             }
         }
 
+    public void blocageBouton() {
+        //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
+        EditText[] editTexts = {montant, description, date}; // Ajoutez tous vos EditText ici
+        for (EditText editText : editTexts) {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    tousremplis = true;
+                    for (EditText editText : editTexts) {
+                        String value = editText.getText().toString().trim();
+                        if (TextUtils.isEmpty(value)) {
+                            tousremplis = false;
+                        }
+                    }
+                    if (tousremplis) {
+                        modifierDepensebtn.setEnabled(true);
+                    } else {
+                        modifierDepensebtn.setEnabled(false);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+
+
+            });
+        }
+    }
 
     /*
      * Récupère les vues pour les pickers de date et les initialise en ajoutant les listeners correspondants.
