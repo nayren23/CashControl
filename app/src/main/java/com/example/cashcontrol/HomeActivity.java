@@ -20,7 +20,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import java.util.Calendar;
 import BDD.DatabaseDepense;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
-import modele.Category;
+import utilitaires.Enum_Categories;
 import modele.Depense;
 import utilitaires.DateUtil;
 
@@ -152,7 +151,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // Déclaration et initialisation du tableau de sommes des dépenses par catégorie
         ArrayList<Double> sommeDepensesParCategorie = new ArrayList<>();
-        for (int i = 0; i < Category.values().length; i++) {
+        for (int i = 0; i < Enum_Categories.values().length; i++) {
             sommeDepensesParCategorie.add(0.0);
         }
 
@@ -208,8 +207,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On met à jour le camembert avec les nouvelles données
         ArrayList<PieEntry> depenseUser = new ArrayList<>();
-        for (Category category : Category.values()) {
-            float sommeDepense = sommeDepensesParCategorie.get(Category.categories.get(category.getLabel())).intValue();
+        for (Enum_Categories category : Enum_Categories.values()) {
+            float sommeDepense = sommeDepensesParCategorie.get(Enum_Categories.categories.get(category.getLabel())).intValue();
             if (sommeDepense > 0) { // On n'ajoute le label que si la somme est supérieure à 0
                 depenseUser.add(new PieEntry(sommeDepense, category.getLabel()));
             }

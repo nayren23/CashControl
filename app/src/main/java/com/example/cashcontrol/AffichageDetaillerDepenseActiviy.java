@@ -18,9 +18,9 @@ import java.util.List;
 import BDD.DatabaseDepense;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
-import modele.Category;
+import utilitaires.Enum_Categories;
 import modele.Depense;
-import modele.DepenseElement;
+import utilitaires.DepenseElement;
 
 public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
 
@@ -79,7 +79,7 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
         dateSelectionner[2] = tab2[2];
 
         //On recupere l'id de la categorie a partir du String
-        this.idCategorie = Category.categories.get(infoCategorie);
+        this.idCategorie = Enum_Categories.categories.get(infoCategorie);
 
         //Threads pour ne pas bloquer le thread principale
         FournisseurExecutor.creerExecutor().execute(() -> {

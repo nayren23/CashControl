@@ -1,10 +1,8 @@
 package modele;
 
 public class Categorie {
-
     private int CategorieId;
     private String nom;
-
 
     public Categorie() {
         this.CategorieId++;
@@ -14,9 +12,6 @@ public class Categorie {
         this.CategorieId = categorieId;
         this.nom = nom;
     }
-
-
-
 
     public int getCategorieId() {
         return CategorieId;

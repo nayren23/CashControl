@@ -44,7 +44,6 @@ public class ConnexionActivity extends AppCompatActivity {
     private String identifiant;
     private String motdepasse;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +60,6 @@ public class ConnexionActivity extends AppCompatActivity {
         //On creer une instance la BDD user
         dbUser = new DatabaseUser(this);
         dbUser.createDefaultUsersIfNeed();
-
 
         //On creer le handler avec le execute
         if (handler == null)
@@ -99,8 +97,6 @@ public class ConnexionActivity extends AppCompatActivity {
                 @Override
                 public void afterTextChanged(Editable s) {
                 }
-
-
             });
 
             mButtonConnexion.setOnClickListener(view -> {

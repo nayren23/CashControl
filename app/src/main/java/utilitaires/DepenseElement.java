@@ -1,4 +1,6 @@
-package modele;
+package utilitaires;
+
+import modele.Depense;
 
 //Utiliser pour l'arrayAdaptater pour avoir un id non visible par l'user dans la class AffichageDetaillerDepenseActivity
 public class DepenseElement {
@@ -14,7 +16,6 @@ public class DepenseElement {
     public Depense getDepense() {
         return depense;
     }
-
     public int getId() {
         return id;
     }

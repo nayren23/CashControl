@@ -70,5 +70,4 @@ public class DateUtil {
         String convertedDate = dateToString(date);
         return convertedDate + " ";
     }
-
 }

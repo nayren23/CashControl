@@ -1,13 +1,10 @@
 package com.example.cashcontrol;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
@@ -15,21 +12,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.mindrot.jbcrypt.BCrypt;
-
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 import BDD.DatabaseUser;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
 import modele.User;
 
-
-public class InscriptionActivity extends AppCompatActivity {
+public class InscriptionActivity extends ImageActivity {
     private Handler handler;
     /*Info User*/
     private EditText mMain_champ_identifiant;
@@ -40,11 +32,11 @@ public class InscriptionActivity extends AppCompatActivity {
     private ImageView imageUser;
     private Button mSauvegarde_compte;
     private TextView mConnexion_users;
+
     private boolean tousremplis = true;// pour verifier si tous les champs sont remplit
 
     /*User*/
     private DatabaseUser dbUser;
-    private static final int REQUEST_ID_IMAGE_CAPTURE = 100;
 
     //spécifie le nombre de tours de hachage à effectuer
     private static final int WORKLOAD = 12;
@@ -60,20 +52,34 @@ public class InscriptionActivity extends AppCompatActivity {
         this.mMain_champ_numero_telephone = this.findViewById(R.id.main_champ_numero_telephone);
         this.mMain_champ_mot_de_passe = this.findViewById(R.id.main_champ_mot_de_passe);
 
-
         this.mButtonImage = this.findViewById(R.id.button_image);
         this.imageUser = (ImageView) this.findViewById(R.id.image_user);
         this.mSauvegarde_compte = this.findViewById(R.id.sauvegarde_compte);
         this.mConnexion_users = this.findViewById(R.id.connexion_text_view_connexion);
 
+        //On creer le handler avec le execute
+        if(handler == null)
+            handler = FourniseurHandler.creerHandler();
+
+        dbUser = new DatabaseUser(this);
+
+        //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            //On creer une instance la BDD user
+            dbUser.createDefaultUsersIfNeed();
+        });
+
         //Set bouton
         this.mSauvegarde_compte.setEnabled(false);
         this.mButtonImage.setEnabled(false);
 
-        //On creer une instance la BDD user
-        dbUser = new DatabaseUser(this);
-        dbUser.createDefaultUsersIfNeed();
 
+        //Listener pour le bouton de la connexion
+        this.mConnexion_users.setOnClickListener(v -> {
+            System.out.println("je suis la");
+            Intent intent = new Intent(InscriptionActivity.this, ConnexionActivity.class);
+            startActivity(intent);
+        });
 
         // ou view
         mSauvegarde_compte.setOnClickListener(v -> {
@@ -104,18 +110,6 @@ public class InscriptionActivity extends AppCompatActivity {
         //Listener pour le bouton de la photo
         this.mButtonImage.setOnClickListener(v -> captureImage());
 
-        //Listener pour le bouton de la connexion
-        this.mConnexion_users.setOnClickListener(v -> {
-            Intent intent = new Intent(InscriptionActivity.this, ConnexionActivity.class);
-            startActivity(intent);
-        });
-
-
-        mConnexion_users.setOnClickListener(view -> {
-            Intent intent = new Intent(this, ConnexionActivity.class);
-            startActivity(intent);
-        });
-
         //On verifie si tous les champs sont remplit pour qu'on puisse appuer sur le bouton save
         EditText[] editTexts = {mMain_champ_identifiant,mMain_champ_email,mMain_champ_numero_telephone, mMain_champ_mot_de_passe};
         for (EditText editText : editTexts) {
@@ -137,25 +131,12 @@ public class InscriptionActivity extends AppCompatActivity {
                 }
             });
         }
-        //On creer le handler avec le execute
-        if(handler == null)
-            handler = FourniseurHandler.creerHandler();
-
-        DatabaseUser databaseUser = new DatabaseUser(this);
-
-        //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
-        FournisseurExecutor.creerExecutor().execute(()-> {
-            databaseUser.createDefaultUsersIfNeed();
-        });
     }
-
-    
 
     public static String encrypt(String password) {
         String salt = BCrypt.gensalt(WORKLOAD);
         return BCrypt.hashpw(password, salt);
     }
-
 
     public boolean isAllEditTextFilled(List<EditText> editTextList) {
         for (EditText editText : editTextList) {
@@ -165,29 +146,12 @@ public class InscriptionActivity extends AppCompatActivity {
         }
         return true;
     }
-        private void enregistrementUser(User user) throws IOException {
-        DatabaseUser dbUser = new DatabaseUser(this);
+
+    private void enregistrementUser(User user) throws IOException {
         dbUser.addUser(user);
         Toast.makeText(this, "Utilisateurs Sauvegarder avec Succées 😍!", Toast.LENGTH_SHORT).show();
     }
-    private void saveImage(Bitmap bp, String nomFichier){
-        try  { // use the absolute file path here
-            FileOutputStream out = this.openFileOutput(nomFichier, MODE_PRIVATE);
-            bp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            out.close();
-            Toast.makeText(this,"Image Sauvegarder !",Toast.LENGTH_SHORT).show();
-            // PNG is a lossless format, the compression factor (100) is ignored
-        } catch (IOException e) {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-    private void captureImage() {
-        // Create an implicit intent, for image capture.
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Start camera and wait for the results.
-        this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
-    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

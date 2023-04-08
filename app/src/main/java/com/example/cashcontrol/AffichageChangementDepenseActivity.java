@@ -41,7 +41,6 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
 
     private Spinner listCategorie;
-
     private Button modifierDepensebtn;
     private Button photoBtn;
 
@@ -59,9 +58,7 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
     private Handler handler;
     private int idDepense;
     private Depense ancienneDepense;
-
     private boolean tousremplis ;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +108,7 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
             if(ancienneDepense.getCheminimage()!=null){
                 bitmap = readImage(ancienneDepense.getCheminimage());
             }
-
             preremplirChamp();
-
         });
 
 
@@ -128,7 +123,6 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
             }
             else {
                 Toast.makeText(this, "Aucune image n'a été donnée, une erreur est survenue! 😥", Toast.LENGTH_LONG).show();
-
             }
         });
 
@@ -257,8 +251,6 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
                 @Override
                 public void afterTextChanged(Editable s) {
                 }
-
-
             });
         }
     }
@@ -303,6 +295,4 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
             depenseImage.setImageBitmap(imageDepense);
         }
     }
-
-
 }

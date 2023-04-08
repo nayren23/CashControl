@@ -132,7 +132,7 @@
                 android:layout_gravity="center_horizontal"
                 android:backgroundTint="@color/black"
                 android:layout_marginTop="40dp"
-                android:text="Modifier" />
+                android:text="Enregistrer" />
 
         </LinearLayout>
 
