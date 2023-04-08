@@ -229,6 +229,40 @@ public class DatabaseUser extends DatabasePrincipale {
         }
         return -1;
     }
+
+
+
+
+
+    public String verifMdpIdentifiant(String identifiant){
+
+        try {
+            String query = " SELECT " + COLUMN_MOT_DE_PASSE_UTILISATEUR + " FROM " + TABLE_USER + " WHERE " + COLUMN_IDENTIFIANT_UTILISATEUR + " = ? ";
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            // Définir la valeur du paramètre
+            String[] selectionArgs = {identifiant};
+
+            // Exécuter la requête préparée avec la valeur du paramètre
+            Cursor cursor = db.rawQuery(query, selectionArgs);
+
+            // Vérifier si le curseur est valide et s'il contient des enregistrements
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getString(0);
+            }
+
+            // Fermer le curseur et la base de données
+            if (cursor != null) {
+                cursor.close();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return "";
+    }
+
     public int updateUser(User user) {
         Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + user.getIdentifiant());
 
