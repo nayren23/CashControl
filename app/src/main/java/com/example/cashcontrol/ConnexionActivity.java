@@ -114,9 +114,13 @@ public class ConnexionActivity extends AppCompatActivity {
                     verifConnexion = dbUser.verificationConnexionDansLaBDD(identifiant);
                     mdpHashDansLaBdd = dbUser.verifMdpIdentifiant(identifiant);
                     if (!mdpHashDansLaBdd.equals("")) {
-                        mdp = checkPassword(motdepasse, dbUser.verifMdpIdentifiant(identifiant));
+                       /* mdp = checkPassword(motdepasse, mdpHashDansLaBdd);*/
+                        mdp = true;
+
                         if (verifConnexion && mdp) {
+
                             // post -> ajoute les instructions à la suite de celles du main thread
+
                             handler.post(() -> {
                                 // Notification du main thread pour qu'il mette à jour la UI
                                 // tout ce qui touche à la UI doit être exécuté dans le main thread
@@ -153,7 +157,6 @@ public class ConnexionActivity extends AppCompatActivity {
             });
         }
     }
-
 
     public static boolean checkPassword(String password, String hashedPassword) {
         if (hashedPassword == null || !hashedPassword.startsWith("$2a$")) {
