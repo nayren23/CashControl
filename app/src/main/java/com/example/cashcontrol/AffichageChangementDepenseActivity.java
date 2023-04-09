@@ -60,6 +60,12 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
     private Depense ancienneDepense;
     private boolean tousremplis ;
 
+    private Button button_lire_description;
+
+    private Button button_lire_categorie;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +84,17 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
         this.date = findViewById(R.id.date_picker_depense);
         this.depenseImage = findViewById(R.id.image_depense);
         this.sauvegarder_imagebtn = findViewById(R.id.button_sauvegarder_image);
+        this.button_lire_description = findViewById(R.id.button_lire_description);
+        this.button_lire_categorie = findViewById(R.id.button_lire_categorie);
+
+        button_lire_description.setOnClickListener(v -> {
+            speak(description.getText().toString());
+        });
+
+        button_lire_categorie.setOnClickListener(v -> {
+            speak(listCategorie.getItemAtPosition(listCategorie.getSelectedItemPosition()).toString());
+        });
+
         this.modifierDepensebtn.setEnabled(false);
         blocageBouton();
 
