@@ -113,8 +113,10 @@ public class HomeActivity extends SmsActivity implements DatePickerFragment.OnDa
 
         });
 
+        //Thread pour lancer l'envoie d'un SMS avec les donnees actualiser
         FournisseurExecutor.creerExecutor().execute(()-> {
-
+            depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
+            sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
             askPermissionAndSendSMS();
         });
 

@@ -2,41 +2,36 @@ package com.example.cashcontrol;
 
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
 
-
-
 public class SmsActivity extends AppCompatActivity {
-
 
     private static final int MY_PERMISSION_REQUEST_CODE_SEND_SMS = 1;
     private static final String LOG_TAG = "AndroidExample";
-
     protected Handler handler;
-
     protected int sommeDepenseMois;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (handler == null)
             handler = FourniseurHandler.creerHandler();
-
     }
 
+    /**
+     Cette méthode demande la permission d'envoyer un SMS à l'utilisateur et envoie un SMS avec les informations sur les dépenses du mois courant s'il y a une autorisation. Si l'utilisateur n'a pas encore accordé la permission, elle demande la permission à l'utilisateur.
+     Si la version Android est supérieure ou égale à la version M (23), l'autorisation doit être demandée à l'utilisateur.
+     Si la demande d'autorisation a été approuvée, la méthode appelle la méthode sendSMS_by_smsManager() sur un thread de fond pour envoyer le SMS.
+     */
     protected void askPermissionAndSendSMS() {
         // With Android Level >= 23, you have to ask the user
         // for permission to send SMS.
@@ -47,54 +42,51 @@ public class SmsActivity extends AppCompatActivity {
             if (sendSmsPermisson != PackageManager.PERMISSION_GRANTED) {
                 // If don't have permission so prompt the user.
                 handler.post(() -> {
-
                     this.requestPermissions(
                             new String[]{Manifest.permission.SEND_SMS},
                             MY_PERMISSION_REQUEST_CODE_SEND_SMS
-
                     );
                 });
-
                 return;
             }
         }
         // Execute sendSMS_by_smsManager on a background thread
-            sendSMS_by_smsManager();
-
+        sendSMS_by_smsManager();
     }
 
-
-
+    /**
+     Cette fonction permet d'envoyer un SMS avec le montant total des dépenses effectuées pendant le mois en cours
+     à un numéro de téléphone prédéfini.
+     @throws SecurityException si l'application n'a pas la permission d'envoyer des SMS
+     */
     protected void sendSMS_by_smsManager()  {
         String phoneNumber = "+15555215554";
-        String message = "Bonjour, ce mois ci vous avez dépenser  : " + sommeDepenseMois;
-
+        String message = "Bonjour, ce mois-ci, vous avez dépensé : " + sommeDepenseMois +"€";
         try {
-            // Get the default instance of the SmsManager
+            // Récupération de l'instance par défaut du SmsManager
             SmsManager smsManager = SmsManager.getDefault();
-            // Send Message
+
+            // Envoi du SMS sur un thread séparé
             FournisseurExecutor.creerExecutor().execute(()-> {
 
-                        smsManager.sendTextMessage(phoneNumber,
-                                null,
-                                message,
-                                null,
-                                null);
-                    });
-
-            Log.i( LOG_TAG,"Your sms has successfully sent!");
+                smsManager.sendTextMessage(phoneNumber,
+                        null,
+                        message,
+                        null,
+                        null);
+            });
+            // Affichage d'un message de confirmation à l'utilisateur
+            Log.i( LOG_TAG,"Votre message a été envoyé avec succès !");
             handler.post(() -> {
-                Toast.makeText(getApplicationContext(), "Your sms has successfully sent!",
+                Toast.makeText(getApplicationContext(), "Votre message a été envoyé avec succès !",
                         Toast.LENGTH_LONG).show();
             });
 
-            System.out.println("point bloquage ezuyfg ");
-
-
         } catch (Exception ex) {
-            Log.e( LOG_TAG,"Your sms has failed...", ex);
+            // En cas d'erreur lors de l'envoi du SMS, affichage d'un message d'erreur à l'utilisateur
+            Log.e( LOG_TAG,"Votre sms a échoué...", ex);
             handler.post(() -> {
-                Toast.makeText(getApplicationContext(), "Your sms has failed... " + ex.getMessage(),
+                Toast.makeText(getApplicationContext(), "Votre sms a échoué..." + ex.getMessage(),
                         Toast.LENGTH_LONG).show();
             });
             ex.printStackTrace();
@@ -115,7 +107,7 @@ public class SmsActivity extends AppCompatActivity {
                     Log.i( LOG_TAG,"Permission granted!");
                     Toast.makeText(this, "Permission granted!", Toast.LENGTH_LONG).show();
                     // Execute askPermissionAndSendSMS on a background thread
-                        askPermissionAndSendSMS();
+                    askPermissionAndSendSMS();
 
 
                 }
