@@ -151,6 +151,10 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 // do nothing
             }
         });
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            limiteDepenseParJour();
+        });
+
 
         setPickersFromView();
         listenersBoutons();
@@ -254,7 +258,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             camemberDepense.setVisibility(View.GONE);
             camemberDepense.setVisibility(View.VISIBLE);
         });
-        limiteDepenseParJour();
+
     }
 
     /**
@@ -277,7 +281,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     }
 
     public void limiteDepenseParJour() {
-        FournisseurExecutor.creerExecutor().execute(() -> {
+
             depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
             int sommeDepenseJour = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
             if (sommeDepenseJour > 100) {
@@ -296,7 +300,6 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                     this.notificationManagerCompat.notify(notificationId, notification);
                 }
             }
-        });
     }
 
     @Override
@@ -308,6 +311,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         FournisseurExecutor.creerExecutor().execute(()-> {
             refreshActivity();
         });
+      
     }
 
     //Liste de Fonction pour avoir la date selectionner par l'user
