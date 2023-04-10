@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import BDD.DatabaseDepense;
-import BDD.FourniseurHandler;
-import BDD.FournisseurExecutor;
+import utilitaires.FourniseurHandler;
+import utilitaires.FournisseurExecutor;
 import utilitaires.Enum_Categories;
 import modele.Depense;
 import utilitaires.DepenseElement;
@@ -90,7 +90,6 @@ public class AffichageDetaillerDepenseActiviy extends AppCompatActivity {
         listDepense.setOnItemClickListener((adapterView, view, i, l) -> {
             int position = listDepense.getPositionForView(view);
             int idDepense = arrayAdapter.getItem(position).getId();
-            System.out.println("voici l'id de la dépense" + idDepense);
             Intent intent1 = new Intent(AffichageDetaillerDepenseActiviy.this, AffichageChangementDepenseActivity.class);
             intent1.putExtra("idDepense", idDepense);
             startActivity(intent1);

@@ -1,4 +1,4 @@
-package BDD;
+package utilitaires;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

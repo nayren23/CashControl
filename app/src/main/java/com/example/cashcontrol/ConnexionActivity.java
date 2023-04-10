@@ -1,29 +1,20 @@
 package com.example.cashcontrol;
 
-import static com.example.cashcontrol.InscriptionActivity.encrypt;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import BDD.DatabaseUser;
-import BDD.FourniseurHandler;
-import BDD.FournisseurExecutor;
-
+import utilitaires.FourniseurHandler;
+import utilitaires.FournisseurExecutor;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class ConnexionActivity extends AppCompatActivity {
@@ -41,7 +32,6 @@ public class ConnexionActivity extends AppCompatActivity {
     /*User*/
     private DatabaseUser dbUser;
 
-
     /*Attributs*/
     private boolean tousremplis;
     private boolean verifConnexion;
@@ -54,8 +44,6 @@ public class ConnexionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connexion);
-
-
 
         //Obtention  les Widgets
         this.mConnexion_champ_identifiant = findViewById(R.id.connexion_champ_identifiant);
@@ -116,9 +104,7 @@ public class ConnexionActivity extends AppCompatActivity {
                     verifConnexion = dbUser.verificationConnexionDansLaBDD(identifiant);
                     mdpHashDansLaBdd = dbUser.verifMdpIdentifiant(identifiant);
                     if (!mdpHashDansLaBdd.equals("")) {
-                       /* mdp = checkPassword(motdepasse, mdpHashDansLaBdd);*/
-                        mdp = true;
-
+                        mdp = checkPassword(motdepasse, mdpHashDansLaBdd);
                         if (verifConnexion && mdp) {
 
                             // post -> ajoute les instructions à la suite de celles du main thread
@@ -166,8 +152,4 @@ public class ConnexionActivity extends AppCompatActivity {
         }
         return BCrypt.checkpw(password, hashedPassword);
     }
-
-
-
-
 }

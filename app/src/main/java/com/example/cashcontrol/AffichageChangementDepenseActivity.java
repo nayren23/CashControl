@@ -2,11 +2,9 @@ package com.example.cashcontrol;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,18 +18,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Calendar;
 
 import BDD.DatabaseDepense;
-import BDD.FourniseurHandler;
-import BDD.FournisseurExecutor;
+import utilitaires.FourniseurHandler;
+import utilitaires.FournisseurExecutor;
 import modele.Depense;
 import utilitaires.DateUtil;
 
@@ -43,9 +37,7 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
     private Spinner listCategorie;
     private Button modifierDepensebtn;
     private Button photoBtn;
-
     private Button sauvegarder_imagebtn;
-
     private EditText montant ;
     private EditText description ;
     private EditText date ;
@@ -59,11 +51,8 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
     private int idDepense;
     private Depense ancienneDepense;
     private boolean tousremplis ;
-
     private Button button_lire_description;
-
     private Button button_lire_categorie;
-
 
 
     @Override
@@ -124,7 +113,6 @@ public class AffichageChangementDepenseActivity extends ImageActivity implements
             }
             preremplirChamp();
         });
-
 
         sauvegarder_imagebtn.setOnClickListener(view -> {
             if(this.bitmap !=null){

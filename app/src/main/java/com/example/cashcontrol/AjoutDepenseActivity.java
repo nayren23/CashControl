@@ -22,8 +22,8 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Calendar;
 
 import BDD.DatabaseDepense;
-import BDD.FourniseurHandler;
-import BDD.FournisseurExecutor;
+import utilitaires.FourniseurHandler;
+import utilitaires.FournisseurExecutor;
 import modele.Depense;
 import utilitaires.DateUtil;
 
@@ -171,10 +171,7 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
         super.onActivityResult(requestCode, resultCode, data);
         //Camera
         if (requestCode == REQUEST_ID_IMAGE_CAPTURE) {
-            System.out.println("c'est presque bon chef");
-
             if (resultCode == RESULT_OK) {
-                System.out.println("c'est bon chef");
                 Bitmap bp = (Bitmap) data.getExtras().get("data");
                 this.depenseImage.setImageBitmap(bp);
 
