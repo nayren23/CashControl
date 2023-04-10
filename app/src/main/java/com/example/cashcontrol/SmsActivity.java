@@ -10,19 +10,31 @@ import android.util.Log;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import BDD.DatabaseDepense;
+import BDD.DatabaseUser;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
+import modele.User;
 
 public class SmsActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSION_REQUEST_CODE_SEND_SMS = 1;
     private static final String LOG_TAG = "AndroidExample";
+    protected int id_Utilisateur_Courant;
+    protected static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
+    protected static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
+
     protected Handler handler;
     protected int sommeDepenseMois;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
+        this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
+
         if (handler == null)
             handler = FourniseurHandler.creerHandler();
     }
@@ -60,37 +72,45 @@ public class SmsActivity extends AppCompatActivity {
      @throws SecurityException si l'application n'a pas la permission d'envoyer des SMS
      */
     protected void sendSMS_by_smsManager()  {
-        String phoneNumber = "+15555215554";
-        String message = "Bonjour, ce mois-ci, vous avez dépensé : " + sommeDepenseMois +"€";
-        try {
-            // Récupération de l'instance par défaut du SmsManager
-            SmsManager smsManager = SmsManager.getDefault();
+        FournisseurExecutor.creerExecutor().execute(()-> {
 
-            // Envoi du SMS sur un thread séparé
-            FournisseurExecutor.creerExecutor().execute(()-> {
+            //On récupere le numéro de téléphone dans la BDD(attention il est sous le format 06 85 88 99 66)
+            DatabaseUser databaseUser = new DatabaseUser(this);
+            User userAcuel = databaseUser.getUser(id_Utilisateur_Courant);
+            String phoneUserAcuel = userAcuel.getNumerotelephone().substring(1);// on enleve donc le 0 devant
 
-                smsManager.sendTextMessage(phoneNumber,
-                        null,
-                        message,
-                        null,
-                        null);
-            });
-            // Affichage d'un message de confirmation à l'utilisateur
-            Log.i( LOG_TAG,"Votre message a été envoyé avec succès !");
-            handler.post(() -> {
-                Toast.makeText(getApplicationContext(), "Votre message a été envoyé avec succès !",
-                        Toast.LENGTH_LONG).show();
-            });
+            String phoneNumber = "+33" + phoneUserAcuel; //On met l'indicatif à l'avance, l'indicatif pour le tel android studio est 15
+            String message = "Bonjour, ce mois-ci, vous avez dépensé : " + sommeDepenseMois +"€";
 
-        } catch (Exception ex) {
-            // En cas d'erreur lors de l'envoi du SMS, affichage d'un message d'erreur à l'utilisateur
-            Log.e( LOG_TAG,"Votre sms a échoué...", ex);
-            handler.post(() -> {
-                Toast.makeText(getApplicationContext(), "Votre sms a échoué..." + ex.getMessage(),
-                        Toast.LENGTH_LONG).show();
-            });
-            ex.printStackTrace();
-        }
+            try {
+                // Récupération de l'instance par défaut du SmsManager
+                SmsManager smsManager = SmsManager.getDefault();
+
+                // Envoi du SMS sur un thread séparé
+                FournisseurExecutor.creerExecutor().execute(()-> {
+                    smsManager.sendTextMessage(phoneNumber,
+                            null,
+                            message,
+                            null,
+                            null);
+                });
+                // Affichage d'un message de confirmation à l'utilisateur
+                Log.i( LOG_TAG,"Votre message a été envoyé avec succès !");
+                handler.post(() -> {
+                    Toast.makeText(getApplicationContext(), "Votre message a été envoyé avec succès !",
+                            Toast.LENGTH_LONG).show();
+                });
+
+            } catch (Exception ex) {
+                // En cas d'erreur lors de l'envoi du SMS, affichage d'un message d'erreur à l'utilisateur
+                Log.e( LOG_TAG,"Votre sms a échoué...", ex);
+                handler.post(() -> {
+                    Toast.makeText(getApplicationContext(), "Votre sms a échoué..." + ex.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                });
+                ex.printStackTrace();
+            }
+        });
     }
 
     // When you have the request results
@@ -104,17 +124,15 @@ public class SmsActivity extends AppCompatActivity {
                 // Note: If request is cancelled, the result arrays are empty.
                 // Permissions granted (SEND_SMS).
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i( LOG_TAG,"Permission granted!");
-                    Toast.makeText(this, "Permission granted!", Toast.LENGTH_LONG).show();
+                    Log.i( LOG_TAG,"Permission accordée !");
+                    Toast.makeText(this, "Permission accordée !", Toast.LENGTH_LONG).show();
                     // Execute askPermissionAndSendSMS on a background thread
                     askPermissionAndSendSMS();
-
-
                 }
                 // Cancelled or denied.
                 else {
-                    Log.i( LOG_TAG,"Permission denied!");
-                    Toast.makeText(this, "Permission denied!", Toast.LENGTH_LONG).show();
+                    Log.i( LOG_TAG,"Permission refusée !");
+                    Toast.makeText(this, "Permission refusée !", Toast.LENGTH_LONG).show();
                 }
                 break;
             }
