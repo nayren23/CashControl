@@ -2,17 +2,25 @@ package com.example.cashcontrol;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
+import android.app.Notification;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
+
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -24,6 +32,8 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+
 import BDD.DatabaseDepense;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
@@ -31,19 +41,20 @@ import utilitaires.Enum_Categories;
 import modele.Depense;
 import utilitaires.DateUtil;
 
-public class HomeActivity extends AppCompatActivity implements DatePickerFragment.OnDateSetListener {
+public class HomeActivity extends SmsActivity implements DatePickerFragment.OnDateSetListener {
 
-    private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
-    private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
+    private static final int PERMISSION_REQUEST_CODE = 123;
 
-    private int id_Utilisateur_Courant;
+    private NotificationManagerCompat notificationManagerCompat;
     private ArrayList<Double> sommeDepensesParCategorie;
     private ArrayList<Depense> depenses_Utilisateur;
     private DatabaseDepense databaseDepense;
     private  PieChart camemberDepense;
-    private Handler handler;
     private String [] dateSelectionner;
     private EditText datePicker;
+
+    ArrayList<Depense> mesDepenses;
+
 
     //Button
     private Button jour_button;
@@ -51,59 +62,53 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private Button mois_button;
     private Button annee_button;
 
-    private Button ajouterDepenseBtn ;
+    private Button ajouterDepenseBtn;
 
     private int boutonActuel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        //On creer le handler avec le execute
-        if(handler == null)
-            handler = FourniseurHandler.creerHandler();
-
-        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
+        boutonActuel = 2;
 
         // On crée les dépenses
         this.databaseDepense = new DatabaseDepense(this);
 
-        // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
-        this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
-
+        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
         this.jour_button = findViewById(R.id.jour_button);
         this.semaine_button = findViewById(R.id.semaine_button);
         this.mois_button = findViewById(R.id.mois_button);
         this.annee_button = findViewById(R.id.annee_button);
-
-        // Initialize dateSelectionner to current date
-        Calendar calendar = Calendar.getInstance();
-        dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
-
+        this.notificationManagerCompat = NotificationManagerCompat.from(this);
         this.datePicker = findViewById(R.id.date_picker);
-
-        // On crée le camembert
         this.camemberDepense = findViewById(R.id.camembert);
 
-        //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
-        FournisseurExecutor.creerExecutor().execute(()->{
-            this.databaseDepense.createDefaultDepenseIfNeed();
-            // On récupère toutes les dépenses de l'utilisateur depuis la BDD
-            this.depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(this.id_Utilisateur_Courant);
+        // //Threads pour ne pas bloquer le thread principale , Initialize dateSelectionner to current date
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            Calendar calendar = Calendar.getInstance();
+            dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
+        });
 
-            // On fait la somme des dépenses par catégories
-            this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
+        //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
+        FournisseurExecutor.creerExecutor().execute(() -> {
+            this.databaseDepense.createDefaultDepenseIfNeed();
             refreshActivity();
         });
 
+        //Thread pour lancer l'envoie d'un SMS avec les donnees actualiser
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            //On set  sommeDepenseMois pour le SMS
+            depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
+            sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+            askPermissionAndSendSMS();
+        });
 
-        this.ajouterDepenseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this , AjoutDepenseActivity.class);
-                startActivity(intent);
-            }
+        this.ajouterDepenseBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this , AjoutDepenseActivity.class);
+            startActivity(intent);
         });
 
         this.camemberDepense.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -117,7 +122,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 // Créer l'objet Bundle
                 Bundle bundle = new Bundle();
 
-                String [] tab1 = new String[2];
+                String[] tab1 = new String[2];
                 tab1[0] = label;
                 tab1[1] = String.valueOf(boutonActuel);
                 String[] tab2 = dateSelectionner;
@@ -135,6 +140,11 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 // do nothing
             }
         });
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            limiteDepenseParJour();
+        });
+
+
         setPickersFromView();
         listenersBoutons();
     }
@@ -191,9 +201,9 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             case 4://choix date
                 //On  met au bon format par ex un 2 sera changer en 02 (c'est pour la requetes SQL)
                 String jour = dateSelectionner[0];
-                String mois  =dateSelectionner[1];
+                String mois = dateSelectionner[1];
                 String annee = dateSelectionner[2];
-                depenses_Utilisateur = databaseDepense.getDepensesParUserIdDateComplete(id_Utilisateur_Courant,jour, mois,annee );
+                depenses_Utilisateur = databaseDepense.getDepensesParUserIdDateComplete(id_Utilisateur_Courant, jour, mois, annee);
                 break;
             default:
                 depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
@@ -203,7 +213,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         // On récupère les nouvelles données de la base de données
         sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
 
-        int sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+        sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+
 
         // On met à jour le camembert avec les nouvelles données
         ArrayList<PieEntry> depenseUser = new ArrayList<>();
@@ -214,11 +225,12 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             }
         }
 
+
         PieDataSet camembertDataSet = new PieDataSet(depenseUser, "");
 
         //Couleurs des segments du diagramme
-        int[] MATERIAL_COLORS ={
-                rgb("#003366"), rgb("#007A33"), rgb("#FF0000"), rgb("#CCCCCC"), rgb("#FFA500"), rgb("#660099"), rgb("#FFC0CB"),rgb("#ADD8E6"),rgb("#FFFF00")
+        int[] MATERIAL_COLORS = {
+                rgb("#003366"), rgb("#007A33"), rgb("#FF0000"), rgb("#CCCCCC"), rgb("#FFA500"), rgb("#660099"), rgb("#FFC0CB"), rgb("#ADD8E6"), rgb("#FFFF00")
         };
 
         camembertDataSet.setColors(MATERIAL_COLORS);
@@ -236,12 +248,50 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
             camemberDepense.setVisibility(View.GONE);
             camemberDepense.setVisibility(View.VISIBLE);
         });
+
     }
 
     /**
      * Appelée lorsque l'activité est reprise après avoir été mise en pause.
      * Appelle la méthode refreshActivity() pour mettre à jour l'affichage de l'activité.
      */
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission accordée
+                limiteDepenseParJour();
+            } else {
+                // Permission refusée
+                Toast.makeText(this, "La permission de notification est nécessaire pour afficher les alertes de dépenses élevées.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void limiteDepenseParJour() {
+
+            depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
+            int sommeDepenseJour = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+            if (sommeDepenseJour > 100) {
+                Notification notification = new NotificationCompat.Builder(this, NotificationApp.CHANNEL_1_ID)
+                        .setSmallIcon(R.drawable.logo_cashcontrol)
+                        .setContentTitle("Dépenses élevées")
+                        .setContentText("Vous avez dépensé plus de 100 euros aujourd'hui.")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .build();
+
+                int notificationId = 1;
+                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_REQUEST_CODE);
+                } else {
+                    this.notificationManagerCompat.notify(notificationId, notification);
+                }
+            }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -251,6 +301,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         FournisseurExecutor.creerExecutor().execute(()-> {
             refreshActivity();
         });
+      
     }
 
     //Liste de Fonction pour avoir la date selectionner par l'user
@@ -337,5 +388,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On refresh l'affichage
         FournisseurExecutor.creerExecutor().execute(this::refreshActivity);
+
     }
+
+
 }

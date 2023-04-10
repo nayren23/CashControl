@@ -64,7 +64,7 @@ public class DatabaseUser extends DatabasePrincipale {
         int count = this.getUserCount();
         if(count ==0 ) {
             User yassine = new User(0 , "yhamidi",0,"yassine@gmail.com", "yassine", "yassine","0781799878");
-            User rayan = new User(1 , "rchouchane",0,"rayan@gmail.com", "rayan","rayan", "0781799878");
+            User rayan = new User(1 , "rchouchane",0,"rayan@gmail.com", "rayan","rayan", "0781799851");
             User ayoub = new User(2 , "abouazizi", "ayoub@gmail.com", "ayoub", "ayoub","0666766767");
             addUser(rayan);
             addUser(yassine);
@@ -98,7 +98,7 @@ public class DatabaseUser extends DatabasePrincipale {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_USER, new String[] { COLUMN_ID_UTILISATEUR,
-                        COLUMN_IDENTIFIANT_UTILISATEUR,COLUMN_EMAIL_UTILISATEUR, COLUMN_NUMEROTELEPHONE_UTILISATEUR,COLUMN_CHEMINIMAGE_UTILISATEUR }, COLUMN_ID_UTILISATEUR + "=?",
+                        COLUMN_IDENTIFIANT_UTILISATEUR,COLUMN_EMAIL_UTILISATEUR, COLUMN_MOT_DE_PASSE_UTILISATEUR, COLUMN_CHEMINIMAGE_UTILISATEUR, COLUMN_NUMEROTELEPHONE_UTILISATEUR}, COLUMN_ID_UTILISATEUR + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
