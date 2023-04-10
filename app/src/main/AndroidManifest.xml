@@ -11,6 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CashControl"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -24,8 +25,13 @@
         <activity
             android:name=".HomeActivity"
             android:exported="false">
-
         </activity>
+
+        <activity
+            android:name=".TextToSpeechActivity"
+            android:exported="false">
+        </activity>
+
 
         <activity
             android:name=".InscriptionActivity"

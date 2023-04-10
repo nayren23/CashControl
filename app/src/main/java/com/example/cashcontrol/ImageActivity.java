@@ -11,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class ImageActivity extends AppCompatActivity {
+public class ImageActivity extends TextToSpeechActivity {
 
     protected static final int REQUEST_ID_IMAGE_CAPTURE = 100;
     protected static final int SAVE_IMAGE_REQUEST_CODE = 121;
