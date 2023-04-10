@@ -3,11 +3,8 @@ package BDD;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import androidx.annotation.Nullable;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public abstract class DatabasePrincipale extends SQLiteOpenHelper {
 

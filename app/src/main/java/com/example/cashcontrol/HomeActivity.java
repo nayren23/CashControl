@@ -7,15 +7,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -28,15 +24,12 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-
 import BDD.DatabaseDepense;
-import BDD.FourniseurHandler;
-import BDD.FournisseurExecutor;
+import utilitaires.FourniseurHandler;
+import utilitaires.FournisseurExecutor;
 import utilitaires.Enum_Categories;
 import modele.Depense;
 import utilitaires.DateUtil;
@@ -272,24 +265,24 @@ public class HomeActivity extends SmsActivity implements DatePickerFragment.OnDa
 
     public void limiteDepenseParJour() {
 
-            depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
-            int sommeDepenseJour = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
-            if (sommeDepenseJour > 100) {
-                Notification notification = new NotificationCompat.Builder(this, NotificationApp.CHANNEL_1_ID)
-                        .setSmallIcon(R.drawable.logo_cashcontrol)
-                        .setContentTitle("Dépenses élevées")
-                        .setContentText("Vous avez dépensé plus de 100 euros aujourd'hui.")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                        .build();
+        depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
+        int sommeDepenseJour = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+        if (sommeDepenseJour > 100) {
+            Notification notification = new NotificationCompat.Builder(this, NotificationApp.CHANNEL_1_ID)
+                    .setSmallIcon(R.drawable.logo_cashcontrol)
+                    .setContentTitle("Dépenses élevées")
+                    .setContentText("Vous avez dépensé plus de 100 euros aujourd'hui.")
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                    .build();
 
-                int notificationId = 1;
-                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_REQUEST_CODE);
-                } else {
-                    this.notificationManagerCompat.notify(notificationId, notification);
-                }
+            int notificationId = 1;
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, PERMISSION_REQUEST_CODE);
+            } else {
+                this.notificationManagerCompat.notify(notificationId, notification);
             }
+        }
     }
 
     @Override
@@ -301,7 +294,7 @@ public class HomeActivity extends SmsActivity implements DatePickerFragment.OnDa
         FournisseurExecutor.creerExecutor().execute(()-> {
             refreshActivity();
         });
-      
+
     }
 
     //Liste de Fonction pour avoir la date selectionner par l'user

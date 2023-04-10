@@ -1,4 +1,4 @@
-package BDD;
+package utilitaires;
 
 import android.os.Handler;
 import android.os.Looper;

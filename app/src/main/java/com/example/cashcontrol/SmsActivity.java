@@ -11,10 +11,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import BDD.DatabaseDepense;
 import BDD.DatabaseUser;
-import BDD.FourniseurHandler;
-import BDD.FournisseurExecutor;
+import utilitaires.FourniseurHandler;
+import utilitaires.FournisseurExecutor;
 import modele.User;
 
 public class SmsActivity extends AppCompatActivity {

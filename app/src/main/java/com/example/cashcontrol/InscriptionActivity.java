@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import BDD.DatabaseUser;
-import BDD.FourniseurHandler;
-import BDD.FournisseurExecutor;
+import utilitaires.FourniseurHandler;
+import utilitaires.FournisseurExecutor;
 import modele.User;
 
 public class InscriptionActivity extends ImageActivity {
@@ -76,7 +76,6 @@ public class InscriptionActivity extends ImageActivity {
 
         //Listener pour le bouton de la connexion
         this.mConnexion_users.setOnClickListener(v -> {
-            System.out.println("je suis la");
             Intent intent = new Intent(InscriptionActivity.this, ConnexionActivity.class);
             startActivity(intent);
         });

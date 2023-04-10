@@ -14,7 +14,6 @@
         android:orientation="vertical"
         android:padding="@dimen/spacing_large">
 
-
         <ImageView
             android:layout_width="296dp"
             android:layout_height="151dp"
@@ -91,7 +90,6 @@
         <View
             android:layout_width="0dp"
             android:layout_height="@dimen/spacing_xxxlarge" />
-
 
     </LinearLayout>
 </RelativeLayout>

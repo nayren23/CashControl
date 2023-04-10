@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.provider.MediaStore;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;

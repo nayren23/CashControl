@@ -6,9 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import modele.User;
 
 //Il n'y a qu'une seule bdd dans le téléphone, les new sont la pour instancier la connexion à cette BDD
@@ -63,12 +60,8 @@ public class DatabaseUser extends DatabasePrincipale {
     public void createDefaultUsersIfNeed()  {
         int count = this.getUserCount();
         if(count ==0 ) {
-            User yassine = new User(0 , "yhamidi",0,"yassine@gmail.com", "yassine", "yassine","0781799878");
-            User rayan = new User(1 , "rchouchane",0,"rayan@gmail.com", "rayan","rayan", "0781799851");
-            User ayoub = new User(2 , "abouazizi", "ayoub@gmail.com", "ayoub", "ayoub","0666766767");
+            User rayan = new User(1 , "rchouchane",0,"rayan@gmail.com", "$2a$12$AY2Oso3K.tWjvgTCM1epEuZsGILbJ7rxYVpOALORK5wm53.7igCrK","rayan", "0781799851");
             addUser(rayan);
-            addUser(yassine);
-            addUser(ayoub);
         }
     }
 
@@ -106,34 +99,7 @@ public class DatabaseUser extends DatabasePrincipale {
         User user = new User(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
         return user;
     }
-    public List<User> getAllUser() {
-        Log.i(TAG, "MyDatabaseHelper.getAllUsers ... " );
 
-        List<User> userList = new ArrayList<User>();
-
-        // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_USER;
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                User user = new User();
-                user.setUserId(Integer.parseInt(cursor.getString(0)));
-                user.setIdentifiant((cursor.getString(1)));
-                user.setEmail((cursor.getString(2)));
-                user.setMot_de_passe((cursor.getString(3)));
-                user.setNumerotelephone((cursor.getString(4)));
-                user.setCheminimage((cursor.getString(5)));
-
-                // Adding user to list
-                userList.add(user);
-            } while (cursor.moveToNext());
-        }
-        return userList;
-    }
     public int getUserCount() {
         Log.i(TAG, "MyDatabaseHelper.getUsersCount ... " );
 
@@ -230,10 +196,6 @@ public class DatabaseUser extends DatabasePrincipale {
         return -1;
     }
 
-
-
-
-
     public String verifMdpIdentifiant(String identifiant){
 
         try {
@@ -261,30 +223,5 @@ public class DatabaseUser extends DatabasePrincipale {
         }
 
         return "";
-    }
-
-    public int updateUser(User user) {
-        Log.i(TAG, "MyDatabaseHelper.updateUser ... "  + user.getIdentifiant());
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_IDENTIFIANT_UTILISATEUR, user.getIdentifiant());
-        values.put(COLUMN_EMAIL_UTILISATEUR, user.getEmail());
-        values.put(COLUMN_NUMEROTELEPHONE_UTILISATEUR, user.getNumerotelephone());
-        values.put(COLUMN_CHEMINIMAGE_UTILISATEUR, user.getCheminimage());
-
-        // updating row
-        return db.update(TABLE_USER, values, COLUMN_ID_UTILISATEUR + " = ?",
-                new String[]{String.valueOf(user.getUserId())});
-    }
-
-    public void deleteUser(User user) {
-        Log.i(TAG, "MyDatabaseHelper.updateUser ... " + user.getIdentifiant());
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_USER, COLUMN_ID_UTILISATEUR + " = ?",
-                new String[] { String.valueOf(user.getUserId()) });
-        db.close();
     }
 }

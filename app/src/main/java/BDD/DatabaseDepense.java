@@ -1,20 +1,14 @@
 package BDD;
 
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import modele.Depense;
 
@@ -139,7 +133,6 @@ public class DatabaseDepense extends DatabasePrincipale {
                 addDepense(depense19);
                 addDepense(depense20);
                 addDepense(depense21);
-
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -155,7 +148,6 @@ public class DatabaseDepense extends DatabasePrincipale {
             ContentValues values = new ContentValues(); //stocker des paires clé-valeur de données à insérer ou mettre à jour dans une base de données SQLite
 
             //on prepare les donnees suivantes
-//          values.put(COLUMN_ID_DEPENSE, depense.getDepenseId());
             values.put(COLUMN_DATE_DEPENSE, depense.getDate());
             values.put(COLUMN_MONTANT_DEPENSE, depense.getMontant());
             values.put(COLUMN_ID_CATEGORIE, depense.getCategorieId());
@@ -190,35 +182,6 @@ public class DatabaseDepense extends DatabasePrincipale {
         } catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public ArrayList<Depense> getAllDepense() {
-        Log.i(TAG, "MyDatabaseHelper.getAllDepense ... " );
-
-        ArrayList<Depense> depenseList = new ArrayList<Depense>();
-
-        // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_DEPENSE;
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                Depense depense = new Depense();
-                depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
-                depense.setDate((cursor.getString(1)));
-                depense.setMontant(Double.parseDouble((cursor.getString(2))));
-                depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
-                depense.setUserId(Integer.parseInt(cursor.getString(4)));
-                depense.setDescriptionDepense(cursor.getString(5));
-
-                // Adding depense to list
-                depenseList.add(depense);
-            } while (cursor.moveToNext());
-        }
-        return depenseList;
     }
 
     public int getDepenseCount() {
@@ -262,111 +225,6 @@ public class DatabaseDepense extends DatabasePrincipale {
                     new String[]{String.valueOf(depense)});
             db.close();
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    /**
-     * permet d'obtenir les depenses d'un utilisateurs, en sachant la catégorie  de la dépense
-     * @param userId
-     * @return
-     */
-    public ArrayList<Depense> getDepensesUtilisateur(int userId) {
-        Log.i(TAG, "MyDatabaseHelper.getAllDepense for user " + userId);
-
-        try {
-            ArrayList<Depense> depenseList = new ArrayList<>();
-
-            // Select Query
-            String selectQuery = "SELECT * FROM " + TABLE_DEPENSE +
-                    " WHERE " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?";
-
-            SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId)});
-
-            // looping through all rows and adding to list
-            if (cursor.moveToFirst()) {
-                do {
-                    Depense depense = new Depense();
-                    depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
-                    depense.setDate((cursor.getString(1)));
-                    depense.setMontant(Double.parseDouble((cursor.getString(2))));
-                    depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
-                    depense.setUserId(Integer.parseInt(cursor.getString(4)));
-                    depense.setDescriptionDepense(cursor.getString(5));
-                    depense.setCheminimage((cursor.getString(6)));
-
-                    // Adding depense to list
-                    depenseList.add(depense);
-                } while (cursor.moveToNext());
-            }
-
-            cursor.close();
-            return depenseList;
-        } catch (NumberFormatException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    /**
-     * permet d'obtenir les depenses d'un utilisateurs, en sachant la catégorie  de la dépense
-     * @param userId
-     * @return
-     */
-    public ArrayList<Depense> getDepensesUtilisateurCategorie(int userId, int categorieId) {
-        Log.i(TAG, "MyDatabaseHelper.getAllDepense for user " + userId);
-
-        try {
-            ArrayList<Depense> depenseList = new ArrayList<>();
-
-            // Select Query
-            String selectQuery = "SELECT * FROM " + TABLE_DEPENSE +
-                    " WHERE " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" + "AND " + COLUMN_ID_CATEGORIE + " = ?";
-
-            SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(userId), String.valueOf(categorieId)});
-
-
-            while (cursor.moveToNext()){
-                Depense depense = new Depense();
-                depense.setDepenseId(Integer.parseInt(cursor.getString(0)));
-                depense.setDate((cursor.getString(1)));
-                depense.setMontant(Double.parseDouble((cursor.getString(2))));
-                depense.setCategorieId(Integer.parseInt((cursor.getString(3))));
-                depense.setUserId(Integer.parseInt(cursor.getString(4)));
-                depense.setDescriptionDepense(cursor.getString(5));
-                depense.setCheminimage((cursor.getString(6)));
-
-
-                // Adding depense to list
-                depenseList.add(depense);
-            }
-
-            cursor.close();
-            return depenseList;
-        } catch (NumberFormatException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public int getDepenseCountCategorie(int idCategorie, int idUser) {
-        Log.i(TAG, "MyDatabaseHelper.getDepenseCount ... " );
-
-        try {
-
-            String countQuery = "SELECT  * FROM " + TABLE_DEPENSE + " WHERE " + COLUMN_ID_CATEGORIE + " = ?" + " AND " + COLUMN_ID_UTILISATEUR_DEPENSE + " = ?" ;
-
-            SQLiteDatabase db = this.getReadableDatabase();
-            Cursor cursor = db.rawQuery(countQuery, new String[]{String.valueOf(idCategorie), String.valueOf((idUser))}, null);
-
-            int count = cursor.getCount();
-
-            cursor.close();
-
-            return count;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -777,9 +635,7 @@ public class DatabaseDepense extends DatabasePrincipale {
                 depenseList.add(depense);
             } while (cursor.moveToNext());
         }
-
         cursor.close();
         return depenseList;
     }
-
 }
