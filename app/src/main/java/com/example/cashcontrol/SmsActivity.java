@@ -80,7 +80,7 @@ public class SmsActivity extends AppCompatActivity {
             String phoneUserAcuel = userAcuel.getNumerotelephone().substring(1);// on enleve donc le 0 devant
 
             String phoneNumber = "+33" + phoneUserAcuel; //On met l'indicatif à l'avance, l'indicatif pour le tel android studio est 15
-            String message = "Bonjour, ce mois-ci, vous avez dépensé : " + sommeDepenseMois +"€";
+            String message = "Salut ! L'équipe Cash Control a remarqué que vos dépenses mensuelles s'élevaient à " + sommeDepenseMois + "€ , et nous souhaitions vous en informer." ;
 
             try {
                 // Récupération de l'instance par défaut du SmsManager
