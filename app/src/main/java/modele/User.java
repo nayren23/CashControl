@@ -6,7 +6,6 @@ public class User implements Serializable {
 
     private int UserId;
     private String identifiant;
-
     private double argent;
     private String email;
     private String mot_de_passe;
@@ -30,25 +29,6 @@ public class User implements Serializable {
         this.numerotelephone = numerotelephone;
     }
 
-
-    /**
-     * constructeur sans le chemin de l'image
-     * @param userId
-     * @param identifiant
-     * @param argent
-     * @param email
-     * @param mot_de_passe
-     * @param numerotelephone
-     */
-    public User(int userId, String identifiant, double argent, String email, String mot_de_passe, String numerotelephone) {
-        UserId = userId;
-        this.identifiant = identifiant;
-        this.argent = argent;
-        this.email = email;
-        this.mot_de_passe = mot_de_passe;
-        this.numerotelephone = numerotelephone;
-    }
-
     /**
      * constructeur sans l'argent
      * @param userId
@@ -67,24 +47,6 @@ public class User implements Serializable {
         this.numerotelephone = numerotelephone;
     }
 
-
-    /**
-     *constructeur sans argent ni chemin de l'image
-     * @param userId
-     * @param identifiant
-     * @param email
-     * @param mot_de_passe
-     * @param numerotelephone
-     */
-    public User(int userId, String identifiant,String email, String mot_de_passe, String numerotelephone) {
-        UserId = userId;
-        this.identifiant = identifiant;
-        this.email = email;
-        this.mot_de_passe = mot_de_passe;
-        this.numerotelephone = numerotelephone;
-    }
-
-
     public User(String identifiant,String email, String mot_de_passe,String photodeprofil, String numerotelephone  ) {
 
         this.identifiant = identifiant;
@@ -93,8 +55,6 @@ public class User implements Serializable {
         this.cheminimage = photodeprofil;
         this.numerotelephone = numerotelephone;
     }
-
-
 
     public double getArgent() {
         return argent;
@@ -119,8 +79,6 @@ public class User implements Serializable {
     public void setIdentifiant(String identifiant) {
         this.identifiant = identifiant;
     }
-
-
 
     public String getEmail() {
         return email;
@@ -153,7 +111,6 @@ public class User implements Serializable {
     public void setNumerotelephone(String numerotelephone) {
         this.numerotelephone = numerotelephone;
     }
-
 
     @Override
     public String toString() {

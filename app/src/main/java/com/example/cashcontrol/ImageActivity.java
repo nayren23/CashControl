@@ -11,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class ImageActivity extends AppCompatActivity {
+public class ImageActivity extends TextToSpeechActivity {
 
     protected static final int REQUEST_ID_IMAGE_CAPTURE = 100;
     protected static final int SAVE_IMAGE_REQUEST_CODE = 121;
@@ -37,6 +37,13 @@ public class ImageActivity extends AppCompatActivity {
         this.startActivityForResult(intent, REQUEST_ID_IMAGE_CAPTURE);
     }
 
+    /**
+     * Cette méthode permet de sauvegarder un Bitmap dans un fichier en utilisant une activité pour sélectionner l'emplacement de stockage.
+     * @param bitmap le Bitmap à sauvegarder
+     * @param activity l'activité courante qui appelle cette méthode
+     * Il est important de noter que cette méthode ne doit pas être appelée directement depuis le thread principal car elle démarre
+     * une activité et attend le résultat de l'utilisateur. Il est donc recommandé de l'appeler à partir d'un thread de fond.
+     */
     public void saveBitmapToFile(Bitmap bitmap, Activity activity) {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -45,8 +52,6 @@ public class ImageActivity extends AppCompatActivity {
 
         activity.startActivityForResult(intent, SAVE_IMAGE_REQUEST_CODE);
     }
-
-
 
     protected Bitmap readImage(String nomFichier) {
         Bitmap bitmap = null;
@@ -65,5 +70,4 @@ public class ImageActivity extends AppCompatActivity {
         }
         return bitmap;
     }
-
 }

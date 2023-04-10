@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +28,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,26 +37,24 @@ import java.util.Date;
 import BDD.DatabaseDepense;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
-import modele.Category;
+import utilitaires.Enum_Categories;
 import modele.Depense;
 import utilitaires.DateUtil;
 
-public class HomeActivity extends AppCompatActivity implements DatePickerFragment.OnDateSetListener {
+public class HomeActivity extends SmsActivity implements DatePickerFragment.OnDateSetListener {
 
-    private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
-    private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
     private static final int PERMISSION_REQUEST_CODE = 123;
-
-    private int id_Utilisateur_Courant;
 
     private NotificationManagerCompat notificationManagerCompat;
     private ArrayList<Double> sommeDepensesParCategorie;
     private ArrayList<Depense> depenses_Utilisateur;
     private DatabaseDepense databaseDepense;
-    private PieChart camemberDepense;
-    private Handler handler;
-    private String[] dateSelectionner;
+    private  PieChart camemberDepense;
+    private String [] dateSelectionner;
     private EditText datePicker;
+
+    ArrayList<Depense> mesDepenses;
+
 
     //Button
     private Button jour_button;
@@ -68,58 +66,51 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
     private int boutonActuel;
 
-    private Double totalDepense;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        //On creer le handler avec le execute
-        if (handler == null)
-            handler = FourniseurHandler.creerHandler();
+        boutonActuel = 2;
 
-        this.ajouterDepenseBtn = findViewById(R.id.btn_plus);
+        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
 
         // On crée les dépenses
         this.databaseDepense = new DatabaseDepense(this);
 
-        // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
-        this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
-
+        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
         this.jour_button = findViewById(R.id.jour_button);
         this.semaine_button = findViewById(R.id.semaine_button);
         this.mois_button = findViewById(R.id.mois_button);
         this.annee_button = findViewById(R.id.annee_button);
         this.notificationManagerCompat = NotificationManagerCompat.from(this);
-
-        // Initialize dateSelectionner to current date
-        Calendar calendar = Calendar.getInstance();
-        dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
-
         this.datePicker = findViewById(R.id.date_picker);
-
-        // On crée le camembert
         this.camemberDepense = findViewById(R.id.camembert);
+
+        // //Threads pour ne pas bloquer le thread principale , Initialize dateSelectionner to current date
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            Calendar calendar = Calendar.getInstance();
+            dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
+        });
 
         //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
         FournisseurExecutor.creerExecutor().execute(() -> {
             this.databaseDepense.createDefaultDepenseIfNeed();
-            // On récupère toutes les dépenses de l'utilisateur depuis la BDD
-            this.depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(this.id_Utilisateur_Courant);
-
-            // On fait la somme des dépenses par catégories
-            this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
             refreshActivity();
         });
 
+        //Thread pour lancer l'envoie d'un SMS avec les donnees actualiser
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            //On set  sommeDepenseMois pour le SMS
+            depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
+            sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+            askPermissionAndSendSMS();
+        });
 
-        this.ajouterDepenseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, AjoutDepenseActivity.class);
-                startActivity(intent);
-            }
+        this.ajouterDepenseBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this , AjoutDepenseActivity.class);
+            startActivity(intent);
         });
 
         this.camemberDepense.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -172,7 +163,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // Déclaration et initialisation du tableau de sommes des dépenses par catégorie
         ArrayList<Double> sommeDepensesParCategorie = new ArrayList<>();
-        for (int i = 0; i < Category.values().length; i++) {
+        for (int i = 0; i < Enum_Categories.values().length; i++) {
             sommeDepensesParCategorie.add(0.0);
         }
 
@@ -224,12 +215,13 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         // On récupère les nouvelles données de la base de données
         sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
 
-        int sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+        sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+
 
         // On met à jour le camembert avec les nouvelles données
         ArrayList<PieEntry> depenseUser = new ArrayList<>();
-        for (Category category : Category.values()) {
-            float sommeDepense = sommeDepensesParCategorie.get(Category.categories.get(category.getLabel())).intValue();
+        for (Enum_Categories category : Enum_Categories.values()) {
+            float sommeDepense = sommeDepensesParCategorie.get(Enum_Categories.categories.get(category.getLabel())).intValue();
             if (sommeDepense > 0) { // On n'ajoute le label que si la somme est supérieure à 0
                 depenseUser.add(new PieEntry(sommeDepense, category.getLabel()));
             }
@@ -398,5 +390,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On refresh l'affichage
         FournisseurExecutor.creerExecutor().execute(this::refreshActivity);
+
     }
+
+
 }

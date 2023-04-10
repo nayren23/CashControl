@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -18,17 +17,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Calendar;
 
 import BDD.DatabaseDepense;
 import BDD.FourniseurHandler;
 import BDD.FournisseurExecutor;
-import modele.Category;
 import modele.Depense;
 import utilitaires.DateUtil;
 
@@ -39,32 +34,23 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
 
     private Spinner listCategorie;
-
     private Button ajoutDepensebtn;
     private Button photoBtn;
-
     private EditText montant ;
-
     private EditText description ;
     private EditText date ;
-
     private String nomFichier ;
     private  String [] dateSelectionner;
     private int id_Utilisateur_Courant;
-
     private DatabaseDepense dbDepense;
-
     private int idCategorie ;
-
     private ImageView depenseImage;
-
     private Handler handler;
-
     private boolean tousremplis ;
 
+    private Button button_lire_description;
 
-
-
+    private Button button_lire_categorie;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +62,15 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
         this.montant = findViewById(R.id.edittext_montant_depense);
         this.description = (EditText) (findViewById(R.id.edittext_description_depense));
         this.date = findViewById(R.id.date_picker_depense);
+        this.button_lire_description = findViewById(R.id.button_lire_description);
+        this.button_lire_categorie = findViewById(R.id.button_lire_categorie);
+
+        //lecture du texte
+        button_lire_description.setOnClickListener(v ->speak(description.getText().toString()));
+
+        button_lire_categorie.setOnClickListener(v ->speak(listCategorie.getItemAtPosition(listCategorie.getSelectedItemPosition()).toString()));
+
+        
         this.dbDepense = new DatabaseDepense(this);
         this.depenseImage = findViewById(R.id.image_depense);
         this.ajoutDepensebtn.setEnabled(false);
@@ -95,9 +90,6 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
         listCategorie.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                // Récupération de l'objet sélectionné dans le Spinner
-                Object selectedItem = adapterView.getItemAtPosition(position);
-
                 // Récupération de l'ID de l'objet sélectionné
                 int selectedItemId = (int) id;
 
@@ -105,34 +97,22 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
                 idCategorie = selectedItemId ;
             }
 
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 // Code à exécuter lorsque aucun élément n'est sélectionné
             }
         });
 
-
-        this.ajoutDepensebtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Depense depense= ajouterdepense();
-                Toast.makeText(getApplicationContext(), "Votre dépense " + depense.getDescriptionDepense() + " d'un montant de " + depense.getMontant() + " a été ajoutée avec succés 👍🏼 " , Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(AjoutDepenseActivity.this , HomeActivity.class);
-                startActivity(intent);
-            }
+        this.ajoutDepensebtn.setOnClickListener(v -> {
+            Depense depense= ajouterdepense();
+            Toast.makeText(getApplicationContext(), "Votre dépense " + depense.getDescriptionDepense() + " d'un montant de " + depense.getMontant() + " a été ajoutée avec succés 👍🏼 " , Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(AjoutDepenseActivity.this , HomeActivity.class);
+            startActivity(intent);
         });
 
-        this.photoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                captureImage();
-            }
-        });
+        this.photoBtn.setOnClickListener(v -> captureImage());
 
         setPickersFromView();
-
-
     }
 
     public void blocageBouton() {
@@ -159,18 +139,12 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
                         ajoutDepensebtn.setEnabled(false);
                     }
                 }
-
                 @Override
                 public void afterTextChanged(Editable s) {
                 }
-
-
             });
         }
     }
-
-
-
 
     private Depense ajouterdepense(){
 
@@ -178,26 +152,19 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
         int idUser = this.id_Utilisateur_Courant;
         String description =  this.description.getText().toString();
         double montant = Double.parseDouble(this.montant.getText().toString());
-        int idCategorie =this.idCategorie ;
+        int idCategorie =this.idCategorie;
 
-        String cheminimage = nomFichier  ;
-        String date = this.dateSelectionner[2] + "-" + this.dateSelectionner[1] + "-" + this.dateSelectionner[0] ;
+        String cheminimage = nomFichier;
+        String date = this.dateSelectionner[2] + "-" + this.dateSelectionner[1] + "-" + this.dateSelectionner[0];
 
         Depense depense = new Depense(date,montant,idUser,idCategorie,description,cheminimage);
-
-
-
 
         //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
         FournisseurExecutor.creerExecutor().execute(()->{
             this.dbDepense.addDepense(depense);
         });
-
         return  depense;
-
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -231,9 +198,7 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
      */
     private void setPickersFromView() {
         date.setOnClickListener(this::showDatePicker);
-
     }
-
 
     /*
      * Affiche la pop-up de choix de date lorsqu'on clique sur le champ de date correspondant.
@@ -243,7 +208,6 @@ public class AjoutDepenseActivity extends ImageActivity implements DatePickerFra
         final DialogFragment datePickerFragment = new DatePickerFragment();
         datePickerFragment.show(this.getSupportFragmentManager(), DatePickerFragment.TAG);
     }
-
 
     @Override
     public void onDateSet(int annee, int mois, int jour) {

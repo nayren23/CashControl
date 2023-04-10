@@ -52,7 +52,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:hint="Entrer votre numéro de teléphone"
+        android:hint="Numéro de teléphone format: 06 11 22 33 44"
         android:inputType="phone"
         android:maxLength="10"
         />
@@ -114,15 +114,7 @@
         />
 
 
-    <TextView
-        android:id="@+id/connexion_text_view_inscription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="75dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="16dp"
-        android:text="Si vous avez un compte, "
-        />
+
 
     <TextView
         android:id="@+id/connexion_text_view_connexion"

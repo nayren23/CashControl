@@ -4,18 +4,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Dette implements Serializable {
-
     private int DetteId;
     private String nom_destinataire;
     private double montant_dette;
     private String date_echeance;
     private int UserId;
 
-
     public Dette() {
         this.DetteId++;
     }
-
 
     public Dette(int detteId, String nom_destinataire, double montant_dette, String date_echeance, int userId) {
         DetteId = detteId;
@@ -23,13 +20,6 @@ public class Dette implements Serializable {
         this.montant_dette = montant_dette;
         this.date_echeance = date_echeance;
         UserId = userId;
-    }
-
-    public Dette(int detteId, String nom_destinataire, double montant_dette, String date_echeance) {
-        DetteId = detteId;
-        this.nom_destinataire = nom_destinataire;
-        this.montant_dette = montant_dette;
-        this.date_echeance = date_echeance;
     }
 
 
@@ -73,7 +63,6 @@ public class Dette implements Serializable {
         UserId = userId;
     }
 
-
     @Override
     public String toString() {
         return "Dette{" +
@@ -85,5 +74,3 @@ public class Dette implements Serializable {
                 '}';
     }
 }
-
-
