@@ -2,21 +2,18 @@ package com.example.cashcontrol;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.SmsManager;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+
 import androidx.fragment.app.DialogFragment;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -36,7 +33,7 @@ import utilitaires.Enum_Categories;
 import modele.Depense;
 import utilitaires.DateUtil;
 
-public class HomeActivity extends AppCompatActivity implements DatePickerFragment.OnDateSetListener {
+public class HomeActivity extends SmsActivity implements DatePickerFragment.OnDateSetListener {
 
     private static final String SHARED_PREF_USER_INFO = "SHARED_PREF_USER_INFO"; //cles
     private static final String SHARED_PREF_USER_INFO_ID = "SHARED_PREF_USER_INFO_ID"; //on recupere la valeur
@@ -46,15 +43,11 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private ArrayList<Depense> depenses_Utilisateur;
     private DatabaseDepense databaseDepense;
     private  PieChart camemberDepense;
-    private Handler handler;
     private String [] dateSelectionner;
     private EditText datePicker;
 
-    private int sommeDepenseMois;
-
     ArrayList<Depense> mesDepenses;
-    private static final int MY_PERMISSION_REQUEST_CODE_SEND_SMS = 1;
-    private static final String LOG_TAG = "AndroidExample";
+
 
     //Button
     private Button jour_button;
@@ -73,49 +66,57 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         boutonActuel = 2;
 
-
-
         //On creer le handler avec le execute
-        if(handler == null)
-            handler = FourniseurHandler.creerHandler();
 
-        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
 
         // On crée les dépenses
         this.databaseDepense = new DatabaseDepense(this);
 
-
-
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
 
+        this.ajouterDepenseBtn= findViewById(R.id.btn_plus);
         this.jour_button = findViewById(R.id.jour_button);
         this.semaine_button = findViewById(R.id.semaine_button);
         this.mois_button = findViewById(R.id.mois_button);
         this.annee_button = findViewById(R.id.annee_button);
-
-        // Initialize dateSelectionner to current date
-        Calendar calendar = Calendar.getInstance();
-        dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
-
+        this.camemberDepense = findViewById(R.id.camembert);
         this.datePicker = findViewById(R.id.date_picker);
 
-        // On crée le camembert
-        this.camemberDepense = findViewById(R.id.camembert);
+        // Initialize dateSelectionner to current date
+        FournisseurExecutor.creerExecutor().execute(()-> {
 
-        askPermissionAndSendSMS();
+            Calendar calendar = Calendar.getInstance();
+            dateSelectionner = new String[]{String.valueOf(calendar.get(Calendar.YEAR)), String.valueOf(calendar.get(Calendar.MONTH)), String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))};
+        });
+        /*recupere la somme des depenses du mois en cours*/
+        /*
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            ArrayList<Depense> madepenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
+            masommeDepenseMois = (int) Depense.calculerSommeDepenses(madepenses_Utilisateur);
+        });
+        */
+
+
+
 
         //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
         FournisseurExecutor.creerExecutor().execute(()->{
             this.databaseDepense.createDefaultDepenseIfNeed();
+            /*
             // On récupère toutes les dépenses de l'utilisateur depuis la BDD
             this.depenses_Utilisateur = databaseDepense.getDepensesUtilisateur(this.id_Utilisateur_Courant);
 
             // On fait la somme des dépenses par catégories
-            this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
+            this.sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);*/
             refreshActivity();
+
         });
 
+        FournisseurExecutor.creerExecutor().execute(()-> {
+
+            askPermissionAndSendSMS();
+        });
 
         this.ajouterDepenseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,7 +216,7 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 depenses_Utilisateur = databaseDepense.getDepensesParUserIdDateComplete(id_Utilisateur_Courant,jour, mois,annee );
                 break;
             default:
-                depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
+                depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
                 break;
         }
 
@@ -357,116 +358,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On refresh l'affichage
         FournisseurExecutor.creerExecutor().execute(this::refreshActivity);
+
     }
 
 
-    private void askPermissionAndSendSMS() {
-
-        // With Android Level >= 23, you have to ask the user
-        // for permission to send SMS.
-        if (android.os.Build.VERSION.SDK_INT >=  android.os.Build.VERSION_CODES.M) { // 23
-
-            // Check if we have send SMS permission
-            int sendSmsPermisson = ActivityCompat.checkSelfPermission(this,
-                    android.Manifest.permission.SEND_SMS);
-
-            if (sendSmsPermisson != PackageManager.PERMISSION_GRANTED) {
-                // If don't have permission so prompt the user.
-                this.requestPermissions(
-                        new String[]{Manifest.permission.SEND_SMS},
-                        MY_PERMISSION_REQUEST_CODE_SEND_SMS
-                );
-                return;
-            }
-        }
-        FournisseurExecutor.creerExecutor().execute(()-> {
-            this.sendSMS_by_smsManager();
-        });
-    }
-
-    private void sendSMS_by_smsManager()  {
-
-
-        ArrayList<Depense> madepenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
-        int masommeDepenseMois = (int) Depense.calculerSommeDepenses(madepenses_Utilisateur);
-
-
-        String phoneNumber = "+15555215554";
-        String message = "Bonjour, ce mois ci vous avez dépenser  : " + masommeDepenseMois;
-
-        try {
-            // Get the default instance of the SmsManager
-            SmsManager smsManager = SmsManager.getDefault();
-            // Send Message
-            smsManager.sendTextMessage(phoneNumber,
-                    null,
-                    message,
-                    null,
-                    null);
-
-            Log.i( LOG_TAG,"Your sms has successfully sent!");
-            handler.post(() -> {
-
-                Toast.makeText(getApplicationContext(), "Your sms has successfully sent!",
-                        Toast.LENGTH_LONG).show();
-            });
-        } catch (Exception ex) {
-            Log.e( LOG_TAG,"Your sms has failed...", ex);
-            handler.post(() -> {
-
-                        Toast.makeText(getApplicationContext(), "Your sms has failed... " + ex.getMessage(),
-                                Toast.LENGTH_LONG).show();
-                    });
-            ex.printStackTrace();
-        }
-    }
-
-
-
-    // When you have the request results
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //
-        switch (requestCode) {
-            case MY_PERMISSION_REQUEST_CODE_SEND_SMS: {
-
-                // Note: If request is cancelled, the result arrays are empty.
-                // Permissions granted (SEND_SMS).
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    Log.i( LOG_TAG,"Permission granted!");
-                    Toast.makeText(this, "Permission granted!", Toast.LENGTH_LONG).show();
-
-                    this.sendSMS_by_smsManager();
-                }
-                // Cancelled or denied.
-                else {
-                    Log.i( LOG_TAG,"Permission denied!");
-                    Toast.makeText(this, "Permission denied!", Toast.LENGTH_LONG).show();
-                }
-                break;
-            }
-        }
-    }
-
-    // When results returned
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == MY_PERMISSION_REQUEST_CODE_SEND_SMS) {
-            if (resultCode == RESULT_OK) {
-                // Do something with data (Result returned).
-                Toast.makeText(this, "Action OK", Toast.LENGTH_LONG).show();
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Action canceled", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Action Failed", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 }
