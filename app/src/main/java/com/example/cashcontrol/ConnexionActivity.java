@@ -3,13 +3,18 @@ package com.example.cashcontrol;
 import static com.example.cashcontrol.InscriptionActivity.encrypt;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -36,6 +41,7 @@ public class ConnexionActivity extends AppCompatActivity {
     /*User*/
     private DatabaseUser dbUser;
 
+
     /*Attributs*/
     private boolean tousremplis;
     private boolean verifConnexion;
@@ -48,6 +54,9 @@ public class ConnexionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connexion);
+
+
+
         //Obtention  les Widgets
         this.mConnexion_champ_identifiant = findViewById(R.id.connexion_champ_identifiant);
         this.mConnexion_mot_de_passe = findViewById(R.id.connexion_champ_mot_de_passe);
@@ -157,4 +166,8 @@ public class ConnexionActivity extends AppCompatActivity {
         }
         return BCrypt.checkpw(password, hashedPassword);
     }
+
+
+
+
 }

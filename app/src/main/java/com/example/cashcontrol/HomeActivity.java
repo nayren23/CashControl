@@ -2,16 +2,21 @@ package com.example.cashcontrol;
 
 import static com.github.mikephil.charting.utils.ColorTemplate.rgb;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
@@ -45,6 +50,12 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
     private String [] dateSelectionner;
     private EditText datePicker;
 
+    private int sommeDepenseMois;
+
+    ArrayList<Depense> mesDepenses;
+    private static final int MY_PERMISSION_REQUEST_CODE_SEND_SMS = 1;
+    private static final String LOG_TAG = "AndroidExample";
+
     //Button
     private Button jour_button;
     private Button semaine_button;
@@ -60,6 +71,10 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
+        boutonActuel = 2;
+
+
+
         //On creer le handler avec le execute
         if(handler == null)
             handler = FourniseurHandler.creerHandler();
@@ -68,6 +83,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On crée les dépenses
         this.databaseDepense = new DatabaseDepense(this);
+
+
 
         // On récupère l'ID de l'utilisateur courant stocké dans les préférences partagées.
         this.id_Utilisateur_Courant = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE).getInt(SHARED_PREF_USER_INFO_ID, -1); // -1 pour vérifier si la case n'est pas null
@@ -85,6 +102,8 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On crée le camembert
         this.camemberDepense = findViewById(R.id.camembert);
+
+        askPermissionAndSendSMS();
 
         //Threads pour ne pas bloquer le thread principale, toute les grosses opérations de la BDD
         FournisseurExecutor.creerExecutor().execute(()->{
@@ -196,14 +215,15 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
                 depenses_Utilisateur = databaseDepense.getDepensesParUserIdDateComplete(id_Utilisateur_Courant,jour, mois,annee );
                 break;
             default:
-                depenses_Utilisateur = databaseDepense.getDepensesParUserIdEtJourActuel(id_Utilisateur_Courant);
+                depenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
                 break;
         }
 
         // On récupère les nouvelles données de la base de données
         sommeDepensesParCategorie = calculSommeDepensesParCategorie(depenses_Utilisateur);
 
-        int sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+        sommeDepenseMois = (int) Depense.calculerSommeDepenses(depenses_Utilisateur);
+
 
         // On met à jour le camembert avec les nouvelles données
         ArrayList<PieEntry> depenseUser = new ArrayList<>();
@@ -337,5 +357,116 @@ public class HomeActivity extends AppCompatActivity implements DatePickerFragmen
 
         // On refresh l'affichage
         FournisseurExecutor.creerExecutor().execute(this::refreshActivity);
+    }
+
+
+    private void askPermissionAndSendSMS() {
+
+        // With Android Level >= 23, you have to ask the user
+        // for permission to send SMS.
+        if (android.os.Build.VERSION.SDK_INT >=  android.os.Build.VERSION_CODES.M) { // 23
+
+            // Check if we have send SMS permission
+            int sendSmsPermisson = ActivityCompat.checkSelfPermission(this,
+                    android.Manifest.permission.SEND_SMS);
+
+            if (sendSmsPermisson != PackageManager.PERMISSION_GRANTED) {
+                // If don't have permission so prompt the user.
+                this.requestPermissions(
+                        new String[]{Manifest.permission.SEND_SMS},
+                        MY_PERMISSION_REQUEST_CODE_SEND_SMS
+                );
+                return;
+            }
+        }
+        FournisseurExecutor.creerExecutor().execute(()-> {
+            this.sendSMS_by_smsManager();
+        });
+    }
+
+    private void sendSMS_by_smsManager()  {
+
+
+        ArrayList<Depense> madepenses_Utilisateur = databaseDepense.getDepensesByUserIdAndCurrentMonth(id_Utilisateur_Courant);
+        int masommeDepenseMois = (int) Depense.calculerSommeDepenses(madepenses_Utilisateur);
+
+
+        String phoneNumber = "+15555215554";
+        String message = "Bonjour, ce mois ci vous avez dépenser  : " + masommeDepenseMois;
+
+        try {
+            // Get the default instance of the SmsManager
+            SmsManager smsManager = SmsManager.getDefault();
+            // Send Message
+            smsManager.sendTextMessage(phoneNumber,
+                    null,
+                    message,
+                    null,
+                    null);
+
+            Log.i( LOG_TAG,"Your sms has successfully sent!");
+            handler.post(() -> {
+
+                Toast.makeText(getApplicationContext(), "Your sms has successfully sent!",
+                        Toast.LENGTH_LONG).show();
+            });
+        } catch (Exception ex) {
+            Log.e( LOG_TAG,"Your sms has failed...", ex);
+            handler.post(() -> {
+
+                        Toast.makeText(getApplicationContext(), "Your sms has failed... " + ex.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    });
+            ex.printStackTrace();
+        }
+    }
+
+
+
+    // When you have the request results
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        //
+        switch (requestCode) {
+            case MY_PERMISSION_REQUEST_CODE_SEND_SMS: {
+
+                // Note: If request is cancelled, the result arrays are empty.
+                // Permissions granted (SEND_SMS).
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Log.i( LOG_TAG,"Permission granted!");
+                    Toast.makeText(this, "Permission granted!", Toast.LENGTH_LONG).show();
+
+                    this.sendSMS_by_smsManager();
+                }
+                // Cancelled or denied.
+                else {
+                    Log.i( LOG_TAG,"Permission denied!");
+                    Toast.makeText(this, "Permission denied!", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
+    }
+
+    // When results returned
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MY_PERMISSION_REQUEST_CODE_SEND_SMS) {
+            if (resultCode == RESULT_OK) {
+                // Do something with data (Result returned).
+                Toast.makeText(this, "Action OK", Toast.LENGTH_LONG).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Action canceled", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Action Failed", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
